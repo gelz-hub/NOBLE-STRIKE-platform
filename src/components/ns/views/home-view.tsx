@@ -105,11 +105,11 @@ export function HomeView() {
           <div className="relative mb-8 ns-fade-up">
             <div className="absolute inset-0 blur-3xl bg-gold/20 rounded-full animate-pulse" />
             <img
-              src="/ns-logo.svg"
+              src="/noble-strike-logo.png"
               alt="NOBLE STRIKE"
               width={120}
               height={120}
-              className="relative ns-logo-glow"
+              className="relative ns-logo-glow rounded-2xl object-cover"
               style={{ width: 120, height: 120 }}
             />
           </div>

@@ -44,8 +44,8 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "NOBLE STRIKE" }],
   icons: {
-    icon: "/ns-logo.svg",
-    apple: "/ns-logo.svg",
+    icon: "/noble-strike-logo.png",
+    apple: "/noble-strike-logo.png",
   },
   openGraph: {
     title: "NOBLE STRIKE — Compete. Conquer. Become Legendary.",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     url: "https://noblestrike.gg",
     siteName: "NOBLE STRIKE",
     type: "website",
-    images: ["/ns-logo.svg"],
+    images: ["/noble-strike-logo.png"],
   },
   twitter: {
     card: "summary_large_image",

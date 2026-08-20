@@ -13,11 +13,11 @@ export function NSLogo({ size = 40, className, withText = false }: LogoProps) {
   return (
     <div className={cn("flex items-center gap-3", className)}>
       <img
-        src="/ns-logo.svg"
+        src="/noble-strike-logo.png"
         alt="NOBLE STRIKE"
         width={size}
         height={size}
-        className="shrink-0 drop-shadow-[0_0_12px_rgba(213,190,119,0.4)]"
+        className="shrink-0 rounded-xl object-cover drop-shadow-[0_0_12px_rgba(213,190,119,0.4)]"
         style={{ width: size, height: size }}
       />
       {withText && (
