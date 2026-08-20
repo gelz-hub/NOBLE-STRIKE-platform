@@ -1,0 +1,163 @@
+// NOBLE STRIKE — Prisma schema
+// Premium esports tournament platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("VISITOR") // VISITOR | TEAM_MANAGER | ADMIN
+  discord   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teams     Team[]
+}
+
+model Team {
+  id               String         @id @default(cuid())
+  name             String
+  logo             String?
+  captainName      String
+  discordUsername  String
+  contactNumber    String
+  game             String         // MLBB | HOK
+  tournamentId     String?
+  tournament       Tournament?    @relation(fields: [tournamentId], references: [id])
+  status           String         @default("PENDING") // PENDING | APPROVED | REJECTED
+  isOfficial       Boolean        @default(false)
+  // Roster (5 players + optional substitute) as required by spec
+  player1          String
+  player2          String
+  player3          String
+  player4          String
+  player5          String
+  substitute       String?
+  region           String?
+  tag              String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  managerId        String?
+  user             User?          @relation(fields: [managerId], references: [id])
+  matchesAsA       Match[]        @relation("TeamA")
+  matchesAsB       Match[]        @relation("TeamB")
+  achievements     Achievement[]
+  registrations    Registration[]
+}
+
+model Tournament {
+  id                   String          @id @default(cuid())
+  name                 String
+  game                 String          // MLBB | HOK
+  slug                 String          @unique
+  startDate            DateTime
+  registrationDeadline DateTime
+  teamLimit            Int
+  prizePool            String
+  rules                String
+  bannerImage          String?
+  status               String          @default("REGISTRATION_OPEN") // REGISTRATION_OPEN | REGISTRATION_CLOSED | ONGOING | COMPLETED
+  format               String          @default("BO1") // BO1 | BO3 | BO5
+  description          String?
+  location             String?
+  organizer            String?
+  featured             Boolean         @default(false)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  teams                Team[]
+  matches              Match[]
+  registrations        Registration[]
+}
+
+model Registration {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  teamId       String
+  team         Team       @relation(fields: [teamId], references: [id])
+  status       String     @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt    DateTime   @default(now())
+}
+
+model Match {
+  id            String      @id @default(cuid())
+  tournamentId  String
+  tournament    Tournament  @relation(fields: [tournamentId], references: [id])
+  round         Int         // 1 = round of N, increases toward finals
+  matchIndex    Int         // index within the round
+  teamAId       String?
+  teamA         Team?       @relation("TeamA", fields: [teamAId], references: [id])
+  teamBId       String?
+  teamB         Team?       @relation("TeamB", fields: [teamBId], references: [id])
+  scoreA        Int         @default(0)
+  scoreB        Int         @default(0)
+  winnerId      String?
+  status        String      @default("PENDING") // PENDING | COMPLETED
+  format        String      @default("BO1") // BO1 | BO3 | BO5
+  nextMatchId   String?
+  scheduledAt   DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  content     String
+  excerpt     String?
+  category    String   // TOURNAMENT_NEWS | TEAM_UPDATES | PLAYER_SIGNINGS | RESULTS | ANNOUNCEMENTS
+  featured    Boolean  @default(false)
+  coverImage  String?
+  author      String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  title       String
+  description String?
+  date        String
+  placement   String?
+  order       Int      @default(0)
+}
+
+model NSMember {
+  id        String  @id @default(cuid())
+  name      String
+  ign       String?
+  role      String  // player role: GOLD LANER, MID LANER, etc. OR management role
+  type      String  // PLAYER | COACH | MANAGEMENT
+  bio       String?
+  image     String?
+  joinDate  String?
+  country   String?
+  order     Int     @default(0)
+}
+
+model Sponsor {
+  id     String  @id @default(cuid())
+  name   String
+  logo   String?
+  tier   String  // TITANIUM | PLATINUM | GOLD | PARTNER
+  url    String?
+  order  Int     @default(0)
+}
+
+model SocialLink {
+  id       String @id @default(cuid())
+  platform String
+  url      String
+  handle   String?
+  order    Int    @default(0)
+}

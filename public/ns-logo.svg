@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="nsGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E6D69A"/>
+      <stop offset="45%" stop-color="#D5BE77"/>
+      <stop offset="70%" stop-color="#B8A060"/>
+      <stop offset="100%" stop-color="#92783D"/>
+    </linearGradient>
+    <linearGradient id="nsGoldBright" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F5E9B8"/>
+      <stop offset="100%" stop-color="#D5BE77"/>
+    </linearGradient>
+    <linearGradient id="nsShield" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0d0d0d"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <filter id="nsGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer hexagon shield -->
+  <path d="M256 28 L448 138 L448 374 L256 484 L64 374 L64 138 Z"
+        fill="url(#nsShield)" stroke="url(#nsGold)" stroke-width="5"/>
+
+  <!-- Inner hexagon -->
+  <path d="M256 60 L420 154 L420 358 L256 452 L92 358 L92 154 Z"
+        fill="none" stroke="url(#nsGold)" stroke-width="2" opacity="0.55"/>
+
+  <!-- Crown peaks -->
+  <g stroke="url(#nsGoldBright)" stroke-width="3" fill="none" filter="url(#nsGlow)">
+    <path d="M196 110 L216 86 L236 110"/>
+    <path d="M236 110 L256 80 L276 110"/>
+    <path d="M276 110 L296 86 L316 110"/>
+  </g>
+  <circle cx="256" cy="76" r="5" fill="url(#nsGoldBright)"/>
+
+  <!-- NS Monogram -->
+  <g filter="url(#nsGlow)">
+    <!-- N -->
+    <path d="M168 190 L168 330 L196 330 L196 240 L268 330 L268 190 L240 190 L240 280 Z"
+          fill="url(#nsGoldBright)"/>
+    <!-- S (strike) -->
+    <path d="M336 190 C300 190 288 210 288 232 C288 254 304 264 336 274 C362 282 372 290 372 306 C372 322 358 330 336 330 C310 330 296 318 292 300 L272 308 C280 332 304 348 336 348 C376 348 396 330 396 306 C396 282 378 270 348 260 C322 251 312 245 312 232 C312 218 324 208 336 208 C352 208 362 216 368 230 L388 222 C380 200 360 190 336 190 Z"
+          fill="url(#nsGoldBright)"/>
+  </g>
+
+  <!-- Lightning strike through middle -->
+  <path d="M150 256 L210 250 L240 256 L272 246 L300 256 L360 250"
+        stroke="#E6D69A" stroke-width="3" fill="none" opacity="0.7" filter="url(#nsGlow)"/>
+
+  <!-- Bottom ribbon -->
+  <g filter="url(#nsGlow)">
+    <path d="M150 372 L362 372 L372 396 L362 396 L256 388 L150 396 L140 396 Z"
+          fill="url(#nsGold)" opacity="0.18"/>
+    <text x="256" y="392" text-anchor="middle" font-family="Arial Black, sans-serif"
+          font-size="16" font-weight="900" letter-spacing="6" fill="url(#nsGoldBright)">NOBLE STRIKE</text>
+  </g>
+
+  <!-- Side flourishes -->
+  <g stroke="url(#nsGold)" stroke-width="2" fill="none" opacity="0.5">
+    <path d="M70 256 L96 256"/>
+    <path d="M416 256 L442 256"/>
+  </g>
+</svg>
