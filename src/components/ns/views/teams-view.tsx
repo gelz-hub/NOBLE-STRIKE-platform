@@ -6,9 +6,9 @@ import { useFetch } from "../hooks";
 import {
   SectionHeading,
   StatusPill,
-  GameBadge,
   TeamMonogram,
   NSCardSkeleton,
+  Reveal,
 } from "../ui";
 import { Button } from "@/components/ui/button";
 import { TeamCard } from "./home-view";
@@ -20,37 +20,69 @@ import {
   UserPlus,
   Trophy,
   Swords,
-  Gamepad2,
-  Calendar,
   Medal,
   Shield,
   Search,
+  ChevronDown,
+  Target,
+  Calendar,
+  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Team, Tournament, Achievement, Match } from "@/lib/types";
+import type { Team, Tournament, Achievement, Match, Registration } from "@/lib/types";
 
-const GAME_FILTERS = [
-  { id: "ALL", label: "All Games" },
-  { id: "MLBB", label: "MLBB" },
-  { id: "HOK", label: "HoK" },
-];
+type SortKey = "newest" | "alphabetical" | "tournaments";
 
 export function TeamsView() {
   const selectedId = useApp((s) => s.selectedTeamId);
-  const [gameFilter, setGameFilter] = useState("ALL");
+  const [tournamentFilter, setTournamentFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("APPROVED");
+  const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [query, setQuery] = useState("");
   const [showReg, setShowReg] = useState(false);
 
-  const { data: teams, loading } = useFetch<Team[]>("/api/teams");
+  // Fetch all teams (no status filter so we can filter client-side for the admin view too)
+  const { data: teams, loading } = useFetch<Team[]>("/api/teams?status=ALL");
+  const { data: tournaments } = useFetch<Tournament[]>("/api/tournaments");
 
   const filtered = useMemo(() => {
-    return (teams || []).filter((t) => {
-      if (gameFilter !== "ALL" && t.game !== gameFilter) return false;
-      if (query && !t.name.toLowerCase().includes(query.toLowerCase()))
-        return false;
-      return true;
+    let list = (teams || []).slice();
+    // status filter
+    if (statusFilter !== "ALL") {
+      list = list.filter((t) => t.status === statusFilter);
+    }
+    // tournament filter
+    if (tournamentFilter !== "ALL") {
+      list = list.filter((t) =>
+        (t.registrations || []).some(
+          (r) => r.tournamentId === tournamentFilter && r.status === "APPROVED"
+        )
+      );
+    }
+    // search
+    if (query) {
+      const q = query.toLowerCase();
+      list = list.filter(
+        (t) =>
+          t.name.toLowerCase().includes(q) ||
+          (t.tag || "").toLowerCase().includes(q) ||
+          (t.captainName || "").toLowerCase().includes(q)
+      );
+    }
+    // sort
+    list.sort((a, b) => {
+      if (sortKey === "alphabetical") return a.name.localeCompare(b.name);
+      if (sortKey === "tournaments")
+        return (
+          (b.registrations || []).length - (a.registrations || []).length
+        );
+      // newest
+      return (
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
     });
-  }, [teams, gameFilter, query]);
+    return list;
+  }, [teams, statusFilter, tournamentFilter, query, sortKey]);
 
   const selected = useMemo(
     () => (teams || []).find((t) => t.id === selectedId) || null,
@@ -64,68 +96,101 @@ export function TeamsView() {
   return (
     <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-          <SectionHeading
-            kicker="The Contenders"
-            title="Teams"
-            description="Elite rosters competing across MLBB & Honor of Kings."
-          />
-          <Button
-            onClick={() => setShowReg(true)}
-            className="ns-btn-gold h-11 px-6 self-start md:self-auto"
-          >
-            <UserPlus className="w-4 h-4" />
-            Register Team
-          </Button>
-        </div>
+        <Reveal>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <SectionHeading
+              kicker="The Contenders"
+              title="Teams"
+              description="Elite rosters competing across multiple tournaments. Filter, search, and discover your next rival."
+            />
+            <Button
+              onClick={() => setShowReg(true)}
+              className="ns-btn-gold h-11 px-6 self-start md:self-auto"
+            >
+              <UserPlus className="w-4 h-4" />
+              Register Team
+            </Button>
+          </div>
+        </Reveal>
 
         {/* Filters */}
-        <div className="mt-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            {GAME_FILTERS.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => setGameFilter(f.id)}
-                className={cn(
-                  "px-4 py-2 rounded-md text-xs font-heading font-semibold uppercase tracking-wider transition-all border",
-                  gameFilter === f.id
-                    ? "bg-gold/15 border-gold/50 text-gold-light"
-                    : "border-gold/15 text-white/60 hover:text-white hover:border-gold/30"
-                )}
+        <Reveal delay={100}>
+          <div className="mt-10 ns-card rounded-xl p-4 space-y-4">
+            {/* Search + sort */}
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search by team name, tag, or captain..."
+                  className="w-full h-10 pl-10 pr-4 rounded-md bg-black/40 border border-gold/20 focus:border-gold/50 text-sm placeholder:text-muted-foreground outline-none"
+                />
+              </div>
+              <SortDropdown value={sortKey} onChange={setSortKey} />
+            </div>
+            {/* Tournament + status filters */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground mr-1">
+                Tournament:
+              </span>
+              <FilterChip
+                active={tournamentFilter === "ALL"}
+                onClick={() => setTournamentFilter("ALL")}
               >
-                {f.label}
-              </button>
-            ))}
+                All Tournaments
+              </FilterChip>
+              {(tournaments || []).map((t) => (
+                <FilterChip
+                  key={t.id}
+                  active={tournamentFilter === t.id}
+                  onClick={() => setTournamentFilter(t.id)}
+                >
+                  {t.name}
+                </FilterChip>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[0.7rem] uppercase tracking-wider text-muted-foreground mr-1">
+                Status:
+              </span>
+              {(["ALL", "APPROVED", "PENDING", "REJECTED"] as const).map((s) => (
+                <FilterChip
+                  key={s}
+                  active={statusFilter === s}
+                  onClick={() => setStatusFilter(s)}
+                >
+                  {s === "ALL" ? "All" : s.charAt(0) + s.slice(1).toLowerCase()}
+                </FilterChip>
+              ))}
+            </div>
           </div>
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search teams..."
-              className="w-full h-10 pl-10 pr-4 rounded-md bg-black/40 border border-gold/20 focus:border-gold/50 text-sm placeholder:text-muted-foreground outline-none"
-            />
-          </div>
+        </Reveal>
+
+        {/* Results count */}
+        <div className="mt-6 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            <span className="text-gold-light font-semibold">{filtered.length}</span>{" "}
+            {filtered.length === 1 ? "team" : "teams"} found
+          </p>
         </div>
 
         {/* Grid */}
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {loading ? (
             Array.from({ length: 6 }).map((_, i) => (
-              <NSCardSkeleton key={i} className="h-24" />
+              <NSCardSkeleton key={i} className="h-28" />
             ))
           ) : filtered.length === 0 ? (
             <div className="col-span-full text-center py-20 text-muted-foreground">
               <Users className="w-12 h-12 mx-auto mb-4 text-gold/30" />
-              No teams found.
+              No teams match your filters.
             </div>
           ) : (
-            filtered.map((t) => (
-              <TeamCard
-                key={t.id}
-                team={t}
-                onClick={() => useApp.getState().openTeam(t.id)}
-              />
+            filtered.map((t, i) => (
+              <Reveal key={t.id} delay={Math.min(i * 50, 300)}>
+                <TeamCard team={t} onClick={() => useApp.getState().openTeam(t.id)} />
+              </Reveal>
             ))
           )}
         </div>
@@ -134,10 +199,83 @@ export function TeamsView() {
       {showReg && (
         <TeamRegistrationForm
           onClose={() => setShowReg(false)}
-          onSuccess={() => {
-            setShowReg(false);
-          }}
+          onSuccess={() => setShowReg(false)}
         />
+      )}
+    </div>
+  );
+}
+
+function FilterChip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "px-3 py-1.5 rounded-md text-xs font-heading font-semibold uppercase tracking-wider transition-all border",
+        active
+          ? "bg-gold/15 border-gold/50 text-gold-light"
+          : "border-gold/15 text-white/60 hover:text-white hover:border-gold/30"
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function SortDropdown({
+  value,
+  onChange,
+}: {
+  value: SortKey;
+  onChange: (v: SortKey) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const labels: Record<SortKey, string> = {
+    newest: "Newest Registration",
+    alphabetical: "Alphabetical (A-Z)",
+    tournaments: "Most Tournaments",
+  };
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-2 h-10 px-4 rounded-md bg-black/40 border border-gold/20 hover:border-gold/50 text-sm text-white/80 min-w-[200px] justify-between"
+      >
+        <span className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-gold/60" />
+          {labels[value]}
+        </span>
+        <ChevronDown className={cn("w-4 h-4 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 mt-2 w-full z-50 glass-dark rounded-md border border-gold/20 overflow-hidden">
+            {(Object.keys(labels) as SortKey[]).map((k) => (
+              <button
+                key={k}
+                onClick={() => {
+                  onChange(k);
+                  setOpen(false);
+                }}
+                className={cn(
+                  "w-full text-left px-4 py-2.5 text-sm hover:bg-gold/10 transition-colors",
+                  value === k ? "text-gold-light bg-gold/5" : "text-white/70"
+                )}
+              >
+                {labels[k]}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
@@ -149,29 +287,33 @@ function TeamProfile({ team }: { team: Team }) {
   const openTeam = useApp((s) => s.openTeam);
   const setView = useApp((s) => s.setView);
   const { data: tournaments } = useFetch<Tournament[]>("/api/tournaments");
-  const { data: fullTeam } = useFetch<Team & { matches?: Match[] }>(
-    `/api/teams/${team.id}`
-  );
+  const { data: fullTeam } = useFetch<
+    Team & { matches?: Match[]; registrations?: Registration[] }
+  >(`/api/teams/${team.id}`);
 
-  const tournament = (tournaments || []).find((t) => t.id === team.tournamentId);
   const roster = [
-    { ign: team.player1, role: "Player 1" },
-    { ign: team.player2, role: "Player 2" },
-    { ign: team.player3, role: "Player 3" },
-    { ign: team.player4, role: "Player 4" },
-    { ign: team.player5, role: "Player 5" },
-    { ign: team.substitute, role: "Substitute" },
+    { ign: team.player1, role: "Player 1", captain: true },
+    { ign: team.player2, role: "Player 2", captain: false },
+    { ign: team.player3, role: "Player 3", captain: false },
+    { ign: team.player4, role: "Player 4", captain: false },
+    { ign: team.player5, role: "Player 5", captain: false },
+    { ign: team.substitute, role: "Substitute", captain: false },
   ].filter((p) => p.ign);
 
   const achievements = fullTeam?.achievements || team.achievements || [];
   const matches = fullTeam?.matches || [];
+  const regs = fullTeam?.registrations || team.registrations || [];
+  const approvedRegs = regs.filter((r) => r.status === "APPROVED");
 
-  const wins = matches.filter(
-    (m) => m.winnerId === team.id
+  const wins = matches.filter((m) => m.winnerId === team.id).length;
+  const completedMatches = matches.filter((m) => m.status === "COMPLETED");
+  const losses = completedMatches.filter(
+    (m) => m.winnerId && m.winnerId !== team.id
   ).length;
-  const losses = matches.filter(
-    (m) => m.status === "COMPLETED" && m.winnerId && m.winnerId !== team.id
-  ).length;
+  const winRate =
+    completedMatches.length > 0
+      ? Math.round((wins / completedMatches.length) * 100)
+      : 0;
 
   return (
     <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
@@ -207,8 +349,12 @@ function TeamProfile({ team }: { team: Team }) {
             />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-2">
-                <GameBadge game={team.game} />
                 <StatusPill status={team.status} />
+                {team.region && (
+                  <span className="text-xs text-muted-foreground">
+                    {team.region}
+                  </span>
+                )}
               </div>
               <h1 className="font-display font-black text-3xl md:text-5xl text-white text-glow-gold truncate">
                 {team.name}
@@ -218,21 +364,30 @@ function TeamProfile({ team }: { team: Team }) {
                   </span>
                 )}
               </h1>
-              {team.region && (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Region: {team.region}
-                </p>
-              )}
             </div>
           </div>
         </div>
 
+        {/* Description */}
+        {team.description && (
+          <div className="mt-6 ns-card rounded-xl p-5">
+            <p className="text-sm md:text-base text-white/80 leading-relaxed">
+              {team.description}
+            </p>
+          </div>
+        )}
+
         {/* Stats row */}
-        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-5 gap-4">
           <StatBox icon={Trophy} label="Wins" value={wins} />
-          <StatBox icon={Swords} label="Matches" value={matches.length} />
+          <StatBox icon={Swords} label="Matches" value={completedMatches.length} />
+          <StatBox
+            icon={TrendingUp}
+            label="Win Rate"
+            value={`${winRate}%`}
+          />
           <StatBox icon={Medal} label="Trophies" value={achievements.length} />
-          <StatBox icon={Users} label="Roster" value={roster.length} />
+          <StatBox icon={Target} label="Tournaments" value={approvedRegs.length} />
         </div>
 
         {/* Body */}
@@ -254,7 +409,7 @@ function TeamProfile({ team }: { team: Team }) {
                   <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#E6D69A] via-[#D5BE77] to-[#92783D] flex items-center justify-center font-display font-bold text-black">
                     {p.ign?.[0]?.toUpperCase()}
                   </div>
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="font-heading font-semibold text-white truncate">
                       {p.ign}
                     </p>
@@ -262,8 +417,11 @@ function TeamProfile({ team }: { team: Team }) {
                       {p.role}
                     </p>
                   </div>
-                  {i === 0 && (
-                    <Shield className="w-3.5 h-3.5 text-gold ml-auto" title="Captain" />
+                  {p.captain && (
+                    <span className="ns-pill ns-pill-ongoing text-[0.6rem]">
+                      <Shield className="w-3 h-3" />
+                      Captain
+                    </span>
                   )}
                 </div>
               ))}
@@ -272,33 +430,6 @@ function TeamProfile({ team }: { team: Team }) {
 
           {/* Sidebar */}
           <div className="flex flex-col gap-4">
-            {/* Tournament */}
-            <div className="ns-card rounded-xl p-5">
-              <p className="text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-3">
-                Registered Tournament
-              </p>
-              {tournament ? (
-                <button
-                  onClick={() => useApp.getState().openTournament(tournament.id)}
-                  className="w-full text-left flex items-center gap-3 p-3 rounded-lg hover:bg-gold/5 border border-gold/15 transition-colors"
-                >
-                  <Trophy className="w-5 h-5 text-gold" />
-                  <div>
-                    <p className="font-heading font-semibold text-white text-sm">
-                      {tournament.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {tournament.prizePool} · {tournament.format}
-                    </p>
-                  </div>
-                </button>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  Not registered to a tournament.
-                </p>
-              )}
-            </div>
-
             {/* Captain info */}
             <div className="ns-card rounded-xl p-5">
               <p className="text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-3">
@@ -318,8 +449,67 @@ function TeamProfile({ team }: { team: Team }) {
                 </div>
               </div>
             </div>
+
+            {/* Win rate visualization */}
+            <div className="ns-card rounded-xl p-5">
+              <p className="text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-3">
+                Performance
+              </p>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-display font-bold text-3xl text-gold-gradient">
+                  {winRate}%
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {wins}W - {losses}L
+                </span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-white/5 overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-[#92783D] via-[#D5BE77] to-[#E6D69A] rounded-full"
+                  style={{ width: `${winRate}%` }}
+                />
+              </div>
+            </div>
           </div>
         </div>
+
+        {/* Tournament Participation */}
+        {approvedRegs.length > 0 && (
+          <div className="mt-6 ns-card rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center">
+                <Target className="w-4.5 h-4.5 text-gold" />
+              </div>
+              <h2 className="font-display font-bold text-xl text-white">
+                Tournament Participation
+              </h2>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {approvedRegs.map((r) => {
+                const t = r.tournament || (tournaments || []).find((x) => x.id === r.tournamentId);
+                if (!t) return null;
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => useApp.getState().openTournament(t.id)}
+                    className="flex items-center gap-3 p-3 rounded-lg bg-black/30 border border-gold/10 hover:border-gold/40 transition-colors text-left"
+                  >
+                    <Trophy className="w-5 h-5 text-gold shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-heading font-semibold text-white text-sm truncate">
+                        {t.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {t.prizePool} · {t.format}
+                      </p>
+                    </div>
+                    <StatusPill status={t.status} />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Achievements */}
         {achievements.length > 0 && (
@@ -329,7 +519,7 @@ function TeamProfile({ team }: { team: Team }) {
                 <Medal className="w-4.5 h-4.5 text-gold" />
               </div>
               <h2 className="font-display font-bold text-xl text-white">
-                Achievements
+                Achievements &amp; Placements
               </h2>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -372,8 +562,8 @@ function TeamProfile({ team }: { team: Team }) {
                 Match History
               </h2>
             </div>
-            <div className="flex flex-col gap-2">
-              {matches.slice(0, 8).map((m) => {
+            <div className="flex flex-col gap-2 max-h-96 overflow-y-auto">
+              {matches.slice(0, 10).map((m) => {
                 const isA = m.teamAId === team.id;
                 const opp = isA ? m.teamB : m.teamA;
                 const myScore = isA ? m.scoreA : m.scoreB;
@@ -388,11 +578,7 @@ function TeamProfile({ team }: { team: Team }) {
                     <div
                       className={cn(
                         "w-1 h-10 rounded-full",
-                        done
-                          ? won
-                            ? "bg-green-400"
-                            : "bg-red-400"
-                          : "bg-gold/40"
+                        done ? (won ? "bg-green-400" : "bg-red-400") : "bg-gold/40"
                       )}
                     />
                     <div className="flex-1 flex items-center justify-between gap-3">
@@ -442,7 +628,7 @@ function StatBox({
 }: {
   icon: React.ElementType;
   label: string;
-  value: number;
+  value: number | string;
 }) {
   return (
     <div className="ns-card rounded-xl p-4 flex items-center gap-3">

@@ -2,27 +2,42 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 // GET /api/teams — list teams (default: APPROVED), with optional filters
+//   ?status=PENDING|APPROVED|REJECTED
+//   ?official=true
+//   ?tournamentId=xxx  -> filter to teams with an APPROVED or PENDING registration in that tournament
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
     const official = searchParams.get("official");
+    const tournamentId = searchParams.get("tournamentId");
 
-    // Default: APPROVED only (so public teams page hides PENDING/REJECTED)
+    // Default: APPROVED only (so public teams page hides PENDING/REJECTED).
+    // "ALL" is treated as no status filter (returns every team regardless of status).
     const where: Record<string, unknown> = {};
-    if (status) {
+    if (status && status !== "ALL") {
       where.status = status;
-    } else if (official === null) {
-      // no filter
-    } else {
+    } else if (!status) {
       where.status = "APPROVED";
     }
     if (official === "true") where.isOfficial = true;
+
+    // Multi-tournament filter: teams that have a registration (APPROVED or PENDING)
+    // in the requested tournament.
+    if (tournamentId) {
+      where.registrations = {
+        some: {
+          tournamentId,
+          status: { in: ["APPROVED", "PENDING"] },
+        },
+      };
+    }
 
     const teams = await db.team.findMany({
       where,
       include: {
         tournament: true,
+        registrations: { include: { tournament: true } },
         achievements: true,
       },
       orderBy: { createdAt: "desc" },
@@ -53,6 +68,7 @@ export async function POST(request: Request) {
       substitute = null,
       region = null,
       tag = null,
+      description = null,
     } = body;
 
     if (
@@ -79,6 +95,7 @@ export async function POST(request: Request) {
     const normSubstitute = substitute || null;
     const normRegion = region || null;
     const normTag = tag || null;
+    const normDescription = description || null;
 
     const team = await db.team.create({
       data: {
@@ -97,10 +114,15 @@ export async function POST(request: Request) {
         substitute: normSubstitute,
         region: normRegion,
         tag: normTag,
+        description: normDescription,
         status: "PENDING",
         isOfficial: false,
       },
-      include: { tournament: true, achievements: true },
+      include: {
+        tournament: true,
+        registrations: { include: { tournament: true } },
+        achievements: true,
+      },
     });
 
     // If a tournamentId is provided, also create a registration record

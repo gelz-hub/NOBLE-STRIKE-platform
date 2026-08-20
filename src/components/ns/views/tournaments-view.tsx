@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useApp } from "@/lib/store";
-import { useFetch, apiPost } from "../hooks";
+import { useFetch } from "../hooks";
 import {
   SectionHeading,
   StatusPill,
@@ -10,11 +10,12 @@ import {
   PrizeTag,
   NSCardSkeleton,
   TeamMonogram,
+  Reveal,
+  SlotsBar,
 } from "../ui";
 import { Button } from "@/components/ui/button";
-import {
-  TournamentCard,
-} from "./home-view";
+import { TournamentCard } from "./home-view";
+import { TeamRegistrationForm } from "../forms/team-registration-form";
 import {
   Trophy,
   Calendar,
@@ -24,25 +25,23 @@ import {
   ScrollText,
   MapPin,
   UserPlus,
-  CheckCircle2,
   Clock,
   Building2,
+  ChevronRight,
+  ListChecks,
+  BarChart3,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import type { Tournament, Team } from "@/lib/types";
-import { TeamRegistrationForm } from "../forms/team-registration-form";
+import type { Tournament, Team, Registration } from "@/lib/types";
 
-const STATUS_FILTERS = [
-  { id: "ALL", label: "All" },
-  { id: "REGISTRATION_OPEN", label: "Open" },
-  { id: "ONGOING", label: "Live" },
-  { id: "COMPLETED", label: "Completed" },
-];
+type DetailTab = "overview" | "rules" | "teams" | "bracket" | "schedule" | "results" | "stats";
 
 export function TournamentsView() {
   const selectedId = useApp((s) => s.selectedTournamentId);
   const openTournament = useApp((s) => s.openTournament);
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
   const { data: tournaments, loading } = useFetch<Tournament[]>(
     "/api/tournaments"
@@ -57,28 +56,46 @@ export function TournamentsView() {
     return <TournamentDetail tournament={selected} />;
   }
 
+  const filtered =
+    statusFilter === "ALL"
+      ? tournaments || []
+      : (tournaments || []).filter((t) => t.status === statusFilter);
+
   return (
     <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <SectionHeading
-          kicker="The Arena"
-          title="Tournaments"
-          description="Compete in elite 5v5 MOBA tournaments. Register, battle, and claim your legacy."
-        />
+        <Reveal>
+          <SectionHeading
+            kicker="The Arena"
+            title="Tournaments"
+            description="Compete in elite 5v5 MOBA tournaments across multiple seasons. From 8-team invitationals to 256-slot open qualifiers."
+          />
+        </Reveal>
 
         {/* Filters */}
-        <div className="mt-10 flex flex-wrap items-center gap-2">
-          {STATUS_FILTERS.map((f) => (
-            <Button
-              key={f.id}
-              variant="outline"
-              size="sm"
-              className="border-gold/30 text-white/70 hover:text-gold-light hover:border-gold/60 hover:bg-gold/10"
-            >
-              {f.label}
-            </Button>
-          ))}
-        </div>
+        <Reveal delay={100}>
+          <div className="mt-10 flex flex-wrap items-center gap-2">
+            {[
+              { id: "ALL", label: "All" },
+              { id: "REGISTRATION_OPEN", label: "Registration Open" },
+              { id: "ONGOING", label: "Live Now" },
+              { id: "COMPLETED", label: "Completed" },
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setStatusFilter(f.id)}
+                className={cn(
+                  "px-4 py-2 rounded-md text-xs font-heading font-semibold uppercase tracking-wider transition-all border",
+                  statusFilter === f.id
+                    ? "bg-gold/15 border-gold/50 text-gold-light"
+                    : "border-gold/15 text-white/60 hover:text-white hover:border-gold/30"
+                )}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </Reveal>
 
         {/* Grid */}
         <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -88,18 +105,19 @@ export function TournamentsView() {
               <NSCardSkeleton />
               <NSCardSkeleton />
             </>
-          ) : (tournaments || []).length === 0 ? (
+          ) : filtered.length === 0 ? (
             <div className="col-span-full text-center py-20 text-muted-foreground">
               <Trophy className="w-12 h-12 mx-auto mb-4 text-gold/30" />
-              No tournaments yet. Check back soon.
+              No tournaments found.
             </div>
           ) : (
-            (tournaments || []).map((t) => (
-              <TournamentCard
-                key={t.id}
-                tournament={t}
-                onClick={() => openTournament(t.id)}
-              />
+            filtered.map((t, i) => (
+              <Reveal key={t.id} delay={i * 80}>
+                <TournamentCard
+                  tournament={t}
+                  onClick={() => openTournament(t.id)}
+                />
+              </Reveal>
             ))
           )}
         </div>
@@ -108,25 +126,42 @@ export function TournamentsView() {
   );
 }
 
+/* ============ Tournament Detail with Tabs ============ */
+
 function TournamentDetail({ tournament }: { tournament: Tournament }) {
-  const setView = useApp((s) => s.setView);
   const openTournament = useApp((s) => s.openTournament);
+  const setView = useApp((s) => s.setView);
+  const [tab, setTab] = useState<DetailTab>("overview");
   const [showReg, setShowReg] = useState(false);
 
-  const { data: teams } = useFetch<Team[]>(
-    `/api/teams?status=APPROVED`,
-    [tournament.id]
-  );
+  const { data: teams } = useFetch<Team[]>("/api/teams");
+  const { data: bracket } = useFetch<{
+    rounds: { round: number; matches: unknown[] }[];
+  }>(`/api/tournaments/${tournament.id}/bracket`, [tournament.id]);
 
-  const registeredTeams = (teams || []).filter(
-    (t) => t.tournamentId === tournament.id
+  const registeredTeams = (teams || []).filter((t) =>
+    (t.registrations || []).some(
+      (r: Registration) =>
+        r.tournamentId === tournament.id && r.status === "APPROVED"
+    )
   );
-
+  const regCount = registeredTeams.length;
+  const remaining = Math.max(0, tournament.teamLimit - regCount);
   const startDate = new Date(tournament.startDate);
   const deadline = new Date(tournament.registrationDeadline);
   const regOpen = tournament.status === "REGISTRATION_OPEN";
-  const regCount = tournament._count?.teams ?? registeredTeams.length;
-  const pct = Math.min(100, (regCount / tournament.teamLimit) * 100);
+  const totalMatches = bracket?.rounds?.reduce((s, r) => s + r.matches.length, 0) || 0;
+  const hasBracket = totalMatches > 0;
+
+  const TABS: { id: DetailTab; label: string; icon: React.ElementType }[] = [
+    { id: "overview", label: "Overview", icon: Building2 },
+    { id: "rules", label: "Rules", icon: ScrollText },
+    { id: "teams", label: "Registered Teams", icon: Users },
+    { id: "bracket", label: "Bracket", icon: Swords },
+    { id: "schedule", label: "Schedule", icon: Calendar },
+    { id: "results", label: "Results", icon: Trophy },
+    { id: "stats", label: "Statistics", icon: BarChart3 },
+  ];
 
   return (
     <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
@@ -166,188 +201,127 @@ function TournamentDetail({ tournament }: { tournament: Tournament }) {
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <PrizeTag prize={tournament.prizePool} />
               <span className="ns-pill ns-pill-ongoing">{tournament.format}</span>
+              <span className="ns-pill ns-pill-approved">
+                {tournament.teamLimit} Slots
+              </span>
             </div>
           </div>
         </div>
 
         {/* Quick stats */}
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-          <DetailStat
-            icon={Calendar}
-            label="Start Date"
-            value={startDate.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          />
-          <DetailStat
-            icon={Clock}
-            label="Reg Deadline"
-            value={deadline.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-            })}
-          />
-          <DetailStat
-            icon={Users}
-            label="Team Slots"
-            value={`${regCount} / ${tournament.teamLimit}`}
-          />
-          <DetailStat
-            icon={MapPin}
-            label="Location"
-            value={tournament.location || "Online"}
-          />
+          <DetailStat icon={Calendar} label="Start Date" value={startDate.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} />
+          <DetailStat icon={Clock} label="Reg Deadline" value={deadline.toLocaleDateString("en-US", { month: "short", day: "numeric" })} />
+          <DetailStat icon={Users} label="Registered" value={`${regCount} / ${tournament.teamLimit}`} />
+          <DetailStat icon={MapPin} label="Location" value={tournament.location || "Online"} />
         </div>
 
-        {/* registration progress */}
-        <div className="mt-6 ns-card rounded-xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-heading font-semibold uppercase text-sm tracking-wider text-white/80">
-              Registration Progress
-            </span>
-            <span className="text-sm font-bold text-gold-light">
-              {regCount}/{tournament.teamLimit}
-            </span>
-          </div>
-          <div className="h-2.5 w-full rounded-full bg-white/5 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#92783D] via-[#D5BE77] to-[#E6D69A] rounded-full"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-        </div>
-
-        {/* Body grid */}
-        <div className="mt-6 grid lg:grid-cols-[1.6fr_1fr] gap-6">
-          {/* Rules */}
-          <div className="ns-card rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center">
-                <ScrollText className="w-4.5 h-4.5 text-gold" />
-              </div>
-              <h2 className="font-display font-bold text-xl text-white">
-                Tournament Rules
-              </h2>
+        {/* Capacity + CTA */}
+        <div className="mt-6 grid md:grid-cols-[1.4fr_1fr] gap-4">
+          <div className="ns-card rounded-xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-heading font-semibold uppercase text-sm tracking-wider text-white/80">
+                Tournament Capacity
+              </span>
+              <span className="text-sm font-bold text-gold-light">
+                {regCount}/{tournament.teamLimit}
+              </span>
             </div>
-            <div className="prose prose-invert max-w-none">
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {tournament.rules ||
-                  tournament.description ||
-                  "Official rulebook will be published prior to the tournament start. All participants must adhere to the NOBLE STRIKE competitive integrity policy."}
-              </p>
-            </div>
-            {tournament.description && tournament.rules && (
-              <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                {tournament.description}
+            <SlotsBar registered={regCount} limit={tournament.teamLimit} showRemaining={false} />
+            {regOpen && remaining > 0 && (
+              <p className="mt-3 text-sm text-gold-light font-semibold">
+                {remaining} Slots Remaining — Registration Open
               </p>
             )}
-            <div className="mt-5 flex flex-wrap gap-2">
-              <span className="ns-pill ns-pill-ongoing">Single Elimination</span>
-              <span className="ns-pill ns-pill-pending">{tournament.format}</span>
-              <span className="ns-pill ns-pill-approved">5v5</span>
-            </div>
           </div>
-
-          {/* Sidebar */}
-          <div className="flex flex-col gap-4">
-            {/* CTA */}
-            <div className="ns-card ns-card-gold-edge rounded-xl p-6 text-center">
-              <Trophy className="w-10 h-10 text-gold mx-auto mb-3" />
-              <h3 className="font-display font-bold text-lg text-white">
-                {regOpen ? "Join The Battle" : "Registration Closed"}
-              </h3>
-              <p className="mt-2 text-xs text-muted-foreground">
-                {regOpen
-                  ? `Register your squad of 5 + 1 sub before ${deadline.toLocaleDateString()}`
-                  : "Follow along on the brackets page."}
-              </p>
-              <Button
-                onClick={() => setShowReg(true)}
-                disabled={!regOpen}
-                className={cn(
-                  "mt-4 w-full h-11 text-sm uppercase tracking-wider",
-                  regOpen ? "ns-btn-gold" : "opacity-50 cursor-not-allowed"
-                )}
-              >
-                <UserPlus className="w-4 h-4" />
-                Register Team
-              </Button>
-            </div>
-
-            {/* Organizer */}
-            <div className="ns-card rounded-xl p-5">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center">
-                  <Building2 className="w-4.5 h-4.5 text-gold" />
-                </div>
-                <div>
-                  <p className="text-[0.7rem] uppercase tracking-wider text-muted-foreground">
-                    Organizer
-                  </p>
-                  <p className="font-heading font-semibold text-white">
-                    {tournament.organizer || "NOBLE STRIKE"}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Registered teams preview */}
-            <div className="ns-card rounded-xl p-5">
-              <p className="text-[0.7rem] uppercase tracking-wider text-muted-foreground mb-3">
-                Registered Teams
-              </p>
-              {registeredTeams.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  No approved teams yet. Be the first to register.
-                </p>
+          <div className="ns-card ns-card-gold-edge rounded-xl p-5 text-center flex flex-col justify-center">
+            <Trophy className="w-8 h-8 text-gold mx-auto mb-2" />
+            <h3 className="font-display font-bold text-white">
+              {regOpen ? "Join The Battle" : tournament.status === "ONGOING" ? "Watch Live" : "View Results"}
+            </h3>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {regOpen ? `${remaining} slots open` : tournament.status === "ONGOING" ? "Follow the bracket" : "Tournament completed"}
+            </p>
+            <Button
+              onClick={() => (regOpen ? setShowReg(true) : setView("brackets"))}
+              className={cn("mt-3 h-10 text-sm uppercase tracking-wider", regOpen ? "ns-btn-gold" : "ns-btn-outline")}
+            >
+              {regOpen ? (
+                <>
+                  <UserPlus className="w-4 h-4" />
+                  Register Team
+                </>
               ) : (
-                <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
-                  {registeredTeams.map((t) => (
-                    <div
-                      key={t.id}
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors"
-                    >
-                      <TeamMonogram name={t.name} logo={t.logo} size={32} />
-                      <span className="text-sm font-medium text-white/90 truncate">
-                        {t.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <>
+                  <Swords className="w-4 h-4" />
+                  View Bracket
+                </>
               )}
-            </div>
+            </Button>
           </div>
         </div>
 
-        {/* Bracket CTA */}
-        {(tournament.status === "ONGOING" ||
-          tournament.status === "COMPLETED") && (
-          <div className="mt-6 ns-card rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Swords className="w-6 h-6 text-gold" />
-              <div>
-                <h3 className="font-display font-bold text-white">
-                  View Live Bracket
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Track every matchup in real time.
-                </p>
-              </div>
-            </div>
-            <Button
-              onClick={() => setView("brackets")}
-              className="ns-btn-outline h-11 px-6"
-            >
-              Open Brackets
-              <ArrowLeft className="w-4 h-4 rotate-180" />
-            </Button>
+        {/* Tabs */}
+        <div className="mt-8">
+          <div className="flex flex-wrap items-center gap-1 border-b border-gold/15 pb-px">
+            {TABS.map((t) => {
+              const disabled =
+                (t.id === "bracket" || t.id === "results" || t.id === "stats") &&
+                !hasBracket;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => !disabled && setTab(t.id)}
+                  disabled={disabled}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 text-sm font-heading font-semibold uppercase tracking-wider transition-all border-b-2 -mb-px",
+                    tab === t.id
+                      ? "text-gold-light border-gold"
+                      : disabled
+                      ? "text-white/20 border-transparent cursor-not-allowed"
+                      : "text-white/60 border-transparent hover:text-white"
+                  )}
+                >
+                  <t.icon className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t.label}</span>
+                </button>
+              );
+            })}
           </div>
-        )}
+
+          {/* Tab content */}
+          <div className="mt-6">
+            {tab === "overview" && <OverviewTab tournament={tournament} />}
+            {tab === "rules" && <RulesTab tournament={tournament} />}
+            {tab === "teams" && <TeamsTab teams={registeredTeams} />}
+            {tab === "bracket" && hasBracket && (
+              <div className="ns-card rounded-xl p-6 text-center">
+                <Swords className="w-12 h-12 text-gold mx-auto mb-3" />
+                <p className="text-white/80 mb-4">View the full interactive bracket</p>
+                <Button onClick={() => setView("brackets")} className="ns-btn-outline">
+                  Open Bracket Viewer
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+            {tab === "schedule" && <ScheduleTab tournament={tournament} />}
+            {tab === "results" && hasBracket && (
+              <div className="ns-card rounded-xl p-6 text-center">
+                <Trophy className="w-12 h-12 text-gold mx-auto mb-3" />
+                <p className="text-white/80 mb-4">View match results on the bracket page</p>
+                <Button onClick={() => setView("brackets")} className="ns-btn-outline">
+                  View Results
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+            {tab === "stats" && hasBracket && (
+              <StatsTab tournament={tournament} teamCount={regCount} matchCount={totalMatches} />
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* Registration modal */}
       {showReg && (
         <TeamRegistrationForm
           defaultTournamentId={tournament.id}
@@ -362,26 +336,177 @@ function TournamentDetail({ tournament }: { tournament: Tournament }) {
   );
 }
 
-function DetailStat({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-}) {
+function OverviewTab({ tournament }: { tournament: Tournament }) {
+  return (
+    <div className="ns-card rounded-xl p-6 space-y-4">
+      <div className="flex items-center gap-3">
+        <Building2 className="w-5 h-5 text-gold" />
+        <h3 className="font-display font-bold text-xl text-white">Tournament Overview</h3>
+      </div>
+      <p className="text-sm text-muted-foreground leading-relaxed">
+        {tournament.description ||
+          `${tournament.name} is a premier ${tournament.format} 5v5 MOBA tournament organized by ${tournament.organizer || "NOBLE STRIKE"}. With a prize pool of ${tournament.prizePool} and ${tournament.teamLimit} team slots, this competition brings together the strongest rosters to battle for glory.`}
+      </p>
+      <div className="grid sm:grid-cols-2 gap-3 pt-2">
+        <InfoRow icon={Trophy} label="Prize Pool" value={tournament.prizePool} />
+        <InfoRow icon={Swords} label="Format" value={tournament.format} />
+        <InfoRow icon={Users} label="Team Limit" value={`${tournament.teamLimit} teams`} />
+        <InfoRow icon={Building2} label="Organizer" value={tournament.organizer || "NOBLE STRIKE"} />
+        <InfoRow icon={MapPin} label="Location" value={tournament.location || "Online"} />
+        <InfoRow icon={Calendar} label="Start Date" value={new Date(tournament.startDate).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} />
+      </div>
+    </div>
+  );
+}
+
+function RulesTab({ tournament }: { tournament: Tournament }) {
+  return (
+    <div className="ns-card rounded-xl p-6">
+      <div className="flex items-center gap-3 mb-4">
+        <ScrollText className="w-5 h-5 text-gold" />
+        <h3 className="font-display font-bold text-xl text-white">Tournament Rules</h3>
+      </div>
+      <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+        {tournament.rules ||
+          "Official rulebook will be published prior to the tournament start. All participants must adhere to the NOBLE STRIKE competitive integrity policy."}
+      </p>
+      <div className="mt-5 flex flex-wrap gap-2">
+        <span className="ns-pill ns-pill-ongoing">Single Elimination</span>
+        <span className="ns-pill ns-pill-pending">{tournament.format}</span>
+        <span className="ns-pill ns-pill-approved">5v5</span>
+      </div>
+    </div>
+  );
+}
+
+function TeamsTab({ teams }: { teams: Team[] }) {
+  if (teams.length === 0) {
+    return (
+      <div className="ns-card rounded-xl p-12 text-center text-muted-foreground">
+        <Users className="w-12 h-12 mx-auto mb-4 text-gold/30" />
+        No approved teams yet. Be the first to register.
+      </div>
+    );
+  }
+  return (
+    <div className="ns-card rounded-xl p-6">
+      <div className="flex items-center gap-3 mb-5">
+        <ListChecks className="w-5 h-5 text-gold" />
+        <h3 className="font-display font-bold text-xl text-white">
+          Registered Teams ({teams.length})
+        </h3>
+      </div>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[28rem] overflow-y-auto pr-2">
+        {teams.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => useApp.getState().openTeam(t.id)}
+            className="flex items-center gap-3 p-3 rounded-lg bg-black/30 border border-gold/10 hover:border-gold/40 transition-colors text-left"
+          >
+            <TeamMonogram name={t.name} logo={t.logo} size={36} />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5">
+                <p className="font-heading font-semibold text-white text-sm truncate">
+                  {t.name}
+                </p>
+                {t.isOfficial && <Crown className="w-3 h-3 text-gold" />}
+              </div>
+              <p className="text-[0.7rem] text-muted-foreground">
+                {t.tag ? `[${t.tag}]` : ""} {t.region || ""}
+              </p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ScheduleTab({ tournament }: { tournament: Tournament }) {
+  const startDate = new Date(tournament.startDate);
+  const deadline = new Date(tournament.registrationDeadline);
+  const events = [
+    { label: "Registration Opens", date: new Date(tournament.createdAt), done: true, icon: UserPlus },
+    { label: "Registration Closes", date: deadline, done: deadline < new Date(), icon: Clock },
+    { label: "Tournament Begins", date: startDate, done: startDate < new Date(), icon: Swords },
+    { label: "Grand Final", date: new Date(startDate.getTime() + 3 * 86400000), done: tournament.status === "COMPLETED", icon: Crown },
+  ];
+  return (
+    <div className="ns-card rounded-xl p-6">
+      <div className="flex items-center gap-3 mb-5">
+        <Calendar className="w-5 h-5 text-gold" />
+        <h3 className="font-display font-bold text-xl text-white">Match Schedule</h3>
+      </div>
+      <div className="space-y-4">
+        {events.map((e, i) => (
+          <div key={i} className="flex items-center gap-4">
+            <div className={cn(
+              "w-10 h-10 rounded-lg flex items-center justify-center border",
+              e.done ? "bg-gold/10 border-gold/40 text-gold" : "bg-black/30 border-gold/15 text-white/40"
+            )}>
+              <e.icon className="w-4.5 h-4.5" />
+            </div>
+            <div className="flex-1">
+              <p className={cn("font-heading font-semibold", e.done ? "text-white" : "text-white/60")}>
+                {e.label}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {e.date.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+              </p>
+            </div>
+            {e.done && (
+              <span className="ns-pill ns-pill-approved text-[0.6rem]">Done</span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StatsTab({ tournament, teamCount, matchCount }: { tournament: Tournament; teamCount: number; matchCount: number }) {
+  const fillRate = Math.round((teamCount / tournament.teamLimit) * 100);
+  const stats = [
+    { label: "Teams Registered", value: teamCount, icon: Users },
+    { label: "Total Slots", value: tournament.teamLimit, icon: ListChecks },
+    { label: "Fill Rate", value: `${fillRate}%`, icon: BarChart3 },
+    { label: "Bracket Matches", value: matchCount, icon: Swords },
+  ];
+  return (
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {stats.map((s) => (
+        <div key={s.label} className="ns-card ns-card-gold-edge rounded-xl p-5 text-center">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gold/10 border border-gold/30 mb-3">
+            <s.icon className="w-5 h-5 text-gold" />
+          </div>
+          <div className="font-display font-black text-3xl text-gold-gradient">{s.value}</div>
+          <div className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">{s.label}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DetailStat({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
     <div className="ns-card rounded-xl p-4">
       <div className="flex items-center gap-2 text-gold mb-1">
         <Icon className="w-4 h-4" />
-        <span className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">
-          {label}
-        </span>
+        <span className="text-[0.65rem] uppercase tracking-wider text-muted-foreground">{label}</span>
       </div>
-      <p className="font-display font-bold text-sm md:text-base text-white">
-        {value}
-      </p>
+      <p className="font-display font-bold text-sm md:text-base text-white">{value}</p>
+    </div>
+  );
+}
+
+function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+  return (
+    <div className="flex items-center gap-3 p-3 rounded-lg bg-black/30 border border-gold/10">
+      <Icon className="w-4 h-4 text-gold/70 shrink-0" />
+      <div className="min-w-0">
+        <p className="text-[0.7rem] uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p className="text-sm font-heading font-semibold text-white truncate">{value}</p>
+      </div>
     </div>
   );
 }

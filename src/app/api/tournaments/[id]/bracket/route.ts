@@ -57,8 +57,15 @@ export async function POST(_request: Request, { params }: Params) {
       return NextResponse.json({ error: "Tournament not found" }, { status: 404 });
     }
 
+    // Tournament-centric: source of truth for participation is the
+    // Registration table (status APPROVED), not Team.tournamentId.
     const teams = await db.team.findMany({
-      where: { tournamentId: id, status: "APPROVED" },
+      where: {
+        registrations: {
+          some: { tournamentId: id, status: "APPROVED" },
+        },
+        status: "APPROVED",
+      },
     });
 
     if (teams.length < 2) {

@@ -1,0 +1,813 @@
+     1→     1→// NOBLE STRIKE — shared seed logic used by both `prisma/seed.ts` and
+     2→     2→// the /api/admin/seed route so the frontend "load demo data" button can
+     3→     3→// trigger a re-seed without restarting the server.
+     4→     4→import { db } from "@/lib/db";
+     5→     5→
+     6→     6→function shuffle<T>(arr: T[]): T[] {
+     7→     7→  const a = [...arr];
+     8→     8→  for (let i = a.length - 1; i > 0; i--) {
+     9→     9→    const j = Math.floor(Math.random() * (i + 1));
+    10→    10→    [a[i], a[j]] = [a[j], a[i]];
+    11→    11→  }
+    12→    12→  return a;
+    13→    13→}
+    14→    14→
+    15→    15→function nextPow2(n: number): number {
+    16→    16→  let p = 1;
+    17→    17→  while (p < n) p *= 2;
+    18→    18→  return p;
+    19→    19→}
+    20→    20→
+    21→    21→export async function runSeed() {
+    22→    22→  // 1. Wipe everything in dependency order
+    23→    23→  await db.match.deleteMany();
+    24→    24→  await db.registration.deleteMany();
+    25→    25→  await db.achievement.deleteMany();
+    26→    26→  await db.announcement.deleteMany();
+    27→    27→  await db.nSMember.deleteMany();
+    28→    28→  await db.sponsor.deleteMany();
+    29→    29→  await db.socialLink.deleteMany();
+    30→    30→  await db.team.deleteMany();
+    31→    31→  await db.tournament.deleteMany();
+    32→    32→  await db.user.deleteMany();
+    33→    33→
+    34→    34→  const now = new Date();
+    35→    35→  const inDays = (d: number) => new Date(now.getTime() + d * 86400000);
+    36→    36→
+    37→    37→  // 2. Create 4 tournaments
+    38→    38→  const nsChampionship = await db.tournament.create({
+    39→    39→    data: {
+    40→    40→      name: "NS Championship 2025",
+    41→    41→      game: "MLBB",
+    42→    42→      slug: "ns-championship-2025-ns25",
+    43→    43→      startDate: inDays(7),
+    44→    44→      registrationDeadline: inDays(3),
+    45→    45→      teamLimit: 8,
+    46→    46→      prizePool: "$50,000",
+    47→    47→      rules:
+    48→    48→        "Single elimination. BO3 round of 8 and semifinals. BO5 grand final. Standard MPL ruleset. All players must be 18+. Roster lock 24h before kickoff.",
+    49→    49→      bannerImage: null,
+    50→    50→      status: "ONGOING",
+    51→    51→      format: "BO3",
+    52→    52→      description:
+    53→    53→        "The flagship NOBLE STRIKE invitational — 8 elite MLBB rosters battle across three days for a $50,000 prize pool and the NS trophy.",
+    54→    54→      location: "Online — SEA Server",
+    55→    55→      organizer: "NOBLE STRIKE Esports",
+    56→    56→      featured: true,
+    57→    57→    },
+    58→    58→  });
+    59→    59→
+    60→    60→  const hokMasters = await db.tournament.create({
+    61→    61→    data: {
+    62→    62→      name: "HoK Masters Cup",
+    63→    63→      game: "HOK",
+    64→    64→      slug: "hok-masters-cup-hok25",
+    65→    65→      startDate: inDays(21),
+    66→    66→      registrationDeadline: inDays(14),
+    67→    67→      teamLimit: 16,
+    68→    68→      prizePool: "$25,000",
+    69→    69→      rules:
+    70→    70→        "Single elimination. BO1 round of 16, BO3 quarterfinals onward. Honor of Kings Pro ruleset. Cross-server play permitted.",
+    71→    71→      bannerImage: null,
+    72→    72→      status: "REGISTRATION_OPEN",
+    73→    73→      format: "BO3",
+    74→    74→      description:
+    75→    75→        "Open registration cup for Honor of Kings squads — 16 teams, single elimination, $25,000 on the line.",
+    76→    76→      location: "Online — Global",
+    77→    77→      organizer: "NOBLE STRIKE Esports",
+    78→    78→      featured: true,
+    79→    79→    },
+    80→    80→  });
+    81→    81→
+    82→    82→  const goldenArena = await db.tournament.create({
+    83→    83→    data: {
+    84→    84→      name: "Golden Arena Open",
+    85→    85→      game: "MLBB",
+    86→    86→      slug: "golden-arena-open-ga25",
+    87→    87→      startDate: inDays(35),
+    88→    88→      registrationDeadline: inDays(28),
+    89→    89→      teamLimit: 32,
+    90→    90→      prizePool: "$10,000",
+    91→    91→      rules:
+    92→    92→        "Single elimination, BO1 throughout. Open to all approved MLBB rosters. First-come first-served seeding.",
+    93→    93→      bannerImage: null,
+    94→    94→      status: "REGISTRATION_OPEN",
+    95→    95→      format: "BO1",
+    96→    96→      description:
+    97→    97→        "An open bracket for rising MLBB squads — 32 teams, one weekend, $10,000 prize pool.",
+    98→    98→      location: "Online — SEA Server",
+    99→    99→      organizer: "NOBLE STRIKE Esports",
+   100→   100→      featured: false,
+   101→   101→    },
+   102→   102→  });
+   103→   103→
+   104→   104→  const winterClash = await db.tournament.create({
+   105→   105→    data: {
+   106→   106→      name: "Winter Clash 2024",
+   107→   107→      game: "MLBB",
+   108→   108→      slug: "winter-clash-2024-wc24",
+   109→   109→      startDate: inDays(-120),
+   110→   110→      registrationDeadline: inDays(-140),
+   111→   111→      teamLimit: 8,
+   112→   112→      prizePool: "$30,000",
+   113→   113→      rules:
+   114→   114→        "Single elimination. BO5 throughout. Invitation-only. Standard MPL ruleset.",
+   115→   115→      bannerImage: null,
+   116→   116→      status: "COMPLETED",
+   117→   117→      format: "BO5",
+   118→   118→      description:
+   119→   119→        "The closing chapter of the 2024 season — 8 invited MLBB teams clashed in a BO5 bracket for the winter crown.",
+   120→   120→      location: "Studio Arena, Singapore",
+   121→   121→      organizer: "NOBLE STRIKE Esports",
+   122→   122→      featured: false,
+   123→   123→    },
+   124→   124→  });
+   125→   125→
+   126→   126→  // 3. Official NOBLE STRIKE team (assigned to NS Championship)
+   127→   127→  const nsTeam = await db.team.create({
+   128→   128→    data: {
+   129→   129→      name: "NOBLE STRIKE",
+   130→   130→      logo: null,
+   131→   131→      captainName: "Vortex",
+   132→   132→      discordUsername: "vortex#0001",
+   133→   133→      contactNumber: "+1-555-0100",
+   134→   134→      game: "MLBB",
+   135→   135→      tournamentId: nsChampionship.id,
+   136→   136→      status: "APPROVED",
+   137→   137→      isOfficial: true,
+   138→   138→      player1: "Vortex",
+   139→   139→      player2: "Phantom",
+   140→   140→      player3: "Reaper",
+   141→   141→      player4: "Sage",
+   142→   142→      player5: "Blitz",
+   143→   143→      substitute: "Nova",
+   144→   144→      region: "Southeast Asia",
+   145→   145→      tag: "NS",
+   146→   146→    },
+   147→   147→  });
+   148→   148→
+   149→   149→  // 4. Seven other approved teams (mix MLBB & HOK). All assigned to NS Championship
+   150→   150→  //    for the live bracket — but two of them are HOK teams entered for the
+   151→   151→  //    HoK Masters Cup instead.
+   152→   152→  const otherTeamsData = [
+   153→   153→    {
+   154→   154→      name: "Eclipse Empire",
+   155→   155→      tag: "EE",
+   156→   156→      game: "MLBB",
+   157→   157→      captainName: "Lumen",
+   158→   158→      players: ["Lumen", "Umbra", "Cipher", "Quasar", "Echo"],
+   159→   159→      sub: "Pulse",
+   160→   160→      tournamentId: nsChampionship.id,
+   161→   161→    },
+   162→   162→    {
+   163→   163→      name: "Phoenix Reborn",
+   164→   164→      tag: "PX",
+   165→   165→      game: "MLBB",
+   166→   166→      captainName: "Ember",
+   167→   167→      players: ["Ember", "Ashen", "Cinder", "Blaze", "Flare"],
+   168→   168→      sub: "Inferno",
+   169→   169→      tournamentId: nsChampionship.id,
+   170→   170→    },
+   171→   171→    {
+   172→   172→      name: "Shadow Dynasty",
+   173→   173→      tag: "SD",
+   174→   174→      game: "MLBB",
+   175→   175→      captainName: "Wraith",
+   176→   176→      players: ["Wraith", "Specter", "Shade", "Veil", "Dusk"],
+   177→   177→      sub: "Phantom2",
+   178→   178→      tournamentId: nsChampionship.id,
+   179→   179→    },
+   180→   180→    {
+   181→   181→      name: "Iron Wolves",
+   182→   182→      tag: "IW",
+   183→   183→      game: "MLBB",
+   184→   184→      captainName: "Fang",
+   185→   185→      players: ["Fang", "Claw", "Howl", "Steel", "Ironhide"],
+   186→   186→      sub: "Pack",
+   187→   187→      tournamentId: nsChampionship.id,
+   188→   188→    },
+   189→   189→    {
+   190→   190→      name: "Crimson Vanguard",
+   191→   191→      tag: "CV",
+   192→   192→      game: "MLBB",
+   193→   193→      captainName: "Scarlet",
+   194→   194→      players: ["Scarlet", "Rogue", "Veridian", "Onyx", "Maroon"],
+   195→   195→      sub: "Cardinal",
+   196→   196→      tournamentId: nsChampionship.id,
+   197→   197→    },
+   198→   198→    {
+   199→   199→      name: "Azure Sentinels",
+   200→   200→      tag: "AS",
+   201→   201→      game: "MLBB",
+   202→   202→      captainName: "Cobalt",
+   203→   203→      players: ["Cobalt", "Skye", "Cerulean", "Tide", "Frost"],
+   204→   204→      sub: "Mist",
+   205→   205→      tournamentId: nsChampionship.id,
+   206→   206→    },
+   207→   207→    {
+   208→   208→      name: "Mythic Legion",
+   209→   209→      tag: "ML",
+   210→   210→      game: "MLBB",
+   211→   211→      captainName: "Aegis",
+   212→   212→      players: ["Aegis", "Athena", "Valkyrie", "Titan", "Oracle"],
+   213→   213→      sub: "Apollo",
+   214→   214→      tournamentId: nsChampionship.id,
+   215→   215→    },
+   216→   216→    {
+   217→   217→      name: "Dragon Hoard",
+   218→   218→      tag: "DH",
+   219→   219→      game: "HOK",
+   220→   220→      captainName: "Ryu",
+   221→   221→      players: ["Ryu", "Long", "Shen", "Fucang", "Jiao"],
+   222→   222→      sub: "Tatsu",
+   223→   223→      tournamentId: hokMasters.id,
+   224→   224→    },
+   225→   225→  ];
+   226→   226→
+   227→   227→  const createdTeams = [nsTeam];
+   228→   228→  for (const t of otherTeamsData) {
+   229→   229→    const team = await db.team.create({
+   230→   230→      data: {
+   231→   231→        name: t.name,
+   232→   232→        logo: null,
+   233→   233→        captainName: t.captainName,
+   234→   234→        discordUsername: `${t.captainName.toLowerCase()}#${1000 + Math.floor(Math.random() * 8999)}`,
+   235→   235→        contactNumber: `+1-555-${Math.floor(1000 + Math.random() * 8999)}`,
+   236→   236→        game: t.game,
+   237→   237→        tournamentId: t.tournamentId,
+   238→   238→        status: "APPROVED",
+   239→   239→        isOfficial: false,
+   240→   240→        player1: t.players[0],
+   241→   241→        player2: t.players[1],
+   242→   242→        player3: t.players[2],
+   243→   243→        player4: t.players[3],
+   244→   244→        player5: t.players[4],
+   245→   245→        substitute: t.sub,
+   246→   246→        region: "Global",
+   247→   247→        tag: t.tag,
+   248→   248→      },
+   249→   249→    });
+   250→   250→    createdTeams.push(team);
+   251→   251→
+   252→   252→    // For open tournaments create a registration entry as well
+   253→   253→    await db.registration.create({
+   254→   254→      data: {
+   255→   255→        tournamentId: t.tournamentId,
+   256→   256→        teamId: team.id,
+   257→   257→        status: "APPROVED",
+   258→   258→      },
+   259→   259→    });
+   260→   260→  }
+   261→   261→
+   262→   262→  // Also create a PENDING team to demonstrate the registration flow
+   263→   263→  await db.team.create({
+   264→   264→    data: {
+   265→   265→      name: "Rookie Rascals",
+   266→   266→      logo: null,
+   267→   267→      captainName: "Bambino",
+   268→   268→      discordUsername: "bambino#0420",
+   269→   269→      contactNumber: "+1-555-0142",
+   270→   270→      game: "MLBB",
+   271→   271→      tournamentId: goldenArena.id,
+   272→   272→      status: "PENDING",
+   273→   273→      isOfficial: false,
+   274→   274→      player1: "Bambino",
+   275→   275→      player2: "Toto",
+   276→   276→      player3: "Pip",
+   277→   277→      player4: "Juno",
+   278→   278→      player5: "Kit",
+   279→   279→      substitute: "Roo",
+   280→   280→      region: "North America",
+   281→   281→      tag: "RR",
+   282→   282→    },
+   283→   283→  });
+   284→   284→
+   285→   285→  // 5. NS achievements
+   286→   286→  await db.achievement.createMany({
+   287→   287→    data: [
+   288→   288→      {
+   289→   289→        teamId: nsTeam.id,
+   290→   290→        title: "Champions — MPL Wildcard 2024",
+   291→   291→        description: "Undefeated run through the MPL Wildcard qualifier bracket.",
+   292→   292→        date: "2024-09-14",
+   293→   293→        placement: "1st",
+   294→   294→        order: 0,
+   295→   295→      },
+   296→   296→      {
+   297→   297→        teamId: nsTeam.id,
+   298→   298→        title: "2nd Place — SEA Invitational",
+   299→   299→        description: "Runner-up finish at the Southeast Asia Invitational, falling 2-3 in the grand final.",
+   300→   300→        date: "2024-07-02",
+   301→   301→        placement: "2nd",
+   302→   302→        order: 1,
+   303→   303→      },
+   304→   304→      {
+   305→   305→        teamId: nsTeam.id,
+   306→   306→        title: "Top 4 — Global Series",
+   307→   307→        description: "Semifinalists at the Global Series championship event in Singapore.",
+   308→   308→        date: "2024-04-21",
+   309→   309→        placement: "Top 4",
+   310→   310→        order: 2,
+   311→   311→      },
+   312→   312→    ],
+   313→   313→  });
+   314→   314→
+   315→   315→  // 6. NS Members — 5 players, 1 coach, 1 manager
+   316→   316→  await db.nSMember.createMany({
+   317→   317→    data: [
+   318→   318→      {
+   319→   319→        name: "Marcus Chen",
+   320→   320→        ign: "Vortex",
+   321→   321→        role: "GOLD LANER",
+   322→   322→        type: "PLAYER",
+   323→   323→        bio: "Team captain and gold laner. Three-time regional MVP known for aggressive playmaking.",
+   324→   324→        image: null,
+   325→   325→        joinDate: "2023-01-15",
+   326→   326→        country: "Singapore",
+   327→   327→        order: 0,
+   328→   328→      },
+   329→   329→      {
+   330→   330→        name: "Liang Wei",
+   331→   331→        ign: "Phantom",
+   332→   332→        role: "MID LANER",
+   333→   333→        type: "PLAYER",
+   334→   334→        bio: "Mid lane prodigy with the fastest reaction time on the roster.",
+   335→   335→        image: null,
+   336→   336→        joinDate: "2023-02-01",
+   337→   337→        country: "China",
+   338→   338→        order: 1,
+   339→   339→      },
+   340→   340→      {
+   341→   341→        name: "Hiro Tanaka",
+   342→   342→        ign: "Reaper",
+   343→   343→        role: "EXP LANER",
+   344→   344→        type: "PLAYER",
+   345→   345→        bio: "Veteran exp laner. Quiet off-stage, ruthless in the side lane.",
+   346→   346→        image: null,
+   347→   347→        joinDate: "2023-01-20",
+   348→   348→        country: "Japan",
+   349→   349→        order: 2,
+   350→   350→      },
+   351→   351→      {
+   352→   352→        name: "Daniel Cruz",
+   353→   353→        ign: "Sage",
+   354→   354→        role: "ROAM",
+   355→   355→        type: "PLAYER",
+   356→   356→        bio: "Shotcaller and roam specialist. The voice that holds the team together.",
+   357→   357→        image: null,
+   358→   358→        joinDate: "2023-03-10",
+   359→   359→        country: "Philippines",
+   360→   360→        order: 3,
+   361→   361→      },
+   362→   362→      {
+   363→   363→        name: "Kai Park",
+   364→   364→        ign: "Blitz",
+   365→   365→        role: "JUNGLE",
+   366→   366→        type: "PLAYER",
+   367→   367→        bio: "Jungle duelist with a 78% first-blood rate across the season.",
+   368→   368→        image: null,
+   369→   369→        joinDate: "2023-02-18",
+   370→   370→        country: "South Korea",
+   371→   371→        order: 4,
+   372→   372→      },
+   373→   373→      {
+   374→   374→        name: "Elena Rosales",
+   375→   375→        ign: null,
+   376→   376→        role: "HEAD COACH",
+   377→   377→        type: "COACH",
+   378→   378→        bio: "Former pro turned coach. Two seasons as head coach with a 71% series win rate.",
+   379→   379→        image: null,
+   380→   380→        joinDate: "2023-01-05",
+   381→   381→        country: "Philippines",
+   382→   382→        order: 5,
+   383→   383→      },
+   384→   384→      {
+   385→   385→        name: "Tobias Brandt",
+   386→   386→        ign: null,
+   387→   387→        role: "TEAM MANAGER",
+   388→   388→        type: "MANAGEMENT",
+   389→   389→        bio: "Operations and logistics lead. Handles travel, sponsorships, and player welfare.",
+   390→   390→        image: null,
+   391→   391→        joinDate: "2022-12-01",
+   392→   392→        country: "Germany",
+   393→   393→        order: 6,
+   394→   394→      },
+   395→   395→    ],
+   396→   396→  });
+   397→   397→
+   398→   398→  // 7. Sponsors across tiers
+   399→   399→  await db.sponsor.createMany({
+   400→   400→    data: [
+   401→   401→      {
+   402→   402→        name: "ApexTech Systems",
+   403→   403→        logo: null,
+   404→   404→        tier: "TITANIUM",
+   405→   405→        url: "https://example.com/apextech",
+   406→   406→        order: 0,
+   407→   407→      },
+   408→   408→      {
+   409→   409→        name: "Hyperion Energy",
+   410→   410→        logo: null,
+   411→   411→        tier: "PLATINUM",
+   412→   412→        url: "https://example.com/hyperion",
+   413→   413→        order: 1,
+   414→   414→      },
+   415→   415→      {
+   416→   416→        name: "Voltedge Gear",
+   417→   417→        logo: null,
+   418→   418→        tier: "GOLD",
+   419→   419→        url: "https://example.com/voltedge",
+   420→   420→        order: 2,
+   421→   421→      },
+   422→   422→      {
+   423→   423→        name: "Lumina Studios",
+   424→   424→        logo: null,
+   425→   425→        tier: "GOLD",
+   426→   426→        url: "https://example.com/lumina",
+   427→   427→        order: 3,
+   428→   428→      },
+   429→   429→      {
+   430→   430→        name: "BriskBite Snacks",
+   431→   431→        logo: null,
+   432→   432→        tier: "PARTNER",
+   433→   433→        url: "https://example.com/briskbite",
+   434→   434→        order: 4,
+   435→   435→      },
+   436→   436→    ],
+   437→   437→  });
+   438→   438→
+   439→   439→  // 8. Social links
+   440→   440→  await db.socialLink.createMany({
+   441→   441→    data: [
+   442→   442→      { platform: "Discord", url: "https://discord.gg/noblestrike", handle: "NOBLE STRIKE", order: 0 },
+   443→   443→      { platform: "Twitter / X", url: "https://twitter.com/noblestrike", handle: "@noblestrike", order: 1 },
+   444→   444→      { platform: "YouTube", url: "https://youtube.com/@noblestrike", handle: "NOBLE STRIKE", order: 2 },
+   445→   445→      { platform: "Twitch", url: "https://twitch.tv/noblestrike", handle: "noblestrike", order: 3 },
+   446→   446→      { platform: "Instagram", url: "https://instagram.com/noblestrike", handle: "@noblestrike", order: 4 },
+   447→   447→    ],
+   448→   448→  });
+   449→   449→
+   450→   450→  // 9. Announcements
+   451→   451→  await db.announcement.createMany({
+   452→   452→    data: [
+   453→   453→      {
+   454→   454→        title: "NS Championship 2025 kicks off next weekend",
+   455→   455→        content:
+   456→   456→          "The NS Championship 2025 begins next Saturday with eight elite MLBB rosters, a $50,000 prize pool, and three days of single-elimination action. NOBLE STRIKE headlines the bracket as the top seed after their MPL Wildcard triumph.\n\nRound of 8 will be best-of-three, with the grand final moving to a best-of-five showcase. All matches stream live on the NOBLE STRIKE Twitch channel starting 14:00 SGT.",
+   457→   457→        excerpt:
+   458→   458→          "Eight elite MLBB rosters, a $50,000 prize pool, three days of single-elimination bracket play — the NS Championship 2025 goes live next weekend.",
+   459→   459→        category: "TOURNAMENT_NEWS",
+   460→   460→        featured: true,
+   461→   461→        coverImage: null,
+   462→   462→        author: "NS Editorial",
+   463→   463→      },
+   464→   464→      {
+   465→   465→        title: "NOBLE STRIKE announces 2025 roster",
+   466→   466→        content:
+   467→   467→          "NOBLE STRIKE is proud to confirm our 2025 starting roster. Captain Vortex returns at gold lane, with Phantom on mid, Reaper on exp, Sage roaming, and Blitz in the jungle. Nova remains our substitute and will step in across the season.\n\nThe coaching staff and management are unchanged — Elena Rosales continues as head coach, with Tobias Brandt handling team operations.",
+   468→   468→        excerpt:
+   469→   469→          "Vortex, Phantom, Reaper, Sage, and Blitz return as the 2025 starting five, with Nova as substitute and an unchanged coaching staff.",
+   470→   470→        category: "TEAM_UPDATES",
+   471→   471→        featured: false,
+   472→   472→        coverImage: null,
+   473→   473→        author: "NS Editorial",
+   474→   474→      },
+   475→   475→      {
+   476→   476→        title: "Blitz signs two-year extension with NOBLE STRIKE",
+   477→   477→        content:
+   478→   478→          "Jungler Kai 'Blitz' Park has signed a two-year contract extension keeping him with NOBLE STRIKE through the 2026 season. Blitz joined the roster in February 2023 and has since posted a 78% first-blood rate and three tournament MVPs.\n\n'I'm honored to keep wearing the NS crest,' Blitz said. 'We have unfinished business at Globals and I want to finish what we started.'",
+   479→   479→        excerpt:
+   480→   480→          "Star jungler Blitz commits to NOBLE STRIKE through 2026 after a standout season with a 78% first-blood rate.",
+   481→   481→        category: "PLAYER_SIGNINGS",
+   482→   482→        featured: false,
+   483→   483→        coverImage: null,
+   484→   484→        author: "NS Editorial",
+   485→   485→      },
+   486→   486→      {
+   487→   487→        title: "NOBLE STRIKE crowned MPL Wildcard Champions 2024",
+   488→   488→        content:
+   489→   489→          "NOBLE STRIKE completed an undefeated run through the MPL Wildcard qualifier bracket last weekend, securing the championship title and a direct seed into the 2025 premier circuit.\n\nThe team dropped only a single game across the entire bracket, sweeping every series 2-0 except a tightly contested 2-1 semifinal. Vortex was named tournament MVP.",
+   490→   490→        excerpt:
+   491→   491→          "An undefeated MPL Wildcard run delivers NS the championship title and a direct seed into the 2025 premier circuit.",
+   492→   492→        category: "RESULTS",
+   493→   493→        featured: false,
+   494→   494→        coverImage: null,
+   495→   495→        author: "NS Editorial",
+   496→   496→      },
+   497→   497→      {
+   498→   498→        title: "HoK Masters Cup registration now open",
+   499→   499→        content:
+   500→   500→          "Registration is now open for the HoK Masters Cup — a 16-team single-elimination Honor of Kings bracket with a $25,000 prize pool. The cup is open to all approved HOK rosters and runs across three weekends in the new year.\n\nTeams can register through the NOBLE STRIKE platform. Seeds are awarded on a first-come first-served basis once rosters are approved.",
+   501→   501→        excerpt:
+   502→   502→          "16 HOK teams. $25,000 prize pool. Single-elimination across three weekends. Registration is now open.",
+   503→   503→        category: "TOURNAMENT_NEWS",
+   504→   504→        featured: false,
+   505→   505→        coverImage: null,
+   506→   506→        author: "NS Editorial",
+   507→   507→      },
+   508→   508→      {
+   509→   509→        title: "Platform update: new bracket viewer and admin tools",
+   510→   510→        content:
+   511→   511→          "We've shipped a major platform update. The bracket viewer now supports live match advancement, and team managers can submit scores directly from the admin panel.\n\nAlso included: improved roster display on the NS team page, sponsor tier badges, and a new social links module in the footer. Full changelog is available on the NS Discord.",
+   512→   512→        excerpt:
+   513→   513→          "Live bracket advancement, admin score submission, improved roster display, and sponsor tier badges are now live.",
+   514→   514→        category: "ANNOUNCEMENTS",
+   515→   515→        featured: false,
+   516→   516→        coverImage: null,
+   517→   517→        author: "NS Engineering",
+   518→   518→      },
+   519→   519→    ],
+   520→   520→  });
+   521→   521→
+   522→   522→  // 10. Generate bracket for the ONGOING tournament (NS Championship)
+   523→   523→  //     8 approved MLBB teams assigned to it.
+   524→   524→  const nsTeams = await db.team.findMany({
+   525→   525→    where: { tournamentId: nsChampionship.id, status: "APPROVED" },
+   526→   526→  });
+   527→   527→
+   528→   528→  if (nsTeams.length >= 2) {
+   529→   529→    const shuffled = shuffle(nsTeams);
+   530→   530→    const paddedSize = nextPow2(shuffled.length); // 8
+   531→   531→    const slots: (typeof nsTeams[number] | null)[] = [...shuffled];
+   532→   532→    while (slots.length < paddedSize) slots.push(null);
+   533→   533→
+   534→   534→    const totalRounds = Math.log2(paddedSize); // 3
+   535→   535→
+   536→   536→    // Create empty matches for all rounds
+   537→   537→    const roundMatches: { id: string; round: number; matchIndex: number }[][] = [];
+   538→   538→    for (let r = 1; r <= totalRounds; r++) {
+   539→   539→      const count = paddedSize / Math.pow(2, r);
+   540→   540→      const arr: { id: string; round: number; matchIndex: number }[] = [];
+   541→   541→      for (let mi = 0; mi < count; mi++) {
+   542→   542→        const created = await db.match.create({
+   543→   543→          data: {
+   544→   544→            tournamentId: nsChampionship.id,
+   545→   545→            round: r,
+   546→   546→            matchIndex: mi,
+   547→   547→            format: nsChampionship.format || "BO3",
+   548→   548→            status: "PENDING",
+   549→   549→          },
+   550→   550→        });
+   551→   551→        arr.push({ id: created.id, round: r, matchIndex: mi });
+   552→   552→      }
+   553→   553→      roundMatches.push(arr);
+   554→   554→    }
+   555→   555→
+   556→   556→    // Populate round 1
+   557→   557→    for (let mi = 0; mi < roundMatches[0].length; mi++) {
+   558→   558→      const teamA = slots[mi * 2];
+   559→   559→      const teamB = slots[mi * 2 + 1];
+   560→   560→      const m = roundMatches[0][mi];
+   561→   561→      if (teamA && teamB) {
+   562→   562→        await db.match.update({
+   563→   563→          where: { id: m.id },
+   564→   564→          data: { teamAId: teamA.id, teamBId: teamB.id },
+   565→   565→        });
+   566→   566→      } else if (teamA && !teamB) {
+   567→   567→        await db.match.update({
+   568→   568→          where: { id: m.id },
+   569→   569→          data: {
+   570→   570→            teamAId: teamA.id,
+   571→   571→            winnerId: teamA.id,
+   572→   572→            status: "COMPLETED",
+   573→   573→            scoreA: 1,
+   574→   574→            scoreB: 0,
+   575→   575→          },
+   576→   576→        });
+   577→   577→      } else if (!teamA && teamB) {
+   578→   578→        await db.match.update({
+   579→   579→          where: { id: m.id },
+   580→   580→          data: {
+   581→   581→            teamBId: teamB.id,
+   582→   582→            winnerId: teamB.id,
+   583→   583→            status: "COMPLETED",
+   584→   584→            scoreA: 0,
+   585→   585→            scoreB: 1,
+   586→   586→          },
+   587→   587→        });
+   588→   588→      }
+   589→   589→    }
+   590→   590→
+   591→   591→    // Set nextMatchId
+   592→   592→    for (let r = 0; r < totalRounds - 1; r++) {
+   593→   593→      for (const m of roundMatches[r]) {
+   594→   594→        const nextMatch = roundMatches[r + 1][Math.floor(m.matchIndex / 2)];
+   595→   595→        if (nextMatch) {
+   596→   596→          await db.match.update({
+   597→   597→            where: { id: m.id },
+   598→   598→            data: { nextMatchId: nextMatch.id },
+   599→   599→          });
+   600→   600→        }
+   601→   601→      }
+   602→   602→    }
+   603→   603→
+   604→   604→    // Propagate BYE winners into round 2
+   605→   605→    if (totalRounds >= 2) {
+   606→   606→      for (const m of roundMatches[0]) {
+   607→   607→        const full = await db.match.findUnique({
+   608→   608→          where: { id: m.id },
+   609→   609→          select: { winnerId: true, status: true, matchIndex: true, nextMatchId: true },
+   610→   610→        });
+   611→   611→        if (full?.status === "COMPLETED" && full.winnerId && full.nextMatchId) {
+   612→   612→          const isEven = full.matchIndex % 2 === 0;
+   613→   613→          await db.match.update({
+   614→   614→            where: { id: full.nextMatchId },
+   615→   615→            data: isEven
+   616→   616→              ? { teamAId: full.winnerId }
+   617→   617→              : { teamBId: full.winnerId },
+   618→   618→          });
+   619→   619→        }
+   620→   620→      }
+   621→   621→    }
+   622→   622→
+   623→   623→    // Seed results for 2 of the round-1 matches (with advancing)
+   624→   624→    const r1 = roundMatches[0];
+   625→   625→    const completedR1: { winnerId: string; matchIndex: number; nextMatchId: string | null }[] = [];
+   626→   626→    for (let i = 0; i < Math.min(2, r1.length); i++) {
+   627→   627→      const m = r1[i];
+   628→   628→      const full = await db.match.findUnique({
+   629→   629→        where: { id: m.id },
+   630→   630→        select: { teamAId: true, teamBId: true, status: true },
+   631→   631→      });
+   632→   632→      if (!full || full.status === "COMPLETED" || !full.teamAId || !full.teamBId) continue;
+   633→   633→      // Pick teamA as the winner for the seeded result
+   634→   634→      const winnerId = full.teamAId;
+   635→   635→      const updated = await db.match.update({
+   636→   636→        where: { id: m.id },
+   637→   637→        data: {
+   638→   638→          scoreA: 2,
+   639→   639→          scoreB: 1,
+   640→   640→          winnerId,
+   641→   641→          status: "COMPLETED",
+   642→   642→        },
+   643→   643→      });
+   644→   644→      completedR1.push({
+   645→   645→        winnerId,
+   646→   646→        matchIndex: updated.matchIndex,
+   647→   647→        nextMatchId: updated.nextMatchId,
+   648→   648→      });
+   649→   649→    }
+   650→   650→    // Advance winners into round 2
+   651→   651→    for (const c of completedR1) {
+   652→   652→      if (!c.nextMatchId) continue;
+   653→   653→      const isEven = c.matchIndex % 2 === 0;
+   654→   654→      await db.match.update({
+   655→   655→        where: { id: c.nextMatchId },
+   656→   656→        data: isEven ? { teamAId: c.winnerId } : { teamBId: c.winnerId },
+   657→   657→      });
+   658→   658→    }
+   659→   659→  }
+   660→   660→
+   661→   661→  // 11. For the COMPLETED tournament (Winter Clash), create a fully-played bracket
+   662→   662→  //     We assign 4 fictional teams to it (separate from the live NS bracket) so
+   663→   663→  //     we don't disturb team.tournamentId for the NS championship teams.
+   664→   664→  const winterTeamsData = [
+   665→   665→    {
+   666→   666→      name: "Frostborn Kings",
+   667→   667→      tag: "FK",
+   668→   668→      captainName: "Glacier",
+   669→   669→      players: ["Glacier", "Frost", "Boreas", "Polar", "Tundra"],
+   670→   670→    },
+   671→   671→    {
+   672→   672→      name: "Solar Flare",
+   673→   673→      tag: "SF",
+   674→   674→      captainName: "Helios",
+   675→   675→      players: ["Helios", "Apollo", "Ra", "Sol", "Ignis"],
+   676→   676→    },
+   677→   677→    {
+   678→   678→      name: "Thunder Legion",
+   679→   679→      tag: "TL",
+   680→   680→      captainName: "Voltaic",
+   681→   681→      players: ["Voltaic", "Storm", "Bolt", "Surge", "Spark"],
+   682→   682→    },
+   683→   683→    {
+   684→   684→      name: "Verdant Guardians",
+   685→   685→      tag: "VG",
+   686→   686→      captainName: "Sylvan",
+   687→   687→      players: ["Sylvan", "Moss", "Oak", "Thorn", "Briar"],
+   688→   688→    },
+   689→   689→  ];
+   690→   690→
+   691→   691→  const winterTeams = [];
+   692→   692→  for (const t of winterTeamsData) {
+   693→   693→    const team = await db.team.create({
+   694→   694→      data: {
+   695→   695→        name: t.name,
+   696→   696→        logo: null,
+   697→   697→        captainName: t.captainName,
+   698→   698→        discordUsername: `${t.captainName.toLowerCase()}#${Math.floor(1000 + Math.random() * 8999)}`,
+   699→   699→        contactNumber: `+1-555-${Math.floor(1000 + Math.random() * 8999)}`,
+   700→   700→        game: "MLBB",
+   701→   701→        tournamentId: winterClash.id,
+   702→   702→        status: "APPROVED",
+   703→   703→        isOfficial: false,
+   704→   704→        player1: t.players[0],
+   705→   705→        player2: t.players[1],
+   706→   706→        player3: t.players[2],
+   707→   707→        player4: t.players[3],
+   708→   708→        player5: t.players[4],
+   709→   709→        substitute: null,
+   710→   710→        region: "Global",
+   711→   711→        tag: t.tag,
+   712→   712→      },
+   713→   713→    });
+   714→   714→    winterTeams.push(team);
+   715→   715→  }
+   716→   716→
+   717→   717→  // Build a 4-team, 2-round bracket for Winter Clash (already completed)
+   718→   718→  // Round 1: 2 matches. Round 2 (final): 1 match.
+   719→   719→  const r1m1 = await db.match.create({
+   720→   720→    data: {
+   721→   721→      tournamentId: winterClash.id,
+   722→   722→      round: 1,
+   723→   723→      matchIndex: 0,
+   724→   724→      format: "BO5",
+   725→   725→      teamAId: winterTeams[0].id,
+   726→   726→      teamBId: winterTeams[1].id,
+   727→   727→      status: "COMPLETED",
+   728→   728→      scoreA: 3,
+   729→   729→      scoreB: 1,
+   730→   730→      winnerId: winterTeams[0].id,
+   731→   731→    },
+   732→   732→  });
+   733→   733→  const r1m2 = await db.match.create({
+   734→   734→    data: {
+   735→   735→      tournamentId: winterClash.id,
+   736→   736→      round: 1,
+   737→   737→      matchIndex: 1,
+   738→   738→      format: "BO5",
+   739→   739→      teamAId: winterTeams[2].id,
+   740→   740→      teamBId: winterTeams[3].id,
+   741→   741→      status: "COMPLETED",
+   742→   742→      scoreA: 2,
+   743→   743→      scoreB: 3,
+   744→   744→      winnerId: winterTeams[3].id,
+   745→   745→    },
+   746→   746→  });
+   747→   747→  await db.match.create({
+   748→   748→    data: {
+   749→   749→      tournamentId: winterClash.id,
+   750→   750→      round: 2,
+   751→   751→      matchIndex: 0,
+   752→   752→      format: "BO5",
+   753→   753→      teamAId: winterTeams[0].id,
+   754→   754→      teamBId: winterTeams[3].id,
+   755→   755→      status: "COMPLETED",
+   756→   756→      scoreA: 3,
+   757→   757→      scoreB: 2,
+   758→   758→      winnerId: winterTeams[0].id,
+   759→   759→      scheduledAt: inDays(-118),
+   760→   760→    },
+   761→   761→  });
+   762→   762→  await db.match.update({
+   763→   763→    where: { id: r1m1.id },
+   764→   764→    data: { nextMatchId: (await db.match.findFirst({
+   765→   765→      where: { tournamentId: winterClash.id, round: 2, matchIndex: 0 },
+   766→   766→    }))!.id },
+   767→   767→  });
+   768→   768→  await db.match.update({
+   769→   769→    where: { id: r1m2.id },
+   770→   770→    data: { nextMatchId: (await db.match.findFirst({
+   771→   771→      where: { tournamentId: winterClash.id, round: 2, matchIndex: 0 },
+   772→   772→    }))!.id },
+   773→   773→  });
+   774→   774→
+   775→   775→  // Return final counts
+   776→   776→  const [
+   777→   777→    tournamentCount,
+   778→   778→    teamCount,
+   779→   779→    matchCount,
+   780→   780→    registrationCount,
+   781→   781→    achievementCount,
+   782→   782→    memberCount,
+   783→   783→    sponsorCount,
+   784→   784→    socialCount,
+   785→   785→    announcementCount,
+   786→   786→    userCount,
+   787→   787→  ] = await Promise.all([
+   788→   788→    db.tournament.count(),
+   789→   789→    db.team.count(),
+   790→   790→    db.match.count(),
+   791→   791→    db.registration.count(),
+   792→   792→    db.achievement.count(),
+   793→   793→    db.nSMember.count(),
+   794→   794→    db.sponsor.count(),
+   795→   795→    db.socialLink.count(),
+   796→   796→    db.announcement.count(),
+   797→   797→    db.user.count(),
+   798→   798→  ]);
+   799→   799→
+   800→   800→  return {
+   801→   801→    tournaments: tournamentCount,
+   802→   802→    teams: teamCount,
+   803→   803→    matches: matchCount,
+   804→   804→    registrations: registrationCount,
+   805→   805→    achievements: achievementCount,
+   806→   806→    members: memberCount,
+   807→   807→    sponsors: sponsorCount,
+   808→   808→    socials: socialCount,
+   809→   809→    announcements: announcementCount,
+   810→   810→    users: userCount,
+   811→   811→  };
+   812→   812→}
+   813→   813→

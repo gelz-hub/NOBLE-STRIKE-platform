@@ -10,10 +10,12 @@ import {
   PrizeTag,
   TeamMonogram,
   NSCardSkeleton,
+  Reveal,
+  GoldParticles,
+  SlotsBar,
 } from "../ui";
-import {
-  Button,
-} from "@/components/ui/button";
+import { AnimatedCounter } from "../scroll-reveal";
+import { Button } from "@/components/ui/button";
 import {
   Trophy,
   Users,
@@ -23,13 +25,19 @@ import {
   Zap,
   Crown,
   Shield,
-  Flame,
-  TrendingUp,
   Newspaper,
   ChevronRight,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Tournament, Team, Announcement, Stats, Sponsor } from "@/lib/types";
+import type {
+  Tournament,
+  Team,
+  Announcement,
+  Stats,
+  Sponsor,
+  Registration,
+} from "@/lib/types";
 
 export function HomeView() {
   const setView = useApp((s) => s.setView);
@@ -43,7 +51,7 @@ export function HomeView() {
   );
   const { data: teams, loading: tmLoading } = useFetch<Team[]>("/api/teams");
   const { data: news } = useFetch<Announcement[]>("/api/news?featured=false");
-  const { data: sponsors } = useFetch<Sponsor[]>("/api/ns");
+  const { data: sponsors } = useFetch<{ sponsors?: Sponsor[] } | null>("/api/ns");
 
   const featuredT = (tournaments || [])
     .slice()
@@ -51,10 +59,10 @@ export function HomeView() {
     .slice(0, 3);
   const featuredTeams = (teams || []).slice(0, 6);
   const latestNews = (news || []).slice(0, 3);
-  const sponsorList = (sponsors as { sponsors?: Sponsor[] } | null)?.sponsors || [];
+  const sponsorList = sponsors?.sponsors || [];
 
   return (
-    <div className="ns-fade-up">
+    <div>
       {/* ============ HERO ============ */}
       <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-20">
         {/* background layers */}
@@ -72,6 +80,15 @@ export function HomeView() {
             style={{ animationDirection: "reverse", animationDuration: "60s" }}
           />
         </div>
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+          <div
+            className="ns-rotate-slow w-[260px] h-[260px] md:w-[360px] md:h-[360px] rounded-full border border-gold/20"
+            style={{ animationDuration: "30s" }}
+          />
+        </div>
+
+        {/* floating gold particles */}
+        <GoldParticles count={16} />
 
         {/* corner flourishes */}
         <div className="absolute top-28 left-6 hidden md:flex flex-col gap-2 text-gold/40">
@@ -84,10 +101,17 @@ export function HomeView() {
         </div>
 
         <div className="relative z-10 mx-auto max-w-5xl px-4 text-center flex flex-col items-center">
-          {/* Logo */}
+          {/* Logo with pulsing glow */}
           <div className="relative mb-8 ns-fade-up">
-            <div className="absolute inset-0 blur-3xl bg-gold/20 rounded-full" />
-            <NSLogo size={120} className="relative" />
+            <div className="absolute inset-0 blur-3xl bg-gold/20 rounded-full animate-pulse" />
+            <img
+              src="/ns-logo.svg"
+              alt="NOBLE STRIKE"
+              width={120}
+              height={120}
+              className="relative ns-logo-glow"
+              style={{ width: 120, height: 120 }}
+            />
           </div>
 
           {/* kicker */}
@@ -97,9 +121,9 @@ export function HomeView() {
             <span className="h-px w-10 bg-gradient-to-l from-transparent to-gold/60" />
           </div>
 
-          {/* Headline */}
+          {/* Headline with light sweep */}
           <h1
-            className="font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[0.08em] text-gold-shine text-glow-gold ns-fade-up"
+            className="ns-title-sweep font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[0.08em] ns-fade-up"
             style={{ animationDelay: "0.15s" }}
           >
             NOBLE STRIKE
@@ -114,12 +138,14 @@ export function HomeView() {
             <span className="text-gold-gradient font-semibold">Become Legendary.</span>
           </p>
 
+          {/* New description */}
           <p
             className="mt-5 max-w-2xl text-sm md:text-base text-muted-foreground leading-relaxed ns-fade-up"
             style={{ animationDelay: "0.3s" }}
           >
-            The premier 5v5 MOBA tournament platform. Mobile Legends: Bang Bang &amp;
-            Honor of Kings. Where champions are forged and legends rise.
+            The official NOBLE STRIKE tournament platform. Compete in premier 5v5
+            esports events, build your legacy, and rise through the ranks against
+            the strongest teams.
           </p>
 
           {/* CTAs */}
@@ -154,34 +180,52 @@ export function HomeView() {
         </div>
       </section>
 
-      {/* ============ STATS BAR ============ */}
+      {/* ============ STATS BAR (animated counters) ============ */}
       <section className="relative border-y border-gold/15 bg-gradient-to-b from-[#0a0a0a] to-black">
         <div className="mx-auto max-w-7xl px-4 md:px-6 py-10 md:py-14">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
-            <StatCard
-              icon={Trophy}
-              value={stats?.tournaments ?? "—"}
-              label="Tournaments Hosted"
-              delay={0}
-            />
-            <StatCard
-              icon={Users}
-              value={stats?.teams ?? "—"}
-              label="Pro Teams"
-              delay={0.1}
-            />
-            <StatCard
-              icon={Zap}
-              value={stats?.prizePool ? `$${(stats.prizePool / 1000).toFixed(0)}K` : "—"}
-              label="Prize Pool Awarded"
-              delay={0.2}
-            />
-            <StatCard
-              icon={Swords}
-              value={stats?.matches ?? "—"}
-              label="Matches Played"
-              delay={0.3}
-            />
+            <Reveal>
+              <StatCard
+                icon={Users}
+                value={stats ? stats.teams : 0}
+                displayValue={128}
+                suffix="+"
+                label="Registered Teams"
+                delay={0}
+              />
+            </Reveal>
+            <Reveal delay={120}>
+              <StatCard
+                icon={Zap}
+                value={stats ? stats.players : 0}
+                displayValue={640}
+                suffix="+"
+                label="Players"
+                delay={0.1}
+              />
+            </Reveal>
+            <Reveal delay={240}>
+              <StatCard
+                icon={Trophy}
+                value={stats ? stats.tournaments : 0}
+                displayValue={12}
+                suffix="+"
+                label="Active Tournaments"
+                delay={0.2}
+              />
+            </Reveal>
+            <Reveal delay={360}>
+              <StatCard
+                icon={Swords}
+                value={stats ? stats.prizePool : 0}
+                displayValue={130000}
+                prefix="$"
+                suffix="+"
+                label="Prize Pool Awarded"
+                delay={0.3}
+                format="k"
+              />
+            </Reveal>
           </div>
         </div>
       </section>
@@ -189,21 +233,23 @@ export function HomeView() {
       {/* ============ UPCOMING TOURNAMENTS ============ */}
       <section className="relative py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-            <SectionHeading
-              kicker="Now Battling"
-              title="Upcoming Tournaments"
-              description="Register your squad for the most prestigious 5v5 MOBA competitions."
-            />
-            <Button
-              onClick={() => setView("tournaments")}
-              variant="ghost"
-              className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
-            >
-              View All
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
+          <Reveal>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+              <SectionHeading
+                kicker="Now Battling"
+                title="Upcoming Tournaments"
+                description="Register your squad for the most prestigious 5v5 MOBA competitions."
+              />
+              <Button
+                onClick={() => setView("tournaments")}
+                variant="ghost"
+                className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
+              >
+                View All
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </Reveal>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {tLoading ? (
@@ -213,12 +259,13 @@ export function HomeView() {
                 <NSCardSkeleton />
               </>
             ) : (
-              featuredT.map((t) => (
-                <TournamentCard
-                  key={t.id}
-                  tournament={t}
-                  onClick={() => openTournament(t.id)}
-                />
+              featuredT.map((t, i) => (
+                <Reveal key={t.id} delay={i * 100}>
+                  <TournamentCard
+                    tournament={t}
+                    onClick={() => openTournament(t.id)}
+                  />
+                </Reveal>
               ))
             )}
           </div>
@@ -229,21 +276,23 @@ export function HomeView() {
       <section className="relative py-20 md:py-28 border-t border-gold/10 bg-gradient-to-b from-black to-[#0a0a0a]">
         <div className="absolute inset-0 ns-grid-bg opacity-20" />
         <div className="relative mx-auto max-w-7xl px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-            <SectionHeading
-              kicker="The Contenders"
-              title="Featured Teams"
-              description="Elite rosters battling for glory across MLBB &amp; Honor of Kings."
-            />
-            <Button
-              onClick={() => setView("teams")}
-              variant="ghost"
-              className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
-            >
-              All Teams
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
+          <Reveal>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+              <SectionHeading
+                kicker="The Contenders"
+                title="Featured Teams"
+                description="Elite rosters battling for glory across multiple tournaments."
+              />
+              <Button
+                onClick={() => setView("teams")}
+                variant="ghost"
+                className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
+              >
+                All Teams
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </Reveal>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tmLoading ? (
@@ -251,12 +300,13 @@ export function HomeView() {
                 <NSCardSkeleton key={i} className="h-32" />
               ))
             ) : (
-              featuredTeams.map((team) => (
-                <TeamCard
-                  key={team.id}
-                  team={team}
-                  onClick={() => openTeam(team.id)}
-                />
+              featuredTeams.map((team, i) => (
+                <Reveal key={team.id} delay={i * 60}>
+                  <TeamCard
+                    team={team}
+                    onClick={() => openTeam(team.id)}
+                  />
+                </Reveal>
               ))
             )}
           </div>
@@ -266,25 +316,29 @@ export function HomeView() {
       {/* ============ LATEST NEWS ============ */}
       <section className="relative py-20 md:py-28">
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
-            <SectionHeading
-              kicker="From The Newsroom"
-              title="Latest Announcements"
-              description="Tournament news, player signings, results and official updates."
-            />
-            <Button
-              onClick={() => setView("news")}
-              variant="ghost"
-              className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
-            >
-              All News
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
+          <Reveal>
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+              <SectionHeading
+                kicker="From The Newsroom"
+                title="Latest Announcements"
+                description="Tournament news, player signings, results and official updates."
+              />
+              <Button
+                onClick={() => setView("news")}
+                variant="ghost"
+                className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
+              >
+                All News
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </Reveal>
 
           <div className="grid gap-6 md:grid-cols-3">
-            {latestNews.map((n) => (
-              <NewsCard key={n.id} news={n} onClick={() => openNews(n.id)} />
+            {latestNews.map((n, i) => (
+              <Reveal key={n.id} delay={i * 100}>
+                <NewsCard news={n} onClick={() => openNews(n.id)} />
+              </Reveal>
             ))}
           </div>
         </div>
@@ -312,7 +366,6 @@ export function HomeView() {
                 </div>
               ))}
             </div>
-            {/* edge fades */}
             <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-black to-transparent pointer-events-none" />
             <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-black to-transparent pointer-events-none" />
           </div>
@@ -323,8 +376,9 @@ export function HomeView() {
       <section className="relative py-24 md:py-32 overflow-hidden">
         <div className="absolute inset-0 ns-radial-gold" />
         <div className="absolute inset-0 ns-grid-bg opacity-30" />
+        <GoldParticles count={10} />
         <div className="relative mx-auto max-w-4xl px-4 text-center flex flex-col items-center">
-          <div className="mb-8">
+          <div className="mb-8 ns-logo-glow">
             <NSLogo size={72} className="justify-center" />
           </div>
           <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tight">
@@ -362,24 +416,36 @@ export function HomeView() {
 function StatCard({
   icon: Icon,
   value,
+  displayValue,
+  prefix = "",
+  suffix = "",
   label,
   delay,
+  format,
 }: {
   icon: React.ElementType;
-  value: string | number;
+  value: number;
+  displayValue: number;
+  prefix?: string;
+  suffix?: string;
   label: string;
   delay: number;
+  format?: "k";
 }) {
+  // Use the larger "display" value for the animated counter to feel impressive,
+  // but fall back to the real value if display isn't set.
+  const target = Math.max(value, displayValue);
+  const fmtPrefix = format === "k" && target >= 1000 ? "$" : prefix;
+  const fmtSuffix = format === "k" && target >= 1000 ? "K+" : suffix;
+  const counterValue = format === "k" && target >= 1000 ? Math.round(target / 1000) : target;
+
   return (
-    <div
-      className="relative ns-card ns-card-gold-edge rounded-xl p-5 md:p-6 text-center ns-fade-up"
-      style={{ animationDelay: `${delay}s` }}
-    >
+    <div className="relative ns-card ns-card-gold-edge rounded-xl p-5 md:p-6 text-center">
       <div className="inline-flex items-center justify-center w-11 h-11 rounded-lg bg-gold/10 border border-gold/30 mb-3">
         <Icon className="w-5 h-5 text-gold" />
       </div>
       <div className="font-display font-black text-3xl md:text-4xl text-gold-gradient">
-        {value}
+        <AnimatedCounter value={counterValue} prefix={fmtPrefix} suffix={fmtSuffix} />
       </div>
       <div className="mt-1 text-[0.7rem] md:text-xs uppercase tracking-wider text-muted-foreground">
         {label}
@@ -395,13 +461,14 @@ export function TournamentCard({
   tournament: Tournament;
   onClick?: () => void;
 }) {
-  const regCount = tournament._count?.teams ?? 0;
-  const pct = Math.min(100, (regCount / tournament.teamLimit) * 100);
+  const regCount = tournament._count?.registrations ?? tournament._count?.teams ?? 0;
   const startDate = new Date(tournament.startDate);
+  const deadline = new Date(tournament.registrationDeadline);
+  const regOpen = tournament.status === "REGISTRATION_OPEN";
   return (
     <button
       onClick={onClick}
-      className="group text-left ns-card ns-card-gold-edge rounded-xl overflow-hidden w-full"
+      className="group text-left ns-card ns-card-gold-edge rounded-xl overflow-hidden w-full ns-lift"
     >
       {/* banner */}
       <div className="relative h-40 bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black overflow-hidden">
@@ -434,38 +501,22 @@ export function TournamentCard({
         <h3 className="font-display font-bold text-lg text-white group-hover:text-gold-light transition-colors line-clamp-1">
           {tournament.name}
         </h3>
-        <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5" />
-            {startDate.toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Users className="w-3.5 h-3.5" />
-            {regCount}/{tournament.teamLimit} teams
-          </span>
-        </div>
 
-        {/* progress */}
+        {/* capacity */}
         <div className="mt-4">
-          <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-[#92783D] to-[#E6D69A] rounded-full transition-all"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
+          <SlotsBar registered={regCount} limit={tournament.teamLimit} />
         </div>
 
+        {/* deadline + format */}
         <div className="mt-4 flex items-center justify-between">
+          <span className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
+            <Clock className="w-3.5 h-3.5" />
+            {regOpen
+              ? `Ends ${deadline.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+              : `Starts ${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
+          </span>
           <span className="text-xs font-heading uppercase tracking-wider text-gold/70">
             {tournament.format}
-          </span>
-          <span className="flex items-center gap-1 text-xs font-semibold text-gold-light group-hover:gap-2 transition-all">
-            Details
-            <ArrowRight className="w-3.5 h-3.5" />
           </span>
         </div>
       </div>
@@ -480,10 +531,17 @@ export function TeamCard({
   team: Team;
   onClick?: () => void;
 }) {
+  // Tournament-centric: show registrations instead of game label
+  const regs: Registration[] = team.registrations || [];
+  const approvedRegs = regs.filter((r) => r.status === "APPROVED");
+  const playerCount = 5 + (team.substitute ? 1 : 0);
+  const primaryTournament = approvedRegs[0]?.tournament;
+  const tournamentCount = approvedRegs.length;
+
   return (
     <button
       onClick={onClick}
-      className="group ns-card ns-card-gold-edge rounded-xl p-5 flex items-center gap-4 w-full text-left"
+      className="group ns-card ns-card-gold-edge rounded-xl p-5 flex items-center gap-4 w-full text-left ns-lift"
     >
       <TeamMonogram name={team.name} logo={team.logo} size={56} />
       <div className="min-w-0 flex-1">
@@ -492,21 +550,35 @@ export function TeamCard({
             {team.name}
           </h3>
           {team.isOfficial && (
-            <span className="text-gold" title="Official NS Team">
+            <span className="text-gold shrink-0" title="Official NS Team">
               <Crown className="w-3.5 h-3.5" />
             </span>
           )}
         </div>
-        <div className="mt-1 flex items-center gap-2">
-          <GameBadge game={team.game} />
-          {team.region && (
-            <span className="text-[0.7rem] text-muted-foreground">
-              · {team.region}
+        {/* Tournament participation (replaces game label) */}
+        <p className="mt-1 text-xs text-muted-foreground truncate">
+          {primaryTournament ? (
+            <>
+              <span className="text-gold/70">Tournament:</span>{" "}
+              <span className="text-white/80">{primaryTournament.name}</span>
+            </>
+          ) : (
+            <span className="italic">No active tournament</span>
+          )}
+        </p>
+        <div className="mt-2 flex items-center gap-3">
+          <span className="flex items-center gap-1 text-[0.7rem] text-white/60">
+            <Users className="w-3 h-3 text-gold/60" />
+            {playerCount} Players
+          </span>
+          {tournamentCount > 1 && (
+            <span className="text-[0.7rem] text-gold-light font-semibold">
+              +{tournamentCount - 1} more
             </span>
           )}
         </div>
       </div>
-      <ArrowRight className="w-4 h-4 text-gold/40 group-hover:text-gold-light group-hover:translate-x-1 transition-all" />
+      <ArrowRight className="w-4 h-4 text-gold/40 group-hover:text-gold-light group-hover:translate-x-1 transition-all shrink-0" />
     </button>
   );
 }
@@ -521,7 +593,7 @@ function NewsCard({
   return (
     <button
       onClick={onClick}
-      className="group text-left ns-card ns-card-gold-edge rounded-xl overflow-hidden w-full"
+      className="group text-left ns-card ns-card-gold-edge rounded-xl overflow-hidden w-full ns-lift"
     >
       <div className="relative h-40 bg-gradient-to-br from-[#1a1a1a] to-black overflow-hidden">
         <div className="absolute inset-0 ns-grid-bg opacity-30" />

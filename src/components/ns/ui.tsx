@@ -2,7 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import { GAME_LABELS, STATUS_LABELS, STATUS_PILL } from "@/lib/types";
-import { Trophy } from "lucide-react";
+import { Trophy, Users } from "lucide-react";
+import { useScrollReveal } from "./scroll-reveal";
+import { type ReactNode, useMemo } from "react";
 
 /** Team monogram avatar (gold gradient with initials) */
 export function TeamMonogram({
@@ -157,6 +159,113 @@ export function NSCardSkeleton({ className }: { className?: string }) {
       <div className="p-4 space-y-3">
         <div className="h-4 w-3/4 bg-white/5 rounded animate-pulse" />
         <div className="h-3 w-1/2 bg-white/5 rounded animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+/* ============ Premium animation components ============ */
+
+/** Scroll-reveal wrapper — fades + slides children into view on scroll */
+export function Reveal({
+  children,
+  className,
+  delay = 0,
+  threshold = 0.15,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+  threshold?: number;
+}) {
+  const { ref, visible } = useScrollReveal<HTMLDivElement>({ threshold });
+  return (
+    <div
+      ref={ref}
+      className={cn("ns-reveal", visible && "ns-reveal-visible", className)}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      {children}
+    </div>
+  );
+}
+
+/** Floating gold particles — subtle ambient effect for hero sections */
+export function GoldParticles({ count = 14 }: { count?: number }) {
+  const particles = useMemo(
+    () =>
+      Array.from({ length: count }).map((_, i) => {
+        const size = 2 + Math.random() * 4;
+        return {
+          id: i,
+          left: Math.random() * 100,
+          top: 40 + Math.random() * 60,
+          size,
+          duration: 7 + Math.random() * 8,
+          delay: Math.random() * 10,
+          drift: (Math.random() - 0.5) * 60,
+          opacity: 0.3 + Math.random() * 0.4,
+        };
+      }),
+    [count]
+  );
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <span
+          key={p.id}
+          className="ns-particle"
+          style={
+            {
+              left: `${p.left}%`,
+              top: `${p.top}%`,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              "--p-duration": `${p.duration}s`,
+              "--p-delay": `${p.delay}s`,
+              "--p-drift": `${p.drift}px`,
+              "--p-opacity": p.opacity,
+            } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Tournament capacity display: "24 / 128 Teams" + "104 Slots Remaining" */
+export function SlotsBar({
+  registered,
+  limit,
+  showRemaining = true,
+  className,
+}: {
+  registered: number;
+  limit: number;
+  showRemaining?: boolean;
+  className?: string;
+}) {
+  const pct = limit > 0 ? Math.min(100, (registered / limit) * 100) : 0;
+  const remaining = Math.max(0, limit - registered);
+  return (
+    <div className={cn("space-y-1.5", className)}>
+      <div className="flex items-center justify-between text-xs">
+        <span className="flex items-center gap-1.5 text-white/70">
+          <Users className="w-3.5 h-3.5 text-gold/70" />
+          <span className="font-semibold text-white">{registered}</span>
+          <span className="text-muted-foreground">/ {limit} Teams</span>
+        </span>
+        {showRemaining && remaining > 0 && (
+          <span className="text-gold-light font-semibold text-[0.7rem]">
+            {remaining} Slots Left
+          </span>
+        )}
+      </div>
+      <div className="h-1.5 w-full rounded-full bg-white/5 overflow-hidden">
+        <div
+          className="h-full bg-gradient-to-r from-[#92783D] via-[#D5BE77] to-[#E6D69A] rounded-full transition-all duration-700"
+          style={{ width: `${pct}%` }}
+        />
       </div>
     </div>
   );

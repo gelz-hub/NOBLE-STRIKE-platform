@@ -47,9 +47,11 @@ export interface Team {
   substitute: string | null;
   region: string | null;
   tag: string | null;
+  description: string | null;
   createdAt: string;
   tournament?: Tournament | null;
   achievements?: Achievement[];
+  registrations?: Registration[];
 }
 
 export interface Tournament {
@@ -71,6 +73,16 @@ export interface Tournament {
   featured: boolean;
   createdAt: string;
   _count?: { teams: number; registrations: number };
+}
+
+export interface Registration {
+  id: string;
+  tournamentId: string;
+  teamId: string;
+  status: string;
+  createdAt: string;
+  tournament?: Tournament;
+  team?: Team;
 }
 
 export interface Match {
@@ -148,6 +160,8 @@ export interface Stats {
   teams: number;
   prizePool: number;
   matches: number;
+  players: number;
+  registrations: number;
 }
 
 export const GAME_LABELS: Record<string, string> = {

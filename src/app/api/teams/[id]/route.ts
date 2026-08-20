@@ -11,6 +11,7 @@ export async function GET(_request: Request, { params }: Params) {
       where: { id },
       include: {
         tournament: true,
+        registrations: { include: { tournament: true } },
         achievements: true,
         matchesAsA: { include: { teamA: true, teamB: true } },
         matchesAsB: { include: { teamA: true, teamB: true } },
@@ -39,7 +40,7 @@ export async function PUT(request: Request, { params }: Params) {
       "name", "logo", "captainName", "discordUsername", "contactNumber",
       "game", "tournamentId", "status", "isOfficial",
       "player1", "player2", "player3", "player4", "player5", "substitute",
-      "region", "tag",
+      "region", "tag", "description",
     ];
     for (const k of allowed) {
       if (k in body) data[k] = body[k];
@@ -48,7 +49,11 @@ export async function PUT(request: Request, { params }: Params) {
     const updated = await db.team.update({
       where: { id },
       data,
-      include: { tournament: true, achievements: true },
+      include: {
+        tournament: true,
+        registrations: { include: { tournament: true } },
+        achievements: true,
+      },
     });
     return NextResponse.json(updated);
   } catch (e) {

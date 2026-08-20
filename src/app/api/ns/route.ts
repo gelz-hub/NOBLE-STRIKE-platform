@@ -7,7 +7,10 @@ export async function GET() {
     const [team, members, sponsors, socials] = await Promise.all([
       db.team.findFirst({
         where: { isOfficial: true },
-        include: { achievements: true },
+        include: {
+          achievements: true,
+          registrations: { include: { tournament: true } },
+        },
       }),
       db.nSMember.findMany({
         orderBy: [{ order: "asc" }, { type: "asc" }],

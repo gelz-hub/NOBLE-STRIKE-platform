@@ -349,3 +349,93 @@
   to { transform: translateX(-50%); }
 }
 .ns-marquee { animation: ns-marquee 32s linear infinite; }
+
+/* ============ Premium Hero Animations ============ */
+
+/* Floating gold particles */
+@keyframes ns-float-up {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: var(--p-opacity, 0.6); }
+  90% { opacity: var(--p-opacity, 0.6); }
+  100% { transform: translateY(-120px) translateX(var(--p-drift, 0px)); opacity: 0; }
+}
+.ns-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #E6D69A 0%, #D5BE77 40%, transparent 70%);
+  pointer-events: none;
+  animation: ns-float-up var(--p-duration, 8s) ease-in-out infinite;
+  animation-delay: var(--p-delay, 0s);
+}
+
+/* Light sweep across title */
+@keyframes ns-sweep {
+  0% { background-position: -200% center; }
+  60%, 100% { background-position: 200% center; }
+}
+.ns-title-sweep {
+  background: linear-gradient(
+    110deg,
+    #92783D 0%,
+    #D5BE77 25%,
+    #E6D69A 40%,
+    #FFFFFF 50%,
+    #E6D69A 60%,
+    #D5BE77 75%,
+    #92783D 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: ns-sweep 8s ease-in-out infinite;
+}
+
+/* Pulsing logo glow */
+@keyframes ns-logo-glow {
+  0%, 100% { filter: drop-shadow(0 0 20px rgba(213, 190, 119, 0.35)) drop-shadow(0 0 40px rgba(213, 190, 119, 0.15)); }
+  50% { filter: drop-shadow(0 0 30px rgba(213, 190, 119, 0.55)) drop-shadow(0 0 70px rgba(213, 190, 119, 0.25)); }
+}
+.ns-logo-glow { animation: ns-logo-glow 4s ease-in-out infinite; }
+
+/* Scroll reveal — starts hidden, becomes visible when .ns-reveal-visible is added */
+.ns-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ns-reveal.ns-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile slide-out menu */
+@keyframes ns-slide-in {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+@keyframes ns-slide-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+.ns-slide-in { animation: ns-slide-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.ns-slide-out { animation: ns-slide-out 0.3s cubic-bezier(0.4, 0, 1, 1) both; }
+@keyframes ns-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.ns-fade-in { animation: ns-fade-in 0.3s ease both; }
+
+/* Counter shimmer (while animating) */
+.ns-counting {
+  text-shadow: 0 0 18px rgba(213, 190, 119, 0.4);
+}
+
+/* Subtle hover lift for premium cards */
+.ns-lift {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+.ns-lift:hover {
+  transform: translateY(-4px);
+}

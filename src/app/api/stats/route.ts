@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
+// GET /api/stats — aggregate, tournament-centric numbers for the home view
 export async function GET() {
   try {
-    const [tournaments, approvedTeams, matches, allTournaments] = await Promise.all([
+    const [
+      tournaments,
+      approvedTeams,
+      completedMatches,
+      approvedRegistrations,
+      allTournaments,
+    ] = await Promise.all([
       db.tournament.count(),
       db.team.count({ where: { status: "APPROVED" } }),
       db.match.count({ where: { status: "COMPLETED" } }),
+      db.registration.count({ where: { status: "APPROVED" } }),
       db.tournament.findMany({ select: { prizePool: true } }),
     ]);
 
@@ -20,8 +28,9 @@ export async function GET() {
       tournaments,
       teams: approvedTeams,
       prizePool,
-      matches,
+      matches: completedMatches,
       players: approvedTeams * 5,
+      registrations: approvedRegistrations,
     });
   } catch (e) {
     return NextResponse.json(
