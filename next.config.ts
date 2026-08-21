@@ -37,7 +37,13 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  // "standalone" output is for self-hosting (see OPERATIONS.md/DEPLOYMENT.md's
+  // `npm run build`/`npm run start` self-host path) — Vercel's own builder
+  // produces its own optimized serverless bundle and the two modes conflict
+  // (standalone's reorganized .next layout breaks Vercel's file-tracing
+  // step). VERCEL is set automatically in Vercel's build environment, so
+  // this stays "standalone" everywhere else without needing two configs.
+  output: process.env.VERCEL ? undefined : "standalone",
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
