@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/require-admin-api";
 
 // GET /api/news — list announcements (with optional filters)
 export async function GET(request: Request) {
@@ -32,6 +33,9 @@ export async function GET(request: Request) {
 // POST /api/news — create announcement
 export async function POST(request: Request) {
   try {
+    const authError = await requireAdminApi();
+    if (authError) return authError;
+
     const body = await request.json();
     const { title, content, excerpt, category, featured, coverImage, author } = body;
 

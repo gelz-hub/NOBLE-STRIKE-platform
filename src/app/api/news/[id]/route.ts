@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/require-admin-api";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -20,6 +21,9 @@ export async function GET(_request: Request, { params }: Params) {
 // PUT /api/news/[id]
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const authError = await requireAdminApi();
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -48,6 +52,9 @@ export async function PUT(request: Request, { params }: Params) {
 // DELETE /api/news/[id]
 export async function DELETE(_request: Request, { params }: Params) {
   try {
+    const authError = await requireAdminApi();
+    if (authError) return authError;
+
     const { id } = await params;
     await db.announcement.delete({ where: { id } });
     return NextResponse.json({ ok: true });

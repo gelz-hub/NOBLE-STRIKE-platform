@@ -43,14 +43,87 @@
   --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
   --color-gold-metallic: var(--gold-metallic);
+  --color-surface: var(--surface);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent-hover: var(--accent-hover);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* NOBLE STRIKE — enforced dark luxury theme */
-:root {
+/* NOBLE STRIKE — black & gold theme, with a light-mode counterpart.
+ * The brand gold scale stays identical in both — only surface/text tokens
+ * change. Note: most page-level components in this app use literal Tailwind
+ * dark-mode utility classes (bg-black/40, text-white/70, border-white/10,
+ * etc.) rather than these semantic tokens, since the app was originally
+ * built "hard-locked" to dark. These tokens correctly drive shadcn/ui
+ * primitives and any component written against bg-background/text-foreground/
+ * bg-card, but switching every page's literal dark utility classes to
+ * semantic ones is a larger follow-up (see ROADMAP.md). */
+:root, .light {
+  --radius: 0.75rem;
+
+  /* Brand gold scale — unchanged across themes */
+  --gold: #D5BE77;
+  --gold-light: #E6D69A;
+  --gold-dark: #92783D;
+  --gold-metallic: #B8A060;
+
+  /* Backgrounds */
+  --background: #F5F3EE;
+  --foreground: #14120C;
+  --card: #FFFFFF;
+  --card-foreground: #14120C;
+  --popover: #FFFFFF;
+  --popover-foreground: #14120C;
+
+  /* Primary = gold */
+  --primary: #92783D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EAE5D9;
+  --secondary-foreground: #4a3f22;
+  --muted: #EDEAE1;
+  --muted-foreground: #6b6558;
+  --accent: #F0EBDD;
+  --accent-foreground: #4a3f22;
+  --destructive: #d9363e;
+  --border: rgba(146, 120, 61, 0.22);
+  --input: rgba(146, 120, 61, 0.22);
+  --ring: #92783D;
+  --chart-1: #D5BE77;
+  --chart-2: #E6D69A;
+  --chart-3: #B8A060;
+  --chart-4: #92783D;
+  --chart-5: #5c4d28;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #14120C;
+  --sidebar-primary: #92783D;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #EDEAE1;
+  --sidebar-accent-foreground: #4a3f22;
+  --sidebar-border: rgba(146, 120, 61, 0.22);
+  --sidebar-ring: #92783D;
+
+  /* Phase 11 semantic layer — aliases of the tokens above (single source of
+   * truth stays --card/--foreground/--muted*), plus new status colors tuned
+   * per-theme for AA contrast against their surface. */
+  --surface: var(--card);
+  --surface-secondary: var(--muted);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --accent-hover: #7c6530;
+  --success: #16a34a;
+  --warning: #b45309;
+  --danger: var(--destructive);
+}
+
+.dark {
   --radius: 0.75rem;
 
   /* Brand gold scale */
@@ -93,6 +166,15 @@
   --sidebar-accent-foreground: #E6D69A;
   --sidebar-border: rgba(213, 190, 119, 0.14);
   --sidebar-ring: #D5BE77;
+
+  --surface: var(--card);
+  --surface-secondary: var(--muted);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --accent-hover: #E6D69A;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: var(--destructive);
 }
 
 @layer base {
@@ -100,12 +182,13 @@
     @apply border-border outline-ring/50;
   }
   html {
+    color-scheme: light;
+  }
+  html.dark {
     color-scheme: dark;
   }
   body {
     @apply bg-background text-foreground;
-    background-color: #000000;
-    color: #FFFFFF;
     font-family: var(--font-inter), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -151,31 +234,37 @@
   text-shadow: 0 0 18px rgba(213, 190, 119, 0.55), 0 0 40px rgba(213, 190, 119, 0.25);
 }
 
-/* Glassmorphism */
+/* Glassmorphism — theme-reactive: a translucent surface over whatever's
+ * behind it, not a fixed dark tint. Alpha stays high in dark mode (glass
+ * over black) and lower in light mode (glass over a pale background). */
 .glass {
-  background: rgba(17, 17, 17, 0.6);
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(213, 190, 119, 0.14);
+  border: 1px solid var(--border);
 }
 .glass-dark {
-  background: rgba(0, 0, 0, 0.7);
+  background: color-mix(in srgb, var(--background) 70%, transparent);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(213, 190, 119, 0.1);
+  border: 1px solid var(--border);
 }
 
-/* Premium card with gold border on hover */
+/* Premium card with gold border on hover — theme-reactive surface */
 .ns-card {
   position: relative;
-  background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%);
-  border: 1px solid rgba(213, 190, 119, 0.12);
+  background: linear-gradient(180deg, var(--surface) 0%, color-mix(in srgb, var(--surface) 92%, var(--background)) 100%);
+  border: 1px solid var(--border);
   transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .ns-card:hover {
   border-color: rgba(213, 190, 119, 0.45);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(213, 190, 119, 0.12);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25), 0 0 30px rgba(213, 190, 119, 0.12);
   transform: translateY(-3px);
+}
+:root.dark .ns-card:hover,
+.dark .ns-card:hover {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(213, 190, 119, 0.12);
 }
 .ns-card-gold-edge::before {
   content: "";
@@ -188,6 +277,19 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+/* Form field surface — the semantic replacement for the repeated literal
+ * "bg-black/40 border-gold/20 focus:border-gold/60" className pattern used
+ * across form inputs/textareas/selects. New form UI should use this class
+ * instead of the literal utility chain. */
+.ns-input {
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.ns-input:focus {
+  border-color: rgba(213, 190, 119, 0.6);
 }
 
 /* Gold divider */
@@ -211,11 +313,15 @@
 }
 .ns-btn-outline {
   border: 1px solid rgba(213, 190, 119, 0.5);
-  color: #E6D69A;
+  color: var(--gold-dark);
   background: transparent;
   font-weight: 600;
   letter-spacing: 0.04em;
   transition: all 0.25s ease;
+}
+:root.dark .ns-btn-outline,
+.dark .ns-btn-outline {
+  color: #E6D69A;
 }
 .ns-btn-outline:hover {
   background: rgba(213, 190, 119, 0.1);
@@ -223,13 +329,18 @@
   box-shadow: 0 0 20px rgba(213, 190, 119, 0.25);
 }
 
-/* Section heading kicker */
+/* Section heading kicker — darker gold in light mode for AA contrast
+ * against a pale background; the brighter metallic tone in dark mode. */
 .ns-kicker {
   font-family: var(--font-rajdhani), sans-serif;
   text-transform: uppercase;
   letter-spacing: 0.35em;
   font-weight: 600;
   font-size: 0.75rem;
+  color: var(--gold-dark);
+}
+:root.dark .ns-kicker,
+.dark .ns-kicker {
   color: #B8A060;
 }
 
@@ -257,40 +368,40 @@
   text-transform: uppercase;
   border: 1px solid;
 }
-.ns-pill-open {
-  color: #4ade80;
-  border-color: rgba(74, 222, 128, 0.4);
-  background: rgba(74, 222, 128, 0.08);
+/* Status pills reference the success/warning/danger tokens (per-theme
+ * values, see :root/.light and .dark above) rather than fixed hex, so they
+ * stay AA-legible against both a black and a white card surface. */
+.ns-pill-open,
+.ns-pill-approved {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 45%, transparent);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
 }
-.ns-pill-closed {
-  color: #f87171;
-  border-color: rgba(248, 113, 113, 0.4);
-  background: rgba(248, 113, 113, 0.08);
+.ns-pill-closed,
+.ns-pill-rejected {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
 }
 .ns-pill-ongoing {
-  color: #D5BE77;
+  color: var(--gold-dark);
   border-color: rgba(213, 190, 119, 0.5);
   background: rgba(213, 190, 119, 0.12);
 }
-.ns-pill-completed {
-  color: #94a3b8;
-  border-color: rgba(148, 163, 184, 0.4);
-  background: rgba(148, 163, 184, 0.08);
+:root.dark .ns-pill-ongoing,
+.dark .ns-pill-ongoing {
+  color: #D5BE77;
+}
+.ns-pill-completed,
+.ns-pill-withdrawn {
+  color: var(--text-secondary);
+  border-color: color-mix(in srgb, var(--text-secondary) 40%, transparent);
+  background: color-mix(in srgb, var(--text-secondary) 10%, transparent);
 }
 .ns-pill-pending {
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.4);
-  background: rgba(251, 191, 36, 0.08);
-}
-.ns-pill-approved {
-  color: #4ade80;
-  border-color: rgba(74, 222, 128, 0.4);
-  background: rgba(74, 222, 128, 0.08);
-}
-.ns-pill-rejected {
-  color: #f87171;
-  border-color: rgba(248, 113, 113, 0.4);
-  background: rgba(248, 113, 113, 0.08);
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
 }
 
 /* Pulsing dot */
@@ -317,11 +428,11 @@
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-track { background: var(--surface-secondary); }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #92783D, #D5BE77);
   border-radius: 6px;
-  border: 2px solid #0a0a0a;
+  border: 2px solid var(--surface-secondary);
 }
 ::-webkit-scrollbar-thumb:hover { background: #D5BE77; }
 

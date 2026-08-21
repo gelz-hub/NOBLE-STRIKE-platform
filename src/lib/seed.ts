@@ -1,6 +1,5 @@
-// NOBLE STRIKE — shared seed logic used by both `prisma/seed.ts` and
-// the /api/admin/seed route so the frontend "load demo data" button can
-// trigger a re-seed without restarting the server.
+// NOBLE STRIKE — shared seed logic used by `prisma/seed.ts` (run via
+// `npm run db:seed`) to populate the legacy demo dataset.
 //
 // Tournament-centric architecture: teams participate in MULTIPLE tournaments
 // via the Registration table (source of truth). `Team.tournamentId` is kept

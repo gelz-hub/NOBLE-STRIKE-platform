@@ -54,15 +54,7 @@ export function useHashView() {
   useEffect(() => {
     const apply = () => {
       const h = window.location.hash.replace(/^#\/?/, "");
-      const valid: NSView[] = [
-        "home",
-        "tournaments",
-        "teams",
-        "ns-team",
-        "news",
-        "brackets",
-        "admin",
-      ];
+      const valid: NSView[] = ["home", "tournaments", "teams", "ns-team", "news", "brackets"];
       if ((valid as string[]).includes(h) && h !== view) {
         useApp.setState({ view: h as NSView });
       }

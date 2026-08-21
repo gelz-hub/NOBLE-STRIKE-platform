@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useApp } from "@/lib/store";
+import { useSupabaseUser } from "@/hooks/use-supabase-user";
 import { useFetch, apiPut } from "../hooks";
 import {
   SectionHeading,
@@ -38,7 +38,8 @@ const ROUND_NAMES = (total: number) => (r: number) => {
 
 export function BracketsView() {
   const { data: tournaments } = useFetch<Tournament[]>("/api/tournaments");
-  const adminUnlocked = useApp((s) => s.adminUnlocked);
+  const { profile } = useSupabaseUser();
+  const adminUnlocked = profile?.role === "admin";
 
   const bracketTournaments = (tournaments || []).filter(
     (t) => t.status === "ONGOING" || t.status === "COMPLETED"
@@ -203,7 +204,6 @@ function MatchCard({
   const [scoreA, setScoreA] = useState(match.scoreA);
   const [scoreB, setScoreB] = useState(match.scoreB);
   const [saving, setSaving] = useState(false);
-  const { reload: reloadAll } = useApp.getState();
 
   const teamA = match.teamA;
   const teamB = match.teamB;

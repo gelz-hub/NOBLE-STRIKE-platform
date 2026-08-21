@@ -30,6 +30,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TelegramButtons } from "@/components/telegram/telegram-buttons";
 import type {
   Tournament,
   Team,
@@ -405,6 +406,7 @@ export function HomeView() {
               Meet NS Squad
             </Button>
           </div>
+          <TelegramButtons className="mt-8 justify-center" />
         </div>
       </section>
     </div>

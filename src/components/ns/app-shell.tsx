@@ -11,7 +11,6 @@ import { TeamsView } from "./views/teams-view";
 import { NSTeamView } from "./views/ns-team-view";
 import { NewsView } from "./views/news-view";
 import { BracketsView } from "./views/brackets-view";
-import { AdminView } from "./views/admin-view";
 import type { NSView } from "@/lib/types";
 
 const VIEWS: Record<NSView, React.ComponentType> = {
@@ -21,7 +20,6 @@ const VIEWS: Record<NSView, React.ComponentType> = {
   "ns-team": NSTeamView,
   news: NewsView,
   brackets: BracketsView,
-  admin: AdminView,
 };
 
 export function AppShell() {

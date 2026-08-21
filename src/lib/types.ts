@@ -25,8 +25,7 @@ export type NSView =
   | "teams"
   | "ns-team"
   | "news"
-  | "brackets"
-  | "admin";
+  | "brackets";
 
 export interface Team {
   id: string;
@@ -177,7 +176,16 @@ export const STATUS_LABELS: Record<string, string> = {
   PENDING: "Pending",
   APPROVED: "Approved",
   REJECTED: "Rejected",
+  WITHDRAWN: "Withdrawn",
   COMPLETED_TEAM: "Active",
+  DRAFT: "Draft",
+  ARCHIVED: "Archived",
+  PUBLISHED: "Published",
+  SCHEDULED: "Scheduled",
+  READY: "Ready",
+  LIVE: "Live",
+  DISPUTED: "Disputed",
+  CANCELLED: "Cancelled",
 };
 
 export const STATUS_PILL: Record<string, string> = {
@@ -188,6 +196,15 @@ export const STATUS_PILL: Record<string, string> = {
   PENDING: "ns-pill-pending",
   APPROVED: "ns-pill-approved",
   REJECTED: "ns-pill-rejected",
+  WITHDRAWN: "ns-pill-withdrawn",
+  DRAFT: "ns-pill-withdrawn",
+  ARCHIVED: "ns-pill-closed",
+  PUBLISHED: "ns-pill-approved",
+  SCHEDULED: "ns-pill-open",
+  READY: "ns-pill-approved",
+  LIVE: "ns-pill-ongoing",
+  DISPUTED: "ns-pill-rejected",
+  CANCELLED: "ns-pill-withdrawn",
 };
 
 export const NEWS_CATEGORY_LABELS: Record<string, string> = {

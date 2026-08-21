@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/require-admin-api";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -32,6 +33,9 @@ export async function GET(_request: Request, { params }: Params) {
 // PUT /api/teams/[id]
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const authError = await requireAdminApi();
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
 

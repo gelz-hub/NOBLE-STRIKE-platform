@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/require-admin-api";
 
 type Params = { params: Promise<{ id: string }> };
 
 // PUT /api/matches/[id] — update match + advance winner to next match
 export async function PUT(request: Request, { params }: Params) {
   try {
+    const authError = await requireAdminApi();
+    if (authError) return authError;
+
     const { id } = await params;
     const body = await request.json();
     const { scoreA, scoreB, winnerId, status, format, scheduledAt, advance } = body;

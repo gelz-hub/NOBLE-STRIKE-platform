@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useApp } from "@/lib/store";
 import { NSLogo } from "./logo";
 import { cn } from "@/lib/utils";
-import { Menu, X, Shield, Trophy } from "lucide-react";
+import { Menu, X, Trophy, Users } from "lucide-react";
 import type { NSView } from "@/lib/types";
 import { Button } from "@/components/ui/button";
+import { AccountMenu } from "./account-menu";
 
 const NAV_ITEMS: { id: NSView; label: string }[] = [
   { id: "home", label: "Home" },
@@ -89,7 +91,7 @@ export function NavBar() {
                     "relative px-4 py-2 font-heading font-semibold text-sm uppercase tracking-wider transition-colors",
                     view === item.id
                       ? "text-gold-light"
-                      : "text-white/70 hover:text-white"
+                      : "text-text-secondary hover:text-text-primary"
                   )}
                 >
                   {item.label}
@@ -98,22 +100,16 @@ export function NavBar() {
                   )}
                 </button>
               ))}
+              <Link
+                href="/players"
+                className="relative px-4 py-2 font-heading font-semibold text-sm uppercase tracking-wider transition-colors text-text-secondary hover:text-text-primary"
+              >
+                Players
+              </Link>
             </nav>
 
             {/* Right actions */}
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => go("admin")}
-                className={cn(
-                  "hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-md text-xs font-heading font-semibold uppercase tracking-wider transition-all",
-                  view === "admin"
-                    ? "text-gold-light bg-gold/10 border border-gold/40"
-                    : "text-white/60 hover:text-gold-light border border-transparent hover:border-gold/30"
-                )}
-              >
-                <Shield className="w-3.5 h-3.5" />
-                Admin
-              </button>
               <Button
                 onClick={() => go("tournaments")}
                 className="ns-btn-gold hidden md:inline-flex h-9 px-4 text-xs uppercase tracking-wider"
@@ -121,6 +117,10 @@ export function NavBar() {
                 <Trophy className="w-3.5 h-3.5" />
                 Join Tournament
               </Button>
+
+              <div className="hidden md:block">
+                <AccountMenu />
+              </div>
 
               {/* Mobile toggle */}
               <button
@@ -160,7 +160,7 @@ export function NavBar() {
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
-                className="w-9 h-9 rounded-md flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                className="w-9 h-9 rounded-md flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-secondary transition-colors"
                 aria-label="Close menu"
               >
                 <X className="w-5 h-5" />
@@ -178,33 +178,38 @@ export function NavBar() {
                     "ns-fade-in flex items-center justify-between px-4 py-3.5 font-heading font-semibold uppercase tracking-wider rounded-lg transition-all",
                     view === item.id
                       ? "text-gold-light bg-gold/10 border border-gold/30"
-                      : "text-white/80 hover:bg-white/5 border border-transparent"
+                      : "text-text-secondary hover:bg-surface-secondary border border-transparent"
                   )}
                 >
                   {item.label}
                   <ChevronRightSmall />
                 </button>
               ))}
+              <Link
+                href="/players"
+                onClick={() => setMobileOpen(false)}
+                className="ns-fade-in flex items-center justify-between px-4 py-3.5 font-heading font-semibold uppercase tracking-wider rounded-lg transition-all text-text-secondary hover:bg-surface-secondary border border-transparent"
+              >
+                <span className="flex items-center gap-2">
+                  <Users className="w-4 h-4 text-gold/60" />
+                  Players
+                </span>
+                <ChevronRightSmall />
+              </Link>
             </nav>
 
             {/* divider */}
             <div className="mx-5 ns-divider" />
 
-            {/* admin + CTA */}
+            {/* account */}
+            <div className="px-4">
+              <AccountMenu mobile />
+            </div>
+
+            <div className="mx-5 ns-divider mt-2" />
+
+            {/* CTA */}
             <div className="p-4 flex flex-col gap-2">
-              <button
-                onClick={() => go("admin")}
-                className={cn(
-                  "ns-fade-in flex items-center gap-3 px-4 py-3 font-heading font-semibold uppercase tracking-wider rounded-lg transition-all",
-                  view === "admin"
-                    ? "text-gold-light bg-gold/10 border border-gold/30"
-                    : "text-white/70 hover:bg-white/5 border border-transparent"
-                )}
-                style={{ animationDelay: "400ms" }}
-              >
-                <Shield className="w-4 h-4" />
-                Admin Panel
-              </button>
               <Button
                 onClick={() => go("tournaments")}
                 className="ns-btn-gold h-12 mt-2 text-sm uppercase tracking-wider ns-fade-in"

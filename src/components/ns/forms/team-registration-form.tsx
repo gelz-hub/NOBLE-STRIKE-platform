@@ -93,7 +93,7 @@ export function TeamRegistrationForm({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto bg-[#0d0d0d] border-gold/30 p-0">
+      <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto bg-popover border-gold/30 p-0">
         {/* Header banner */}
         <div className="relative h-28 bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black border-b border-gold/20 overflow-hidden">
           <div className="absolute inset-0 ns-grid-bg opacity-40" />
@@ -130,7 +130,7 @@ export function TeamRegistrationForm({
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
                   placeholder="e.g. Eclipse Empire"
-                  className="bg-black/40 border-gold/20 focus:border-gold/60"
+                  className="ns-input"
                 />
               </Field>
               <Field label="Team Tag">
@@ -139,7 +139,7 @@ export function TeamRegistrationForm({
                   onChange={(e) => set("tag", e.target.value)}
                   placeholder="e.g. ECL"
                   maxLength={6}
-                  className="bg-black/40 border-gold/20 focus:border-gold/60 uppercase"
+                  className="ns-input uppercase"
                 />
               </Field>
               <Field label="Team Logo URL" full>
@@ -149,7 +149,7 @@ export function TeamRegistrationForm({
                     value={form.logo}
                     onChange={(e) => set("logo", e.target.value)}
                     placeholder="https://... (optional)"
-                    className="bg-black/40 border-gold/20 focus:border-gold/60"
+                    className="ns-input"
                   />
                 </div>
               </Field>
@@ -164,7 +164,7 @@ export function TeamRegistrationForm({
                   value={form.captainName}
                   onChange={(e) => set("captainName", e.target.value)}
                   placeholder="Captain's real name"
-                  className="bg-black/40 border-gold/20 focus:border-gold/60"
+                  className="ns-input"
                 />
               </Field>
               <Field label="Discord Username" required>
@@ -172,7 +172,7 @@ export function TeamRegistrationForm({
                   value={form.discordUsername}
                   onChange={(e) => set("discordUsername", e.target.value)}
                   placeholder="username or username#0000"
-                  className="bg-black/40 border-gold/20 focus:border-gold/60"
+                  className="ns-input"
                 />
               </Field>
               <Field label="Contact Number" required>
@@ -180,7 +180,7 @@ export function TeamRegistrationForm({
                   value={form.contactNumber}
                   onChange={(e) => set("contactNumber", e.target.value)}
                   placeholder="+1 555 000 0000"
-                  className="bg-black/40 border-gold/20 focus:border-gold/60"
+                  className="ns-input"
                 />
               </Field>
               <Field label="Region">
@@ -188,7 +188,7 @@ export function TeamRegistrationForm({
                   value={form.region}
                   onChange={(e) => set("region", e.target.value)}
                   placeholder="e.g. SEA, NA, EU"
-                  className="bg-black/40 border-gold/20 focus:border-gold/60"
+                  className="ns-input"
                 />
               </Field>
             </div>
@@ -199,10 +199,10 @@ export function TeamRegistrationForm({
             <div className="grid sm:grid-cols-2 gap-4">
               <Field label="Game" required>
                 <Select value={form.game} onValueChange={(v) => set("game", v)}>
-                  <SelectTrigger className="bg-black/40 border-gold/20 focus:border-gold/60">
+                  <SelectTrigger className="ns-input">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0d0d0d] border-gold/30">
+                  <SelectContent className="bg-popover border-gold/30">
                     <SelectItem value="MLBB">Mobile Legends: Bang Bang</SelectItem>
                     <SelectItem value="HOK">Honor of Kings</SelectItem>
                   </SelectContent>
@@ -215,10 +215,10 @@ export function TeamRegistrationForm({
                     set("tournamentId", v === "none" ? "" : v)
                   }
                 >
-                  <SelectTrigger className="bg-black/40 border-gold/20 focus:border-gold/60">
+                  <SelectTrigger className="ns-input">
                     <SelectValue placeholder="Select a tournament (optional)" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0d0d0d] border-gold/30">
+                  <SelectContent className="bg-popover border-gold/30">
                     <SelectItem value="none">— No tournament —</SelectItem>
                     {(tournaments || []).map((t) => (
                       <SelectItem key={t.id} value={t.id}>
@@ -242,7 +242,7 @@ export function TeamRegistrationForm({
                     value={form[key]}
                     onChange={(e) => set(key, e.target.value)}
                     placeholder={`In-game name ${i + 1}`}
-                    className="bg-black/40 border-gold/20 focus:border-gold/60"
+                    className="ns-input"
                   />
                 </Field>
               ))}
@@ -251,7 +251,7 @@ export function TeamRegistrationForm({
                   value={form.substitute}
                   onChange={(e) => set("substitute", e.target.value)}
                   placeholder="Sub IGN"
-                  className="bg-black/40 border-gold/20 focus:border-gold/60"
+                  className="ns-input"
                 />
               </Field>
             </div>

@@ -4,6 +4,7 @@ import { useApp } from "@/lib/store";
 import { NSWordmark, NSLogo } from "./logo";
 import type { NSView } from "@/lib/types";
 import { Youtube, Twitch, Twitter, Instagram, MessageCircle } from "lucide-react";
+import { TelegramButtons } from "@/components/telegram/telegram-buttons";
 
 const FOOTER_LINKS: { title: string; links: { label: string; view: NSView }[] }[] = [
   {
@@ -24,10 +25,7 @@ const FOOTER_LINKS: { title: string; links: { label: string; view: NSView }[] }[
   },
   {
     title: "Platform",
-    links: [
-      { label: "Home", view: "home" },
-      { label: "Admin Panel", view: "admin" },
-    ],
+    links: [{ label: "Home", view: "home" }],
   },
 ];
 
@@ -72,7 +70,7 @@ export function Footer() {
                     setView("ns-team");
                   }}
                   aria-label={s.label}
-                  className="w-9 h-9 rounded-md flex items-center justify-center border border-gold/20 text-white/60 hover:text-gold-light hover:border-gold/50 hover:bg-gold/10 transition-all"
+                  className="w-9 h-9 rounded-md flex items-center justify-center border border-gold/20 text-text-secondary hover:text-gold-light hover:border-gold/50 hover:bg-gold/10 transition-all"
                 >
                   <s.icon className="w-4 h-4" />
                 </a>
@@ -88,7 +86,7 @@ export function Footer() {
                 <button
                   key={l.label}
                   onClick={() => setView(l.view)}
-                  className="text-left text-sm text-white/70 hover:text-gold-light transition-colors w-fit"
+                  className="text-left text-sm text-text-secondary hover:text-gold-light transition-colors w-fit"
                 >
                   {l.label}
                 </button>
@@ -96,6 +94,8 @@ export function Footer() {
             </div>
           ))}
         </div>
+
+        <TelegramButtons className="mt-10" />
 
         <div className="ns-divider my-10" />
 

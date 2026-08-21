@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Cancel superseded runs on the same branch/PR so pushes don't queue behind
+# stale checks.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Required gate: install, lint, typecheck, unit + integration + security
+  # tests, coverage thresholds. No network/live-service dependency — runs
+  # the same on every fork and every PR, and blocks the merge on failure.
+  test:
+    name: Lint, typecheck, test, coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+  # Optional gate: exercises real RLS/authorization behavior against a live
+  # Supabase project (the same scripts/verify-*.mjs methodology used
+  # throughout this project's development — see TESTING.md). Skipped
+  # entirely unless the repo has a dedicated *test* Supabase project wired
+  # up via secrets; deliberately not required for the `test` job above to
+  # pass, since it depends on a real external service and real credentials
+  # a fork or first-time contributor won't have. Never point this at a
+  # production project — it creates and deletes real rows.
+  live-rls-verification:
+    name: Live Supabase RLS verification (optional)
+    runs-on: ubuntu-latest
+    needs: test
+    if: ${{ vars.RUN_LIVE_RLS_TESTS == 'true' }}
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.TEST_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.TEST_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.TEST_SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run live verification scripts
+        run: |
+          if ls scripts/verify-*.mjs >/dev/null 2>&1; then
+            for f in scripts/verify-*.mjs; do
+              echo "::group::$f"
+              node "$f"
+              echo "::endgroup::"
+            done
+          else
+            echo "No scripts/verify-*.mjs present — nothing to run."
+          fi

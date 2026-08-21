@@ -3,6 +3,9 @@ import { Orbitron, Rajdhani, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { createClient } from "@/lib/supabase/server";
+import { PlausibleScript } from "@/components/analytics/plausible-script";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -63,19 +66,47 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Best-effort: read the signed-in user's stored theme preference so SSR
+  // renders with the right class from the start (avoids a flash-of-wrong-
+  // theme on load). Anonymous visitors fall back to next-themes' own
+  // localStorage-based default ("dark", matching this app's original
+  // hard-locked theme).
+  let initialTheme: "dark" | "light" | "system" = "dark";
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("theme_preference")
+        .eq("id", user.id)
+        .single();
+      if (profile?.theme_preference) initialTheme = profile.theme_preference;
+    }
+  } catch {
+    // Anonymous / no session — keep the dark default.
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <PlausibleScript />
+      </head>
       <body
         className={`${orbitron.variable} ${rajdhani.variable} ${inter.variable} ${jetMono.variable} antialiased`}
       >
-        {children}
-        <Toaster />
-        <SonnerToaster theme="dark" position="bottom-right" />
+        <ThemeProvider attribute="class" defaultTheme={initialTheme} enableSystem storageKey="ns-theme">
+          {children}
+          <Toaster />
+          <SonnerToaster theme="dark" position="bottom-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

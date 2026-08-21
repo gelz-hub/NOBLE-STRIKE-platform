@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAuthApi } from "@/lib/require-admin-api";
 
 // GET /api/teams — list teams (default: APPROVED), with optional filters
 //   ?status=PENDING|APPROVED|REJECTED
@@ -51,6 +52,9 @@ export async function GET(request: Request) {
 // POST /api/teams — register a new team (status=PENDING)
 export async function POST(request: Request) {
   try {
+    const authError = await requireAuthApi();
+    if (authError) return authError;
+
     const body = await request.json();
     const {
       name,

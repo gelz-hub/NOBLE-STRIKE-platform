@@ -95,6 +95,11 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
+    // Embla's API only exists once mounted — there's no earlier point to
+    // read initial scroll-availability from, so this can't be replaced with
+    // a lazy useState initializer the way src/hooks/use-mobile.ts's
+    // synchronous-window-read case could be.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     onSelect(api)
     api.on("reInit", onSelect)
     api.on("select", onSelect)

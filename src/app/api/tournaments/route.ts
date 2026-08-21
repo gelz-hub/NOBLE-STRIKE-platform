@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdminApi } from "@/lib/require-admin-api";
 
 // GET /api/tournaments — list all tournaments ordered by startDate desc
 export async function GET() {
@@ -21,6 +22,9 @@ export async function GET() {
 // POST /api/tournaments — create a tournament
 export async function POST(request: Request) {
   try {
+    const authError = await requireAdminApi();
+    if (authError) return authError;
+
     const body = await request.json();
     const {
       name,
