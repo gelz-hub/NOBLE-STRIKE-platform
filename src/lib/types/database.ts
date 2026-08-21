@@ -262,3 +262,24 @@ export interface News {
   created_at: string;
   updated_at: string;
 }
+
+export type RecruitmentPostType = "LFT" | "LFP";
+export type RecruitmentStatus = "OPEN" | "CLOSED";
+export type RecruitmentRole = "EXP" | "JUNGLE" | "MID" | "GOLD" | "ROAM" | "SUB" | "COACH" | "ANY";
+
+export interface RecruitmentPost {
+  id: string;
+  author_id: string;
+  post_type: RecruitmentPostType;
+  status: RecruitmentStatus;
+  title: string;
+  game: "MLBB" | "HOK";
+  role: RecruitmentRole;
+  rank: string | null;
+  country: string | null;
+  requirements: string | null;
+  telegram_username: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}

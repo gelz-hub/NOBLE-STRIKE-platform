@@ -101,10 +101,10 @@ export function NavBar() {
                 </button>
               ))}
               <Link
-                href="/players"
+                href="/recruitment"
                 className="relative px-4 py-2 font-heading font-semibold text-sm uppercase tracking-wider transition-colors text-text-secondary hover:text-text-primary"
               >
-                Players
+                Recruitment
               </Link>
             </nav>
 
@@ -186,13 +186,13 @@ export function NavBar() {
                 </button>
               ))}
               <Link
-                href="/players"
+                href="/recruitment"
                 onClick={() => setMobileOpen(false)}
                 className="ns-fade-in flex items-center justify-between px-4 py-3.5 font-heading font-semibold uppercase tracking-wider rounded-lg transition-all text-text-secondary hover:bg-surface-secondary border border-transparent"
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-gold/60" />
-                  Players
+                  Recruitment
                 </span>
                 <ChevronRightSmall />
               </Link>
