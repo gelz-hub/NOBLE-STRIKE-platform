@@ -56,7 +56,7 @@ export function NewsView() {
   const rest = (news || []).filter((n) => n.id !== featured?.id);
 
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <SectionHeading
           kicker="The Newsroom"
@@ -225,7 +225,7 @@ function NewsTile({
 function NewsArticle({ article }: { article: Announcement }) {
   const openNews = useApp((s) => s.openNews);
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-3xl px-4 md:px-6">
         <button
           onClick={() => openNews("")}

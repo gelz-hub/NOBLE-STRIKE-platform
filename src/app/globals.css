@@ -194,11 +194,22 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Khmer script needs more vertical room for stacked diacritics than
-     Latin text does at the same line-height — applies wherever content is
-     explicitly marked lang="km" (see pickLocalized/CMS renderers). */
+  /* Khmer typography — applies to any element under <html lang="km">
+     (the default once a visitor selects Khmer, see src/app/layout.tsx) as
+     well as any element explicitly marked lang="km" (CMS content that
+     falls back per-field, see pickLocalized()).
+     - More vertical room: Khmer's stacked diacritics/subscript consonants
+       need extra line-height versus Latin text at the same font-size.
+     - No letter-spacing: the site's uppercase/tracked Latin styles
+       (.ns-kicker, .ns-pill, tracking-wider/widest utilities, etc.) rely on
+       wide tracking that Khmer script has no use for — Khmer has no
+       upper/lowercase, and extra spacing pulls coeng (subscript) marks and
+       diacritics away from their base consonant, hurting readability.
+       Brand copy that stays English inside a Khmer-locale page (see
+       NSWordmark, hero headline) is marked lang="en" so it's unaffected. */
   :lang(km) {
     line-height: 1.8;
+    letter-spacing: normal;
   }
 }
 

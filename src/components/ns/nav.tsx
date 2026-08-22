@@ -78,7 +78,7 @@ export function NavBar() {
               <div className="transition-transform group-hover:scale-105 group-hover:rotate-3 duration-500">
                 <NSLogo size={scrolled ? 38 : 44} />
               </div>
-              <div className="hidden sm:flex flex-col leading-none">
+              <div className="hidden sm:flex flex-col leading-none" lang="en">
                 <span className="font-display font-extrabold text-lg tracking-[0.18em] text-gold-shine">
                   NOBLE
                 </span>
@@ -164,7 +164,7 @@ export function NavBar() {
             <div className="flex items-center justify-between p-5 border-b border-gold/15">
               <div className="flex items-center gap-3">
                 <NSLogo size={36} />
-                <div className="flex flex-col leading-none">
+                <div className="flex flex-col leading-none" lang="en">
                   <span className="font-display font-extrabold text-sm tracking-[0.18em] text-gold-shine">
                     NOBLE
                   </span>
@@ -255,7 +255,10 @@ export function NavBar() {
 
             {/* footer */}
             <div className="mt-auto p-5 border-t border-gold/10">
-              <p className="text-[0.65rem] uppercase tracking-widest text-muted-foreground text-center">
+              <p
+                className="text-[0.65rem] uppercase tracking-widest text-muted-foreground text-center"
+                lang="en"
+              >
                 {tFooter("tagline")}
               </p>
             </div>

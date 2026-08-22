@@ -94,56 +94,60 @@ export function HomeView() {
         <GoldParticles count={16} />
 
         {/* corner flourishes */}
-        <div className="absolute top-28 left-6 hidden md:flex flex-col gap-2 text-gold/40">
-          <span className="font-mono text-[0.65rem] tracking-widest">EST. 2024</span>
+        <div className="absolute top-28 left-6 hidden md:flex flex-col gap-2 text-gold/40" lang="en">
+          <span className="font-mono text-[0.65rem] tracking-widest">EST. 2023</span>
           <span className="h-px w-16 bg-gold/30" />
         </div>
-        <div className="absolute top-28 right-6 hidden md:flex flex-col gap-2 items-end text-gold/40">
+        <div className="absolute top-28 right-6 hidden md:flex flex-col gap-2 items-end text-gold/40" lang="en">
           <span className="font-mono text-[0.65rem] tracking-widest">5V5 MOBA · ELITE</span>
           <span className="h-px w-16 bg-gold/30" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-5xl px-4 text-center flex flex-col items-center">
+        <div className="relative z-10 mx-auto max-w-3xl lg:max-w-4xl px-4 text-center flex flex-col items-center">
           {/* Logo with pulsing glow */}
-          <div className="relative mb-8 ns-fade-up">
+          <div className="relative mb-7 md:mb-8 ns-fade-up">
             <div className="absolute inset-0 blur-3xl bg-gold/20 rounded-full animate-pulse" />
             <img
               src="/noble-strike-logo.png"
               alt="NOBLE STRIKE"
-              width={120}
-              height={120}
-              className="relative ns-logo-glow rounded-2xl object-cover"
-              style={{ width: 120, height: 120 }}
+              width={112}
+              height={112}
+              className="relative ns-logo-glow rounded-2xl object-cover md:w-30 md:h-30"
+              style={{ width: 112, height: 112 }}
             />
           </div>
 
-          {/* kicker */}
-          <div className="flex items-center gap-3 mb-6 ns-fade-up" style={{ animationDelay: "0.1s" }}>
+          {/* kicker — brand phrase, always English (see locales/*.json comment) */}
+          <div className="flex items-center gap-3 mb-5 md:mb-6 ns-fade-up" style={{ animationDelay: "0.1s" }}>
             <span className="h-px w-10 bg-gradient-to-r from-transparent to-gold/60" />
-            <span className="ns-kicker">{t("hero.kicker")}</span>
+            <span className="ns-kicker" lang="en">
+              {t("hero.kicker")}
+            </span>
             <span className="h-px w-10 bg-gradient-to-l from-transparent to-gold/60" />
           </div>
 
-          {/* Headline with light sweep */}
+          {/* Headline with light sweep — brand wordmark, always English */}
           <h1
-            className="ns-title-sweep font-display font-black text-5xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[0.08em] ns-fade-up"
+            className="ns-title-sweep font-display font-black text-5xl sm:text-6xl md:text-7xl tracking-[0.06em] md:tracking-[0.07em] ns-fade-up"
             style={{ animationDelay: "0.15s" }}
+            lang="en"
           >
             NOBLE STRIKE
           </h1>
 
-          {/* Subheadline */}
+          {/* Subheadline — brand tagline, always English */}
           <p
-            className="mt-6 font-heading text-xl md:text-2xl lg:text-3xl font-light tracking-wide text-white/90 ns-fade-up"
+            className="mt-5 md:mt-6 font-heading text-xl md:text-2xl font-light tracking-wide text-white/90 ns-fade-up"
             style={{ animationDelay: "0.25s" }}
+            lang="en"
           >
             {t("hero.subheadlinePrefix")}{" "}
             <span className="text-gold-gradient font-semibold">{t("hero.subheadlineHighlight")}</span>
           </p>
 
-          {/* New description */}
+          {/* Supporting copy — localized */}
           <p
-            className="mt-5 max-w-2xl text-sm md:text-base text-muted-foreground leading-relaxed ns-fade-up"
+            className="mt-5 max-w-xl md:max-w-2xl text-base md:text-lg text-white/70 leading-relaxed ns-fade-up"
             style={{ animationDelay: "0.3s" }}
           >
             {t("hero.description")}
@@ -151,7 +155,7 @@ export function HomeView() {
 
           {/* CTAs */}
           <div
-            className="mt-10 flex flex-col sm:flex-row items-center gap-4 ns-fade-up"
+            className="mt-9 md:mt-10 flex flex-col sm:flex-row items-center gap-4 ns-fade-up"
             style={{ animationDelay: "0.4s" }}
           >
             <Button
@@ -382,7 +386,7 @@ export function HomeView() {
           <div className="mb-8 ns-logo-glow">
             <NSLogo size={72} className="justify-center" />
           </div>
-          <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tight">
+          <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tight" lang="en">
             {t("cta.headlinePrefix")}{" "}
             <span className="text-gold-gradient">{t("cta.headlineHighlight")}</span>
           </h2>

@@ -64,7 +64,7 @@ export function BracketsView() {
   }, [reloadBracket]);
 
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <SectionHeading
           kicker="Live Tournament Tree"

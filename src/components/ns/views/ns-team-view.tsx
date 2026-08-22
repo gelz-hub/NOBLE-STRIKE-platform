@@ -47,7 +47,12 @@ export function NSTeamView() {
   const staff = members.filter((m) => m.type !== "PLAYER");
 
   return (
-    <div className="pt-20 ns-fade-up">
+    <div className="pt-20 ns-fade-up" lang="en">
+      {/* This page's copy is always English (no next-intl translations here) —
+          lang="en" keeps its intentional Latin tracking/uppercase styling
+          (.ns-kicker, tracking-[...]) intact even when the site-wide locale
+          is Khmer, since :lang(km)'s letter-spacing reset (globals.css)
+          would otherwise cascade down from <html lang="km">. */}
       {/* ============ HERO BANNER ============ */}
       <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0a] via-black to-[#0a0a0a]" />
@@ -87,7 +92,7 @@ export function NSTeamView() {
             {team?.game && <GameBadge game={team.game} />}
             <span className="ns-pill ns-pill-ongoing">
               <Crown className="w-3.5 h-3.5" />
-              Founded 2024
+              Founded 2023
             </span>
             <span className="ns-pill ns-pill-approved">Pro Division</span>
           </div>

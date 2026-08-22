@@ -62,7 +62,7 @@ export function TournamentsView() {
       : (tournaments || []).filter((t) => t.status === statusFilter);
 
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <Reveal>
           <SectionHeading
@@ -164,7 +164,7 @@ function TournamentDetail({ tournament }: { tournament: Tournament }) {
   ];
 
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         {/* Back */}
         <button

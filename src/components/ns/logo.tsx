@@ -21,7 +21,7 @@ export function NSLogo({ size = 40, className, withText = false }: LogoProps) {
         style={{ width: size, height: size }}
       />
       {withText && (
-        <div className="flex flex-col leading-none">
+        <div className="flex flex-col leading-none" lang="en">
           <span
             className="text-gold-shine font-display font-extrabold tracking-[0.18em]"
             style={{ fontSize: size * 0.42 }}
@@ -43,7 +43,7 @@ export function NSLogo({ size = 40, className, withText = false }: LogoProps) {
 /** Compact stacked wordmark used in footer / hero */
 export function NSWordmark({ className }: { className?: string }) {
   return (
-    <div className={cn("flex flex-col leading-none", className)}>
+    <div className={cn("flex flex-col leading-none", className)} lang="en">
       <span className="text-gold-shine font-display font-black tracking-[0.2em]">NOBLE</span>
       <span className="text-gold-shine font-display font-black tracking-[0.36em] -mt-1">STRIKE</span>
     </div>

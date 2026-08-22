@@ -94,7 +94,7 @@ export function TeamsView() {
   }
 
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
         <Reveal>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
@@ -316,7 +316,7 @@ function TeamProfile({ team }: { team: Team }) {
       : 0;
 
   return (
-    <div className="pt-24 md:pt-28 pb-20 ns-fade-up">
+    <div className="pt-24 md:pt-28 pb-20 ns-fade-up" lang="en">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <button
           onClick={() => openTeam("")}
