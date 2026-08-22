@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -11,15 +12,17 @@ import { signUpAction, type ActionResult } from "@/app/(auth)/actions";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useTranslations("auth.register");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold w-full h-11">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
-      {pending ? "Creating account..." : "Create Account"}
+      {pending ? t("creatingAccount") : t("submit")}
     </Button>
   );
 }
 
 export function RegisterForm() {
+  const t = useTranslations("auth.register");
   const [state, formAction] = useActionState<ActionResult | null, FormData>(
     signUpAction,
     null
@@ -32,14 +35,11 @@ export function RegisterForm() {
           <MailCheck className="w-6 h-6 text-gold" />
         </div>
         <div className="space-y-1">
-          <h1 className="font-display font-bold text-xl text-white">Check Your Email</h1>
-          <p className="text-sm text-muted-foreground">
-            We&apos;ve sent a confirmation link to your inbox. Verify your email to activate
-            your account, then sign in.
-          </p>
+          <h1 className="font-display font-bold text-xl text-white">{t("checkEmailTitle")}</h1>
+          <p className="text-sm text-muted-foreground">{t("checkEmailBody")}</p>
         </div>
         <Link href="/login">
-          <Button className="ns-btn-outline mt-2">Back to Sign In</Button>
+          <Button className="ns-btn-outline mt-2">{t("backToSignIn")}</Button>
         </Link>
       </div>
     );
@@ -48,14 +48,14 @@ export function RegisterForm() {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-1">
-        <h1 className="font-display font-bold text-xl text-white">Create Your Account</h1>
-        <p className="text-sm text-muted-foreground">Join NOBLE STRIKE and enter the arena</p>
+        <h1 className="font-display font-bold text-xl text-white">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <form action={formAction} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="username" className="text-xs text-muted-foreground">
-            Username
+            {t("usernameLabel")}
           </Label>
           <Input
             id="username"
@@ -69,7 +69,7 @@ export function RegisterForm() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-xs text-muted-foreground">
-            Email
+            {t("emailLabel")}
           </Label>
           <Input
             id="email"
@@ -82,7 +82,7 @@ export function RegisterForm() {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="password" className="text-xs text-muted-foreground">
-            Password
+            {t("passwordLabel")}
           </Label>
           <Input
             id="password"
@@ -90,7 +90,7 @@ export function RegisterForm() {
             type="password"
             required
             minLength={8}
-            placeholder="At least 8 characters"
+            placeholder={t("passwordPlaceholder")}
             className="ns-input"
           />
         </div>
@@ -103,9 +103,9 @@ export function RegisterForm() {
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        Already have an account?{" "}
+        {t("haveAccount")}{" "}
         <Link href="/login" className="text-gold hover:text-gold-light font-medium">
-          Sign in
+          {t("signInLink")}
         </Link>
       </p>
     </div>

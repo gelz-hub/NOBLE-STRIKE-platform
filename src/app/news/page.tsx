@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { getPublishedNews, getFeaturedArticle, getPinnedAnnouncements } from "@/lib/news/queries";
 import { NewsCard } from "@/components/news/news-card";
 import { NewsPublicFilters } from "@/components/news/news-public-filters";
@@ -18,10 +19,11 @@ export default async function NewsPage({ searchParams }: Props) {
   const page = Math.max(1, Number(sp.page) || 1);
   const isFiltered = !!(sp.category || sp.search);
 
-  const [{ rows, total }, featured, pinned] = await Promise.all([
+  const [{ rows, total }, featured, pinned, t] = await Promise.all([
     getPublishedNews({ category: sp.category as NewsCategory | undefined, search: sp.search, page, pageSize: PAGE_SIZE }),
     isFiltered ? Promise.resolve(null) : getFeaturedArticle(),
     isFiltered ? Promise.resolve([]) : getPinnedAnnouncements(),
+    getTranslations("news"),
   ]);
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -35,10 +37,10 @@ export default async function NewsPage({ searchParams }: Props) {
         <div>
           <Link href="/" className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/60 hover:text-gold-light mb-4">
             <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Site
+            {t("backToSite")}
           </Link>
-          <h1 className="font-display font-extrabold text-3xl md:text-4xl text-white">Newsroom</h1>
-          <p className="text-muted-foreground mt-2">The latest from NOBLE STRIKE — tournaments, results, and announcements.</p>
+          <h1 className="font-display font-extrabold text-3xl md:text-4xl text-white">{t("newsroom")}</h1>
+          <p className="text-muted-foreground mt-2">{t("newsroomDescription")}</p>
           <TelegramButtons className="mt-4" />
         </div>
 
@@ -50,7 +52,7 @@ export default async function NewsPage({ searchParams }: Props) {
 
         {pinned.length > 0 && !isFiltered && (
           <section className="space-y-4">
-            <h2 className="font-heading font-bold uppercase tracking-wider text-sm text-gold-light">Pinned Announcements</h2>
+            <h2 className="font-heading font-bold uppercase tracking-wider text-sm text-gold-light">{t("pinnedAnnouncements")}</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {pinned.map((a) => (
                 <NewsCard key={a.id} article={a} />
@@ -65,7 +67,7 @@ export default async function NewsPage({ searchParams }: Props) {
           {listRows.length === 0 ? (
             <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
               <Newspaper className="w-8 h-8 text-gold/50" />
-              <p className="text-white/70">No articles found.</p>
+              <p className="text-white/70">{t("noArticlesFound")}</p>
             </div>
           ) : (
             <>

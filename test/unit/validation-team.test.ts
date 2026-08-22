@@ -80,12 +80,28 @@ describe("withRoleFlags", () => {
   });
 });
 
+const validIdentity = {
+  team_name: "Noble Strike Alpha",
+  game: "MLBB",
+  contact_number: "+85512345678",
+  captain_telegram: "@ns_captain",
+  province: "Phnom Penh",
+};
+
 describe("teamIdentitySchema", () => {
   it("accepts a valid team name", () => {
-    expect(teamIdentitySchema.safeParse({ team_name: "Noble Strike Alpha" }).success).toBe(true);
+    expect(teamIdentitySchema.safeParse(validIdentity).success).toBe(true);
   });
 
   it("rejects a team name that's too short", () => {
-    expect(teamIdentitySchema.safeParse({ team_name: "A" }).success).toBe(false);
+    expect(teamIdentitySchema.safeParse({ ...validIdentity, team_name: "A" }).success).toBe(false);
+  });
+
+  it("rejects an invalid Cambodian phone number", () => {
+    expect(teamIdentitySchema.safeParse({ ...validIdentity, contact_number: "12345" }).success).toBe(false);
+  });
+
+  it("rejects an unlisted province", () => {
+    expect(teamIdentitySchema.safeParse({ ...validIdentity, province: "Atlantis" }).success).toBe(false);
   });
 });

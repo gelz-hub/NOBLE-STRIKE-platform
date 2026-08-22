@@ -23,24 +23,26 @@ export function slugify(input: string): string {
 
 export const tournamentSchema = z
   .object({
-    title: z.string().trim().min(2, "Title must be at least 2 characters.").max(100),
+    name_en: z.string().trim().min(2, "validation.tournament.nameRequired").max(100),
+    name_km: z.string().trim().max(100).optional(),
     slug: z
       .string()
       .trim()
-      .min(2, "Slug must be at least 2 characters.")
+      .min(2, "validation.tournament.slugMinLength")
       .max(80)
-      .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
-    description: z.string().trim().max(2000).optional(),
+      .regex(/^[a-z0-9-]+$/, "validation.tournament.slugFormat"),
+    description_en: z.string().trim().max(2000).optional(),
+    description_km: z.string().trim().max(2000).optional(),
     rules: z.string().trim().max(4000).optional(),
     banner_url: z.union([z.string().url(), z.literal("")]).optional(),
     game_type: z.enum(GAME_TYPES),
     format: z.enum(MATCH_FORMATS),
     bracket_format: z.enum(BRACKET_FORMATS),
     grand_final_reset_enabled: z.enum(["true", "false"]).transform((v) => v === "true"),
-    max_teams: z.coerce.number().int().min(2, "At least 2 teams required.").max(1024),
-    prize_pool: z.coerce.number().min(0, "Prize pool cannot be negative."),
-    registration_deadline: z.string().min(1, "Registration deadline is required."),
-    start_date: z.string().min(1, "Start date is required."),
+    max_teams: z.coerce.number().int().min(2, "validation.tournament.maxTeamsMin").max(1024),
+    prize_pool: z.coerce.number().min(0, "validation.tournament.prizePoolNonNegative"),
+    registration_deadline: z.string().min(1, "validation.tournament.registrationDeadlineRequired"),
+    start_date: z.string().min(1, "validation.tournament.startDateRequired"),
     status: z.enum(TOURNAMENT_STATUSES),
     location: z.string().trim().max(100).optional(),
     organizer: z.string().trim().max(100).optional(),
@@ -50,7 +52,7 @@ export const tournamentSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["start_date"],
-        message: "Start date should be on or after the registration deadline.",
+        message: "validation.tournament.startDateBeforeDeadline",
       });
     }
   });

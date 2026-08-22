@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { tournamentSchema, slugify, type TournamentInput } from "@/lib/validation/tournament";
 import type { TournamentStatus } from "@/lib/types/database";
@@ -20,15 +21,22 @@ async function requireAdmin() {
   return { supabase, user, isAdmin: profile?.role === "admin" };
 }
 
-function firstIssue(error: { issues: { message: string }[] }): string {
-  return error.issues[0]?.message ?? "Invalid input.";
+/** Validation issue messages are stable translation keys (see validation/tournament.ts) — resolve
+ *  them to the current locale's text before surfacing to the client. */
+async function firstIssue(error: { issues: { message: string }[] }): Promise<string> {
+  const key = error.issues[0]?.message;
+  if (!key) return "Invalid input.";
+  const t = await getTranslations();
+  return t.has(key) ? t(key) : key;
 }
 
 function readTournamentForm(formData: FormData) {
   return {
-    title: String(formData.get("title") || ""),
+    name_en: String(formData.get("name_en") || ""),
+    name_km: String(formData.get("name_km") || ""),
     slug: String(formData.get("slug") || ""),
-    description: String(formData.get("description") || ""),
+    description_en: String(formData.get("description_en") || ""),
+    description_km: String(formData.get("description_km") || ""),
     rules: String(formData.get("rules") || ""),
     banner_url: String(formData.get("banner_url") || ""),
     game_type: String(formData.get("game_type") || "MLBB"),
@@ -55,9 +63,11 @@ async function insertWithUniqueSlug(
     const { data: row, error } = await supabase
       .from("tournaments")
       .insert({
-        title: data.title,
+        name_en: data.name_en,
+        name_km: data.name_km || null,
         slug,
-        description: data.description || null,
+        description_en: data.description_en || null,
+        description_km: data.description_km || null,
         rules: data.rules || null,
         banner_url: data.banner_url || null,
         game_type: data.game_type,
@@ -96,9 +106,9 @@ export async function createTournament(
   const raw = readTournamentForm(formData);
   const parsed = tournamentSchema.safeParse({
     ...raw,
-    slug: raw.slug || slugify(raw.title),
+    slug: raw.slug || slugify(raw.name_en),
   });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const supabase = await createClient();
   const { id, error } = await insertWithUniqueSlug(supabase, parsed.data);
@@ -107,7 +117,7 @@ export async function createTournament(
   logEvent({
     event: "tournament.created",
     tournamentId: id,
-    title: parsed.data.title,
+    title: parsed.data.name_en,
     gameType: parsed.data.game_type,
     createdBy: user.id,
   });
@@ -127,15 +137,17 @@ export async function updateTournament(
 
   const raw = readTournamentForm(formData);
   const parsed = tournamentSchema.safeParse(raw);
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("tournaments")
     .update({
-      title: parsed.data.title,
+      name_en: parsed.data.name_en,
+      name_km: parsed.data.name_km || null,
       slug: parsed.data.slug,
-      description: parsed.data.description || null,
+      description_en: parsed.data.description_en || null,
+      description_km: parsed.data.description_km || null,
       rules: parsed.data.rules || null,
       banner_url: parsed.data.banner_url || null,
       game_type: parsed.data.game_type,
@@ -224,13 +236,15 @@ export async function duplicateTournament(tournamentId: string): Promise<ActionR
     .single();
   if (!original) return { error: "Tournament not found." };
 
-  const newTitle = `${original.title} (Copy)`;
+  const newTitle = `${original.name_en} (Copy)`;
   const baseSlug = slugify(newTitle);
 
   const { error } = await insertWithUniqueSlug(supabase, {
-    title: newTitle,
+    name_en: newTitle,
+    name_km: original.name_km ? `${original.name_km} (Copy)` : "",
     slug: baseSlug,
-    description: original.description ?? "",
+    description_en: original.description_en ?? "",
+    description_km: original.description_km ?? "",
     rules: original.rules ?? "",
     banner_url: original.banner_url ?? "",
     game_type: original.game_type,
@@ -265,7 +279,7 @@ export async function broadcastTournamentToTelegram(tournamentId: string): Promi
 
   const { data: tournament } = await supabase
     .from("tournaments")
-    .select("title, slug, game_type, status, prize_pool, registration_deadline, start_date")
+    .select("name_en, name_km, slug, game_type, status, prize_pool, registration_deadline, start_date")
     .eq("id", tournamentId)
     .single();
   if (!tournament) return { error: "Tournament not found." };
@@ -273,7 +287,7 @@ export async function broadcastTournamentToTelegram(tournamentId: string): Promi
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const heading = tournament.status === "REGISTRATION_OPEN" ? "Registration Now Open" : "Tournament Announcement";
   const text = [
-    `<b>${heading}: ${tournament.title}</b>`,
+    `<b>${heading}: ${tournament.name_en}</b>`,
     `Game: ${tournament.game_type}`,
     tournament.prize_pool ? `Prize Pool: ${tournament.prize_pool}` : null,
     tournament.status === "REGISTRATION_OPEN"

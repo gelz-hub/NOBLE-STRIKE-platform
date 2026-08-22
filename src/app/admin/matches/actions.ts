@@ -25,7 +25,7 @@ async function loadMatchForNotify(supabase: Awaited<ReturnType<typeof createClie
   const { data } = await supabase
     .from("matches")
     .select(
-      "id, tournament_id, status, team_a:team_a_id(owner_id, team_name), team_b:team_b_id(owner_id, team_name), tournament:tournament_id(title)"
+      "id, tournament_id, status, team_a:team_a_id(owner_id, team_name), team_b:team_b_id(owner_id, team_name), tournament:tournament_id(name_en)"
     )
     .eq("id", matchId)
     .single<{
@@ -34,7 +34,7 @@ async function loadMatchForNotify(supabase: Awaited<ReturnType<typeof createClie
       status: string;
       team_a: { owner_id: string; team_name: string } | null;
       team_b: { owner_id: string; team_name: string } | null;
-      tournament: { title: string } | null;
+      tournament: { name_en: string } | null;
     }>();
   return data;
 }
@@ -95,7 +95,7 @@ export async function scheduleMatch(
     supabase,
     match,
     wasScheduled ? "Match Rescheduled" : "Match Scheduled",
-    `${match.team_a?.team_name} vs ${match.team_b?.team_name} in ${match.tournament?.title ?? "the tournament"} ${
+    `${match.team_a?.team_name} vs ${match.team_b?.team_name} in ${match.tournament?.name_en ?? "the tournament"} ${
       wasScheduled ? "was rescheduled" : "was scheduled"
     } for ${new Date(parsed.data.scheduled_at).toLocaleString()}.`
   );
@@ -140,7 +140,7 @@ export async function markMatchLive(matchId: string): Promise<ActionResult> {
     supabase,
     match,
     "Match Goes Live",
-    `${match.team_a?.team_name} vs ${match.team_b?.team_name} in ${match.tournament?.title ?? "the tournament"} is now live.`
+    `${match.team_a?.team_name} vs ${match.team_b?.team_name} in ${match.tournament?.name_en ?? "the tournament"} is now live.`
   );
 
   revalidateMatch(matchId, match.tournament_id);

@@ -2,10 +2,11 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
-import { NEWS_CATEGORIES, NEWS_CATEGORY_LABELS } from "@/lib/validation/news";
+import { NEWS_CATEGORIES } from "@/lib/validation/news";
 
 export function NewsPublicFilters() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export function NewsPublicFilters() {
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [, startTransition] = useTransition();
   const activeCategory = searchParams.get("category") ?? "ALL";
+  const t = useTranslations("news");
+  const tCategory = useTranslations("news.category");
 
   function updateParams(next: Record<string, string | null>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -39,7 +42,7 @@ export function NewsPublicFilters() {
                 : "text-white/60 border-transparent hover:border-gold/20"
             )}
           >
-            {c === "ALL" ? "All" : NEWS_CATEGORY_LABELS[c]}
+            {c === "ALL" ? t("allCategory") : tCategory(c.toLowerCase())}
           </button>
         ))}
       </div>
@@ -54,7 +57,7 @@ export function NewsPublicFilters() {
         <Input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search articles..."
+          placeholder={t("searchArticlesPlaceholder")}
           className="h-9 pl-9 ns-input text-sm"
         />
       </form>

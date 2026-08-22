@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -11,15 +12,17 @@ import { requestPasswordResetAction, type ActionResult } from "@/app/(auth)/acti
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useTranslations("auth.forgotPassword");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold w-full h-11">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-      {pending ? "Sending..." : "Send Reset Link"}
+      {pending ? t("sending") : t("submit")}
     </Button>
   );
 }
 
 export function ForgotPasswordForm() {
+  const t = useTranslations("auth.forgotPassword");
   const [state, formAction] = useActionState<ActionResult | null, FormData>(
     requestPasswordResetAction,
     null
@@ -32,13 +35,11 @@ export function ForgotPasswordForm() {
           <MailCheck className="w-6 h-6 text-gold" />
         </div>
         <div className="space-y-1">
-          <h1 className="font-display font-bold text-xl text-white">Check Your Email</h1>
-          <p className="text-sm text-muted-foreground">
-            If an account exists for that email, a password reset link is on its way.
-          </p>
+          <h1 className="font-display font-bold text-xl text-white">{t("checkEmailTitle")}</h1>
+          <p className="text-sm text-muted-foreground">{t("checkEmailBody")}</p>
         </div>
         <Link href="/login">
-          <Button className="ns-btn-outline mt-2">Back to Sign In</Button>
+          <Button className="ns-btn-outline mt-2">{t("backToSignIn")}</Button>
         </Link>
       </div>
     );
@@ -47,16 +48,14 @@ export function ForgotPasswordForm() {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-1">
-        <h1 className="font-display font-bold text-xl text-white">Forgot Password</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your email and we&apos;ll send you a reset link
-        </p>
+        <h1 className="font-display font-bold text-xl text-white">{t("title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <form action={formAction} className="space-y-4">
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-xs text-muted-foreground">
-            Email
+            {t("emailLabel")}
           </Label>
           <Input
             id="email"
@@ -76,9 +75,9 @@ export function ForgotPasswordForm() {
       </form>
 
       <p className="text-center text-sm text-muted-foreground">
-        Remembered it?{" "}
+        {t("rememberedIt")}{" "}
         <Link href="/login" className="text-gold hover:text-gold-light font-medium">
-          Sign in
+          {t("signInLink")}
         </Link>
       </p>
     </div>

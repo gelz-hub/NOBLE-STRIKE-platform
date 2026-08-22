@@ -1,11 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { CheckCheck, Loader2 } from "lucide-react";
 import { markAllNotificationsRead } from "@/app/dashboard/notifications/actions";
 
 export function MarkAllReadButton() {
+  const t = useTranslations("dashboard.notifications");
   const [pending, startTransition] = useTransition();
   return (
     <Button
@@ -16,7 +18,7 @@ export function MarkAllReadButton() {
       className="h-9 px-3 text-xs uppercase tracking-wider text-gold hover:text-gold-light"
     >
       {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCheck className="w-3.5 h-3.5" />}
-      Mark All Read
+      {t("markAllRead")}
     </Button>
   );
 }

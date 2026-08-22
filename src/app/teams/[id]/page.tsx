@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { pickLocalized } from "@/lib/i18n/content";
 import { StatusPill, TeamMonogram } from "@/components/ns/ui";
 import { Crown, Trophy, Users, Calendar, ArrowLeft } from "lucide-react";
 import type { RosterRole, TeamMember } from "@/lib/types/database";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -16,12 +19,14 @@ interface RegistrationRow {
   id: string;
   status: "PENDING" | "APPROVED" | "REJECTED";
   created_at: string;
-  tournaments: { id: string; title: string; slug: string; game_type: string } | null;
+  tournaments: { id: string; name_en: string; name_km: string | null; slug: string; game_type: string } | null;
 }
 
 export default async function TeamDetailPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
+  const locale = (await getLocale()) as Locale;
+  const t = await getTranslations("teamDetail");
 
   const { data: team } = await supabase.from("teams").select("*").eq("id", id).single();
   if (!team) notFound();
@@ -34,7 +39,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
   const { data: registrationsData } = await supabase
     .from("tournament_registrations")
-    .select("id, status, created_at, tournaments(id, title, slug, game_type)")
+    .select("id, status, created_at, tournaments(id, name_en, name_km, slug, game_type)")
     .eq("team_id", id)
     .order("created_at", { ascending: false });
   const registrations = (registrationsData ?? []) as unknown as RegistrationRow[];
@@ -68,7 +73,7 @@ export default async function TeamDetailPage({ params }: Props) {
           className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light bg-black/40 backdrop-blur-sm border border-white/10 rounded-md px-3 py-1.5"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back
+          {t("back")}
         </Link>
       </div>
 
@@ -85,7 +90,7 @@ export default async function TeamDetailPage({ params }: Props) {
               {team.team_name}
             </h1>
             {team.is_official && (
-              <span className="ns-pill ns-pill-approved mt-2 inline-flex">Official NS Team</span>
+              <span className="ns-pill ns-pill-approved mt-2 inline-flex">{t("officialTeam")}</span>
             )}
           </div>
         </div>
@@ -96,32 +101,32 @@ export default async function TeamDetailPage({ params }: Props) {
 
         {/* Statistics */}
         <div className="grid grid-cols-3 gap-4 mt-8">
-          <StatCard icon={Users} label="Roster Size" value={members.length} />
-          <StatCard icon={Trophy} label="Tournaments Joined" value={registrations.length} />
-          <StatCard icon={Crown} label="Approved" value={approvedCount} />
+          <StatCard icon={Users} label={t("rosterSize")} value={members.length} />
+          <StatCard icon={Trophy} label={t("tournamentsJoined")} value={registrations.length} />
+          <StatCard icon={Crown} label={t("approved")} value={approvedCount} />
         </div>
 
         {/* Roster */}
         <section className="mt-10 space-y-6">
           <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
-            Roster
+            {t("roster")}
           </h2>
 
           {captain && (
             <div>
-              <SectionLabel title="Captain" />
+              <SectionLabel title={t("captain")} />
               <RosterMemberCard member={captain} highlight />
             </div>
           )}
 
           <div>
-            <SectionLabel title="Starting Lineup" />
+            <SectionLabel title={t("startingLineup")} />
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {starting.map((m, i) =>
                 m ? (
                   <RosterMemberCard key={m.id} member={m} />
                 ) : (
-                  <EmptySlotCard key={REQUIRED_ROLES[i]} role={REQUIRED_ROLES[i]} />
+                  <EmptySlotCard key={REQUIRED_ROLES[i]} role={REQUIRED_ROLES[i]} openSlotLabel={t("openSlot")} />
                 )
               )}
             </div>
@@ -129,7 +134,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
           {subs.length > 0 && (
             <div>
-              <SectionLabel title="Substitutes" />
+              <SectionLabel title={t("substitutes")} />
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {subs.map((m) => (
                   <RosterMemberCard key={m.id} member={m} />
@@ -140,7 +145,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
           {coach && (
             <div>
-              <SectionLabel title="Coach" />
+              <SectionLabel title={t("coach")} />
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 <RosterMemberCard member={coach} />
               </div>
@@ -151,12 +156,10 @@ export default async function TeamDetailPage({ params }: Props) {
         {/* Tournament history */}
         <section className="mt-10 space-y-4 pb-16">
           <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
-            Tournament History
+            {t("tournamentHistory")}
           </h2>
           {registrations.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              This team hasn&apos;t registered for any tournaments yet.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("noTournamentsYet")}</p>
           ) : (
             <div className="space-y-2">
               {registrations.map((r) => (
@@ -167,8 +170,8 @@ export default async function TeamDetailPage({ params }: Props) {
                   <div className="flex items-center gap-3 min-w-0">
                     <Calendar className="w-4 h-4 text-gold/60 shrink-0" />
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-white truncate">
-                        {r.tournaments?.title ?? "Tournament"}
+                      <p className="text-sm font-medium text-white truncate" lang={locale}>
+                        {r.tournaments ? pickLocalized(r.tournaments, "name", locale) : t("tournamentFallback")}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(r.created_at).toLocaleDateString()}
@@ -233,12 +236,12 @@ function RosterMemberCard({ member, highlight }: { member: TeamMember; highlight
   );
 }
 
-function EmptySlotCard({ role }: { role: string }) {
+function EmptySlotCard({ role, openSlotLabel }: { role: string; openSlotLabel: string }) {
   return (
     <div className="ns-card rounded-xl p-4 flex items-center gap-3 border-dashed opacity-50">
       <div className="w-11 h-11 rounded-lg border border-dashed border-gold/30" />
       <div>
-        <p className="text-sm text-muted-foreground">Open Slot</p>
+        <p className="text-sm text-muted-foreground">{openSlotLabel}</p>
         <p className="text-xs text-muted-foreground">{role}</p>
       </div>
     </div>

@@ -11,12 +11,12 @@ export interface MatchWithContext extends Match {
   team_a: TeamRef | null;
   team_b: TeamRef | null;
   winner: TeamRef | null;
-  tournament: { id: string; title: string; slug: string; format: string } | null;
+  tournament: { id: string; name_en: string; name_km: string | null; slug: string; format: string } | null;
   referee: { id: string; username: string | null } | null;
 }
 
 const MATCH_SELECT =
-  "*, team_a:team_a_id(id, team_name, logo_url), team_b:team_b_id(id, team_name, logo_url), winner:winner_id(id, team_name, logo_url), tournament:tournament_id(id, title, slug, format), referee:referee_id(id, username)";
+  "*, team_a:team_a_id(id, team_name, logo_url), team_b:team_b_id(id, team_name, logo_url), winner:winner_id(id, team_name, logo_url), tournament:tournament_id(id, name_en, name_km, slug, format), referee:referee_id(id, username)";
 
 export async function getMatch(matchId: string): Promise<MatchWithContext | null> {
   const supabase = await createClient();
@@ -64,7 +64,8 @@ export async function getAdminMatches({
       (m) =>
         m.team_a?.team_name.toLowerCase().includes(q) ||
         m.team_b?.team_name.toLowerCase().includes(q) ||
-        m.tournament?.title.toLowerCase().includes(q)
+        m.tournament?.name_en.toLowerCase().includes(q) ||
+        m.tournament?.name_km?.toLowerCase().includes(q)
     );
   }
 

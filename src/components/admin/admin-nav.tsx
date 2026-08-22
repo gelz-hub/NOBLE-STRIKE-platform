@@ -2,22 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Trophy, ClipboardList, Swords, Newspaper, Send } from "lucide-react";
+import { Trophy, ClipboardList, Swords, Newspaper, Send, History } from "lucide-react";
+import { LanguageSwitcher } from "@/components/ns/language-switcher";
 
-const TABS = [
-  { href: "/admin/tournaments", label: "Tournaments", icon: Trophy },
-  { href: "/admin/registrations", label: "Registrations", icon: ClipboardList },
-  { href: "/admin/matches", label: "Matches", icon: Swords },
-  { href: "/admin/news", label: "News", icon: Newspaper },
-  { href: "/admin/integrations/telegram", label: "Telegram", icon: Send },
-];
+const TAB_DEFS = [
+  { href: "/admin/tournaments", key: "tournaments", icon: Trophy },
+  { href: "/admin/registrations", key: "registrations", icon: ClipboardList },
+  { href: "/admin/matches", key: "matches", icon: Swords },
+  { href: "/admin/news", key: "news", icon: Newspaper },
+  { href: "/admin/legacy", key: "legacy", icon: History },
+  { href: "/admin/integrations/telegram", key: "telegram", icon: Send },
+] as const;
 
 export function AdminNav() {
   const pathname = usePathname();
+  const t = useTranslations("admin.nav");
+  const TABS = TAB_DEFS.map((tab) => ({ ...tab, label: t(tab.key) }));
 
   return (
-    <nav className="flex flex-wrap gap-1.5 border-b border-gold/10 pb-4 mb-8">
+    <nav className="flex flex-wrap items-center gap-1.5 border-b border-gold/10 pb-4 mb-8">
+      <LanguageSwitcher className="mr-auto" />
       {TABS.map((tab) => {
         const active = pathname.startsWith(tab.href);
         const Icon = tab.icon;

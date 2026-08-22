@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { createNotification } from "@/lib/notifications";
 import { newsSchema, slugifyTitle, type NewsInput } from "@/lib/validation/news";
@@ -20,16 +21,29 @@ async function requireAdmin() {
   return { supabase, user, isAdmin: profile?.role === "admin" };
 }
 
-function firstIssue(error: { issues: { message: string }[] }): string {
-  return error.issues[0]?.message ?? "Invalid input.";
+/** Resolves a dot-path translation key (e.g. "errors.unauthorized") from the root of the message tree. */
+async function t(key: string): Promise<string> {
+  const translator = await getTranslations();
+  return translator(key);
+}
+
+/** Zod messages in newsSchema are dot-path translation keys (e.g. "validation.news.titleTooShort"). */
+async function firstIssue(error: { issues: { message: string }[] }): Promise<string> {
+  const key = error.issues[0]?.message;
+  if (!key) return await t("validation.generic");
+  const translator = await getTranslations();
+  return translator.has(key) ? translator(key) : key;
 }
 
 function readNewsForm(formData: FormData) {
   return {
-    title: String(formData.get("title") || ""),
+    title_en: String(formData.get("title_en") || ""),
+    title_km: String(formData.get("title_km") || ""),
     slug: String(formData.get("slug") || ""),
-    excerpt: String(formData.get("excerpt") || ""),
-    content: String(formData.get("content") || ""),
+    excerpt_en: String(formData.get("excerpt_en") || ""),
+    excerpt_km: String(formData.get("excerpt_km") || ""),
+    content_en: String(formData.get("content_en") || ""),
+    content_km: String(formData.get("content_km") || ""),
     category: String(formData.get("category") || "ANNOUNCEMENT"),
     status: String(formData.get("status") || "DRAFT"),
     featured: String(formData.get("featured") || "false"),
@@ -44,10 +58,13 @@ function readNewsForm(formData: FormData) {
 
 function toRow(data: NewsInput) {
   return {
-    title: data.title,
+    title_en: data.title_en,
+    title_km: data.title_km || null,
     slug: data.slug,
-    excerpt: data.excerpt || null,
-    content: data.content,
+    excerpt_en: data.excerpt_en || null,
+    excerpt_km: data.excerpt_km || null,
+    content_en: data.content_en,
+    content_km: data.content_km || null,
     category: data.category,
     status: data.status,
     featured: data.featured,
@@ -82,20 +99,21 @@ async function broadcastNotification(
 
 async function maybeNotifyOnPublish(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  news: { title: string; category: string; slug: string },
+  news: { title_en: string; category: string; slug: string },
   wasPublished: boolean,
   isPublished: boolean
 ) {
   if (isPublished && !wasPublished) {
+    const t = await getTranslations("admin.news");
     if (news.category === "ANNOUNCEMENT") {
-      await broadcastNotification(supabase, "Major Announcement Published", news.title);
+      await broadcastNotification(supabase, t("notifyAnnouncementTitle"), news.title_en);
     } else if (news.category === "TOURNAMENT") {
-      await broadcastNotification(supabase, "Tournament Announcement Published", news.title);
+      await broadcastNotification(supabase, t("notifyTournamentTitle"), news.title_en);
     }
     logEvent({
       event: "news.published",
       slug: news.slug,
-      title: news.title,
+      title: news.title_en,
       category: news.category,
     });
   }
@@ -103,22 +121,22 @@ async function maybeNotifyOnPublish(
 
 export async function createNews(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
   const { supabase, user, isAdmin } = await requireAdmin();
-  if (!user) return { error: "You must be signed in." };
-  if (!isAdmin) return { error: "Admin access required." };
+  if (!user) return { error: await t("errors.unauthorized") };
+  if (!isAdmin) return { error: await t("errors.adminRequired") };
 
   const raw = readNewsForm(formData);
-  const parsed = newsSchema.safeParse({ ...raw, slug: raw.slug || slugifyTitle(raw.title) });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  const parsed = newsSchema.safeParse({ ...raw, slug: raw.slug || slugifyTitle(raw.title_en) });
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const row = toRow(parsed.data);
   const { data, error } = await supabase
     .from("news")
     .insert({ ...row, author_id: user.id })
-    .select("id, title, category, slug")
+    .select("id, title_en, category, slug")
     .single();
 
   if (error) {
-    return { error: error.code === "23505" ? "That slug is already in use." : error.message };
+    return { error: error.code === "23505" ? await t("validation.news.slugTaken") : error.message };
   }
 
   if (row.status === "PUBLISHED") {
@@ -136,12 +154,12 @@ export async function updateNews(
   formData: FormData
 ): Promise<ActionResult> {
   const { supabase, user, isAdmin } = await requireAdmin();
-  if (!user) return { error: "You must be signed in." };
-  if (!isAdmin) return { error: "Admin access required." };
+  if (!user) return { error: await t("errors.unauthorized") };
+  if (!isAdmin) return { error: await t("errors.adminRequired") };
 
   const raw = readNewsForm(formData);
   const parsed = newsSchema.safeParse(raw);
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { data: existing } = await supabase.from("news").select("status, slug").eq("id", newsId).single();
   const wasPublished = existing?.status === "PUBLISHED";
@@ -151,11 +169,11 @@ export async function updateNews(
     .from("news")
     .update(row)
     .eq("id", newsId)
-    .select("id, title, category, slug")
+    .select("id, title_en, category, slug")
     .single();
 
   if (error) {
-    return { error: error.code === "23505" ? "That slug is already in use." : error.message };
+    return { error: error.code === "23505" ? await t("validation.news.slugTaken") : error.message };
   }
 
   await maybeNotifyOnPublish(supabase, data, wasPublished, row.status === "PUBLISHED");
@@ -170,8 +188,8 @@ export async function updateNews(
 
 async function setStatus(newsId: string, status: "DRAFT" | "ARCHIVED"): Promise<ActionResult> {
   const { supabase, user, isAdmin } = await requireAdmin();
-  if (!user) return { error: "You must be signed in." };
-  if (!isAdmin) return { error: "Admin access required." };
+  if (!user) return { error: await t("errors.unauthorized") };
+  if (!isAdmin) return { error: await t("errors.adminRequired") };
 
   const { data, error } = await supabase
     .from("news")
@@ -197,8 +215,8 @@ export async function archiveNews(newsId: string): Promise<ActionResult> {
 
 export async function deleteNews(newsId: string): Promise<ActionResult> {
   const { supabase, user, isAdmin } = await requireAdmin();
-  if (!user) return { error: "You must be signed in." };
-  if (!isAdmin) return { error: "Admin access required." };
+  if (!user) return { error: await t("errors.unauthorized") };
+  if (!isAdmin) return { error: await t("errors.adminRequired") };
 
   const { error } = await supabase.from("news").delete().eq("id", newsId);
   if (error) return { error: error.message };
@@ -210,26 +228,35 @@ export async function deleteNews(newsId: string): Promise<ActionResult> {
 
 export async function broadcastNewsToTelegram(newsId: string): Promise<ActionResult> {
   const { supabase, user, isAdmin } = await requireAdmin();
-  if (!user) return { error: "You must be signed in." };
-  if (!isAdmin) return { error: "Admin access required." };
+  if (!user) return { error: await t("errors.unauthorized") };
+  if (!isAdmin) return { error: await t("errors.adminRequired") };
 
-  if (!isTelegramConfigured()) return { error: "TELEGRAM_BOT_TOKEN isn't set on this deployment." };
+  const tNews = await getTranslations("admin.news.telegram");
+  if (!isTelegramConfigured()) return { error: tNews("botNotConfigured") };
 
   const { data: settings } = await supabase.from("telegram_settings").select("channel_id, notifications_enabled").eq("id", true).single();
-  if (!settings?.channel_id) return { error: "No Telegram channel is configured (Admin → Telegram)." };
-  if (settings.notifications_enabled === false) return { error: "Telegram notifications are currently disabled (Admin → Telegram)." };
+  if (!settings?.channel_id) return { error: tNews("channelNotConfigured") };
+  if (settings.notifications_enabled === false) return { error: tNews("notificationsDisabled") };
 
-  const { data: news } = await supabase.from("news").select("title, slug, excerpt, status").eq("id", newsId).single();
-  if (!news) return { error: "Article not found." };
-  if (news.status !== "PUBLISHED") return { error: "Only published articles can be broadcast." };
+  const { data: news } = await supabase
+    .from("news")
+    .select("title_en, title_km, slug, excerpt_en, status")
+    .eq("id", newsId)
+    .single();
+  if (!news) return { error: tNews("articleNotFound") };
+  if (news.status !== "PUBLISHED") return { error: tNews("onlyPublished") };
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  const text = [`<b>${news.title}</b>`, news.excerpt || null, `${siteUrl}/news/${news.slug}`]
-    .filter(Boolean)
-    .join("\n");
+  // Channel broadcasts reach both English- and Khmer-reading subscribers, so
+  // send both language versions of the title in one message (falling back to
+  // English-only when no Khmer title was written).
+  const titleLine = news.title_km
+    ? `🇬🇧 <b>${news.title_en}</b>\n\n🇰🇭 <b>${news.title_km}</b>`
+    : `<b>${news.title_en}</b>`;
+  const text = [titleLine, news.excerpt_en || null, `${siteUrl}/news/${news.slug}`].filter(Boolean).join("\n");
 
   const result = await sendTelegramChannelMessage(settings.channel_id, text);
-  if (!result.ok) return { error: result.error ?? "Failed to send." };
+  if (!result.ok) return { error: result.error ?? tNews("sendFailed") };
 
   logEvent({ event: "telegram.news_broadcast", newsId, slug: news.slug, sentBy: user.id });
   return { success: true };

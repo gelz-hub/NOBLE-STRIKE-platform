@@ -1,10 +1,13 @@
+import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getAdminMatches, getRefereeOptions } from "@/lib/matches/queries";
 import { MatchesFilters } from "@/components/admin/matches-filters";
 import { MatchRow } from "@/components/admin/match-row";
 import { PaginationLinks } from "@/components/admin/pagination-links";
+import { pickLocalized } from "@/lib/i18n/content";
 import { Swords } from "lucide-react";
 import type { MatchStatus } from "@/lib/types/database";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   searchParams: Promise<{
@@ -24,10 +27,15 @@ export default async function AdminMatchesPage({ searchParams }: Props) {
   const status = (sp.status as MatchStatus) || undefined;
 
   const supabase = await createClient();
-  const { data: tournaments } = await supabase
+  const locale = (await getLocale()) as Locale;
+  const { data: tournamentRows } = await supabase
     .from("tournaments")
-    .select("id, title")
+    .select("id, name_en, name_km")
     .order("created_at", { ascending: false });
+  const tournaments = (tournamentRows ?? []).map((row) => ({
+    id: row.id,
+    title: pickLocalized(row, "name", locale),
+  }));
   const referees = await getRefereeOptions();
 
   const { rows, total } = await getAdminMatches({

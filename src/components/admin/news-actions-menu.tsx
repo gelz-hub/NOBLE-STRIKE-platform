@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -32,6 +33,8 @@ export function NewsActionsMenu({
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
+  const t = useTranslations("admin.news");
+  const tCommon = useTranslations("common");
 
   function run(action: () => Promise<{ error: string } | { success: true }>, successMsg: string) {
     startTransition(async () => {
@@ -52,8 +55,8 @@ export function NewsActionsMenu({
           type="button"
           variant="ghost"
           disabled={pending}
-          onClick={() => run(() => unpublishNews(newsId), "Unpublished.")}
-          title="Unpublish"
+          onClick={() => run(() => unpublishNews(newsId), t("unpublished"))}
+          title={t("unpublish")}
           className="h-8 w-8 p-0 text-white/60 hover:text-amber-400"
         >
           {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -64,8 +67,8 @@ export function NewsActionsMenu({
           type="button"
           variant="ghost"
           disabled={pending}
-          onClick={() => run(() => broadcastNewsToTelegram(newsId), "Broadcast to Telegram.")}
-          title="Broadcast to Telegram"
+          onClick={() => run(() => broadcastNewsToTelegram(newsId), t("broadcastSuccess"))}
+          title={t("broadcastToTelegram")}
           className="h-8 w-8 p-0 text-white/60 hover:text-gold-light"
         >
           <Send className="w-3.5 h-3.5" />
@@ -76,8 +79,8 @@ export function NewsActionsMenu({
           type="button"
           variant="ghost"
           disabled={pending}
-          onClick={() => run(() => archiveNews(newsId), "Archived.")}
-          title="Archive"
+          onClick={() => run(() => archiveNews(newsId), t("archived"))}
+          title={t("archive")}
           className="h-8 w-8 p-0 text-white/60 hover:text-amber-400"
         >
           <Archive className="w-3.5 h-3.5" />
@@ -86,17 +89,17 @@ export function NewsActionsMenu({
 
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <AlertDialogTrigger asChild>
-          <Button type="button" variant="ghost" title="Delete" className="h-8 w-8 p-0 text-white/60 hover:text-destructive">
+          <Button type="button" variant="ghost" title={tCommon("delete")} className="h-8 w-8 p-0 text-white/60 hover:text-destructive">
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent className="bg-popover border-gold/30">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">Delete &ldquo;{title}&rdquo;?</AlertDialogTitle>
-            <AlertDialogDescription>This permanently deletes the article. This cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle className="text-white">{t("deleteConfirmTitle", { title })}</AlertDialogTitle>
+            <AlertDialogDescription>{t("deleteConfirmDescription")}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               disabled={pending}
               onClick={(e) => {
@@ -107,7 +110,7 @@ export function NewsActionsMenu({
                     toast.error(result.error);
                     return;
                   }
-                  toast.success("Deleted.");
+                  toast.success(t("deleted"));
                   setDeleteOpen(false);
                   if (redirectOnDelete) router.push("/admin/news");
                   else router.refresh();
@@ -115,7 +118,7 @@ export function NewsActionsMenu({
               }}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+              {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

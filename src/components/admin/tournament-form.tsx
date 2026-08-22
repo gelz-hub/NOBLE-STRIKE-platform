@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { ImageUpload } from "@/components/cloudinary/image-upload";
 import { Switch } from "@/components/ui/switch";
+import { LocaleTabs } from "@/components/admin/locale-tabs";
 import { Loader2, Save, Trophy, Network } from "lucide-react";
 import { GAME_TYPES, TOURNAMENT_STATUSES, BRACKET_FORMATS, slugify } from "@/lib/validation/tournament";
 import { toDatetimeLocal } from "@/lib/format-datetime";
@@ -43,17 +45,19 @@ interface TournamentFormProps {
 
 function SubmitButton({ mode }: { mode: "create" | "edit" }) {
   const { pending } = useFormStatus();
+  const t = useTranslations("admin.tournaments.form");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold h-11 px-6">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {pending ? "Saving..." : mode === "create" ? "Create Tournament" : "Save Changes"}
+      {pending ? t("saving") : mode === "create" ? t("createSubmit") : t("editSubmit")}
     </Button>
   );
 }
 
 export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
+  const t = useTranslations("admin.tournaments.form");
   const [state, formAction] = useActionState<ActionResult | null, FormData>(action, null);
-  const [title, setTitle] = useState(initial?.title ?? "");
+  const [nameEn, setNameEn] = useState(initial?.name_en ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [bannerUrl, setBannerUrl] = useState(initial?.banner_url ?? "");
@@ -78,28 +82,41 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
       <input type="hidden" name="status" value={status} />
 
       {/* Basic Information */}
-      <FormSection icon={Trophy} title="Basic Information">
+      <FormSection icon={Trophy} title={t("basicInformation")}>
         <div className="space-y-1.5">
-          <Label htmlFor="title" className="text-xs text-muted-foreground">
-            Tournament Name <span className="text-gold">*</span>
+          <Label className="text-xs text-muted-foreground">
+            {t("nameLabel")} <span className="text-gold">*</span>
           </Label>
-          <Input
-            id="title"
-            name="title"
-            required
-            value={title}
-            onChange={(e) => {
-              setTitle(e.target.value);
-              if (!slugTouched) setSlug(slugify(e.target.value));
-            }}
-            placeholder="e.g. NS Season 2 Championship"
-            className="ns-input"
+          <LocaleTabs
+            en={
+              <Input
+                id="name_en"
+                name="name_en"
+                required
+                value={nameEn}
+                onChange={(e) => {
+                  setNameEn(e.target.value);
+                  if (!slugTouched) setSlug(slugify(e.target.value));
+                }}
+                placeholder="e.g. NS Season 2 Championship"
+                className="ns-input"
+              />
+            }
+            km={
+              <Input
+                id="name_km"
+                name="name_km"
+                defaultValue={initial?.name_km ?? ""}
+                placeholder="ឧទាហរណ៍៖ NS Season 2 Championship"
+                className="ns-input"
+              />
+            }
           />
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="slug-display" className="text-xs text-muted-foreground">
-            Slug <span className="text-gold">*</span>
+            {t("slugLabel")} <span className="text-gold">*</span>
           </Label>
           <Input
             id="slug-display"
@@ -114,22 +131,34 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="description" className="text-xs text-muted-foreground">
-            Description
-          </Label>
-          <Textarea
-            id="description"
-            name="description"
-            defaultValue={initial?.description ?? ""}
-            maxLength={2000}
-            placeholder="What's this tournament about?"
-            className="ns-input min-h-24"
+          <Label className="text-xs text-muted-foreground">{t("descriptionLabel")}</Label>
+          <LocaleTabs
+            en={
+              <Textarea
+                id="description_en"
+                name="description_en"
+                defaultValue={initial?.description_en ?? ""}
+                maxLength={2000}
+                placeholder="What's this tournament about?"
+                className="ns-input min-h-24"
+              />
+            }
+            km={
+              <Textarea
+                id="description_km"
+                name="description_km"
+                defaultValue={initial?.description_km ?? ""}
+                maxLength={2000}
+                placeholder="តើការប្រកួតនេះជាអ្វី?"
+                className="ns-input min-h-24"
+              />
+            }
           />
         </div>
 
         <ImageUpload
           useCase="tournamentBanner"
-          label="Banner Image"
+          label={t("bannerImageLabel")}
           shape="wide"
           size={360}
           currentUrl={bannerUrl}
@@ -138,11 +167,11 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
       </FormSection>
 
       {/* Game Configuration */}
-      <FormSection icon={Trophy} title="Game Configuration">
+      <FormSection icon={Trophy} title={t("gameConfiguration")}>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              Game Type <span className="text-gold">*</span>
+              {t("gameTypeLabel")} <span className="text-gold">*</span>
             </Label>
             <Select value={gameType} onValueChange={setGameType}>
               <SelectTrigger className="ns-input">
@@ -159,16 +188,16 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              Match Format <span className="text-gold">*</span>
+              {t("matchFormatLabel")} <span className="text-gold">*</span>
             </Label>
             <Select value={matchFormat} onValueChange={setMatchFormat}>
               <SelectTrigger className="ns-input">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border-gold/30">
-                <SelectItem value="BO1">Best of 1</SelectItem>
-                <SelectItem value="BO3">Best of 3</SelectItem>
-                <SelectItem value="BO5">Best of 5</SelectItem>
+                <SelectItem value="BO1">{t("bo1")}</SelectItem>
+                <SelectItem value="BO3">{t("bo3")}</SelectItem>
+                <SelectItem value="BO5">{t("bo5")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -176,11 +205,11 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
       </FormSection>
 
       {/* Tournament Settings */}
-      <FormSection icon={Trophy} title="Tournament Settings">
+      <FormSection icon={Trophy} title={t("tournamentSettings")}>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label htmlFor="max_teams" className="text-xs text-muted-foreground">
-              Max Teams <span className="text-gold">*</span>
+              {t("maxTeamsLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               id="max_teams"
@@ -195,7 +224,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="prize_pool" className="text-xs text-muted-foreground">
-              Prize Pool ($)
+              {t("prizePoolLabel")}
             </Label>
             <Input
               id="prize_pool"
@@ -209,7 +238,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="registration_deadline" className="text-xs text-muted-foreground">
-              Registration Deadline <span className="text-gold">*</span>
+              {t("registrationDeadlineLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               id="registration_deadline"
@@ -222,7 +251,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="start_date" className="text-xs text-muted-foreground">
-              Tournament Start Date <span className="text-gold">*</span>
+              {t("startDateLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               id="start_date"
@@ -235,7 +264,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="location" className="text-xs text-muted-foreground">
-              Location
+              {t("locationLabel")}
             </Label>
             <Input
               id="location"
@@ -247,7 +276,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="organizer" className="text-xs text-muted-foreground">
-              Organizer
+              {t("organizerLabel")}
             </Label>
             <Input
               id="organizer"
@@ -260,7 +289,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
 
         <div className="space-y-1.5">
           <Label htmlFor="rules" className="text-xs text-muted-foreground">
-            Rules
+            {t("rulesLabel")}
           </Label>
           <Textarea
             id="rules"
@@ -274,11 +303,11 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
       </FormSection>
 
       {/* Bracket Settings */}
-      <FormSection icon={Network} title="Bracket Settings">
+      <FormSection icon={Network} title={t("bracketSettings")}>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              Bracket Format <span className="text-gold">*</span>
+              {t("bracketFormatLabel")} <span className="text-gold">*</span>
             </Label>
             <Select value={bracketFormat} onValueChange={setBracketFormat}>
               <SelectTrigger className="ns-input">
@@ -287,7 +316,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
               <SelectContent className="bg-popover border-gold/30">
                 {BRACKET_FORMATS.map((f) => (
                   <SelectItem key={f} value={f}>
-                    {f === "SINGLE_ELIMINATION" ? "Single Elimination" : "Double Elimination"}
+                    {f === "SINGLE_ELIMINATION" ? t("singleElimination") : t("doubleElimination")}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -295,26 +324,23 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
           </div>
           {bracketFormat === "DOUBLE_ELIMINATION" && (
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Grand Final Reset</Label>
+              <Label className="text-xs text-muted-foreground">{t("grandFinalResetLabel")}</Label>
               <div className="flex items-center gap-3 h-9">
                 <Switch checked={grandFinalReset} onCheckedChange={setGrandFinalReset} />
                 <span className="text-sm text-white/70">
-                  {grandFinalReset ? "Enabled" : "Disabled"}
+                  {grandFinalReset ? t("enabled") : t("disabled")}
                 </span>
               </div>
             </div>
           )}
         </div>
         {bracketFormat === "DOUBLE_ELIMINATION" && (
-          <p className="text-xs text-muted-foreground">
-            Seeding method: Random. Teams start in the upper bracket; a loss drops them to the
-            lower bracket, a second loss eliminates them.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("seedingMethodNote")}</p>
         )}
       </FormSection>
 
       {/* Status */}
-      <FormSection icon={Trophy} title="Status">
+      <FormSection icon={Trophy} title={t("statusLabel")}>
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="ns-input">
             <SelectValue />
@@ -331,7 +357,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
 
       {state && "error" in state && <p className="text-sm text-destructive">{state.error}</p>}
       {state && "success" in state && (
-        <p className="text-sm text-emerald-400">Tournament updated successfully.</p>
+        <p className="text-sm text-emerald-400">{t("saveSuccess")}</p>
       )}
 
       <div className="flex justify-end pt-2 border-t border-gold/10">

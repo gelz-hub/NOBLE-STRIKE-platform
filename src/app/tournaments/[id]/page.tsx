@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { pickLocalized } from "@/lib/i18n/content";
 import { TeamMonogram, SlotsBar } from "@/components/ns/ui";
 import { RegisterTeamModal } from "@/components/tournaments/register-team-modal";
 import { TournamentStatsCards } from "@/components/admin/tournament-stats-cards";
@@ -25,6 +27,7 @@ import {
   Clock,
   Network,
 } from "lucide-react";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -52,9 +55,13 @@ const REGISTRATION_STATUS_META: Record<string, { label: string; className: strin
 export default async function TournamentDetailPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
+  const locale = (await getLocale()) as Locale;
+  const t = await getTranslations("tournaments.detail");
 
   const { data: tournament } = await supabase.from("tournaments").select("*").eq("id", id).single();
   if (!tournament) notFound();
+  const tournamentName = pickLocalized(tournament, "name", locale);
+  const tournamentDescription = pickLocalized(tournament, "description", locale);
 
   const { data: approvedData } = await supabase
     .from("tournament_registrations")
@@ -98,7 +105,7 @@ export default async function TournamentDetailPage({ params }: Props) {
         {tournament.banner_url ? (
           <Image
             src={tournament.banner_url}
-            alt={`${tournament.title} banner`}
+            alt={`${tournamentName} banner`}
             fill
             sizes="100vw"
             className="object-cover"
@@ -113,34 +120,36 @@ export default async function TournamentDetailPage({ params }: Props) {
           className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light bg-black/40 backdrop-blur-sm border border-white/10 rounded-md px-3 py-1.5"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back
+          {t("back")}
         </Link>
         <div className="absolute bottom-6 left-4 md:left-6 right-4 md:right-6">
           <span className={`ns-pill ${statusMeta.className} mb-3 inline-flex`}>
             {statusMeta.label}
           </span>
-          <h1 className="font-display font-extrabold text-2xl md:text-4xl text-white">
-            {tournament.title}
+          <h1 className="font-display font-extrabold text-2xl md:text-4xl text-white" lang={locale}>
+            {tournamentName}
           </h1>
         </div>
       </div>
 
       <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 space-y-10">
-        {tournament.description && (
-          <p className="text-white/70 max-w-2xl leading-relaxed">{tournament.description}</p>
+        {tournamentDescription && (
+          <p className="text-white/70 max-w-2xl leading-relaxed" lang={locale}>
+            {tournamentDescription}
+          </p>
         )}
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <InfoCard icon={Trophy} label="Prize Pool" value={`$${tournament.prize_pool}`} />
-          <InfoCard icon={Users} label="Max Teams" value={String(tournament.max_teams)} />
+          <InfoCard icon={Trophy} label={t("prizePool")} value={`$${tournament.prize_pool}`} />
+          <InfoCard icon={Users} label={t("maxTeams")} value={String(tournament.max_teams)} />
           <InfoCard
             icon={Clock}
-            label="Reg. Deadline"
+            label={t("regDeadline")}
             value={new Date(tournament.registration_deadline).toLocaleDateString()}
           />
           <InfoCard
             icon={Calendar}
-            label="Start Date"
+            label={t("startDate")}
             value={new Date(tournament.start_date).toLocaleDateString()}
           />
         </div>
@@ -149,16 +158,16 @@ export default async function TournamentDetailPage({ params }: Props) {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
               <p className="text-sm text-white/90 font-medium">
-                {isOpen ? "Registration is open" : "Registration is closed"}
+                {isOpen ? t("registrationOpen") : t("registrationClosed")}
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {isOpen
-                  ? "Register one of your teams before the deadline."
+                  ? t("registerBeforeDeadline")
                   : slotsFull
-                  ? "All team slots have been filled."
+                  ? t("slotsFull")
                   : deadlinePassed
-                  ? "The registration deadline has passed."
-                  : "This tournament is no longer accepting new registrations."}
+                  ? t("deadlinePassed")
+                  : t("noLongerAccepting")}
               </p>
             </div>
             {isOpen ? (
@@ -167,13 +176,13 @@ export default async function TournamentDetailPage({ params }: Props) {
                 trigger={
                   <Button className="ns-btn-gold h-11 px-6 text-xs uppercase tracking-wider">
                     <Trophy className="w-4 h-4" />
-                    Register Team
+                    {t("registerTeam")}
                   </Button>
                 }
               />
             ) : (
               <Button disabled className="h-11 px-6 text-xs uppercase tracking-wider opacity-50">
-                Registration Closed
+                {t("registrationClosedButton")}
               </Button>
             )}
           </div>
@@ -182,14 +191,14 @@ export default async function TournamentDetailPage({ params }: Props) {
 
         <Tabs defaultValue="overview">
           <TabsList className="bg-black/40 border border-gold/15">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="bracket">Bracket</TabsTrigger>
+            <TabsTrigger value="overview">{t("tabOverview")}</TabsTrigger>
+            <TabsTrigger value="bracket">{t("tabBracket")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-10 pt-6">
             <section className="space-y-4">
               <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
-                Tournament Statistics
+                {t("tournamentStatistics")}
               </h2>
               <TournamentStatsCards stats={stats} />
             </section>
@@ -199,18 +208,18 @@ export default async function TournamentDetailPage({ params }: Props) {
               matchSummary.recentResults.length > 0) && (
               <section className="space-y-6">
                 <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
-                  Matches
+                  {t("matches")}
                 </h2>
-                <MatchSummaryList title="Live Now" matches={matchSummary.live} live />
-                <MatchSummaryList title="Upcoming Matches" matches={matchSummary.upcoming} />
-                <MatchSummaryList title="Recent Results" matches={matchSummary.recentResults} />
+                <MatchSummaryList title={t("liveNow")} matches={matchSummary.live} live />
+                <MatchSummaryList title={t("upcomingMatches")} matches={matchSummary.upcoming} />
+                <MatchSummaryList title={t("recentResults")} matches={matchSummary.recentResults} />
               </section>
             )}
 
             {relatedNews.length > 0 && (
               <section className="space-y-4">
                 <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
-                  Related News
+                  {t("relatedNews")}
                 </h2>
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {relatedNews.map((a) => (
@@ -222,10 +231,10 @@ export default async function TournamentDetailPage({ params }: Props) {
 
             <section className="space-y-4">
               <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
-                Approved Teams ({approvedTeams.length})
+                {t("approvedTeams", { count: approvedTeams.length })}
               </h2>
               {approvedTeams.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No teams approved yet.</p>
+                <p className="text-sm text-muted-foreground">{t("noTeamsApproved")}</p>
               ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   {approvedTeams.map((r) => {
@@ -269,13 +278,13 @@ export default async function TournamentDetailPage({ params }: Props) {
               <div className="ns-card ns-card-gold-edge rounded-xl p-6 flex items-center gap-4">
                 <Crown className="w-10 h-10 text-gold shrink-0" />
                 <div>
-                  <p className="text-xs uppercase tracking-wider text-gold-light">Champion</p>
+                  <p className="text-xs uppercase tracking-wider text-gold-light">{t("champion")}</p>
                   <p className="font-display font-extrabold text-2xl text-white">
                     {tournament.champion_team_name}
                   </p>
                   {tournament.champion_date && (
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Crowned {new Date(tournament.champion_date).toLocaleDateString()}
+                      {t("crowned", { date: new Date(tournament.champion_date).toLocaleDateString() })}
                     </p>
                   )}
                 </div>
@@ -285,28 +294,28 @@ export default async function TournamentDetailPage({ params }: Props) {
             {!bracket || !bracketSummary ? (
               <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
                 <Network className="w-8 h-8 text-gold/50" />
-                <p className="text-white/70">The bracket hasn&apos;t been generated yet.</p>
+                <p className="text-white/70">{t("bracketNotGenerated")}</p>
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-3 gap-3">
                   <InfoCard
                     icon={Network}
-                    label="Current Round"
+                    label={t("currentRound")}
                     value={`${bracketSummary.currentRound} / ${bracketSummary.totalRounds}`}
                   />
-                  <InfoCard icon={Users} label="Remaining Teams" value={String(bracketSummary.remainingTeams)} />
+                  <InfoCard icon={Users} label={t("remainingTeams")} value={String(bracketSummary.remainingTeams)} />
                   <InfoCard
                     icon={Trophy}
-                    label="Champion"
-                    value={tournament.champion_team_name ?? "TBD"}
+                    label={t("champion")}
+                    value={tournament.champion_team_name ?? t("tbd")}
                   />
                 </div>
                 {tournament.bracket_format === "DOUBLE_ELIMINATION" && (
                   <div className="grid grid-cols-3 gap-3">
-                    <InfoCard icon={Users} label="Upper Bracket" value={String(bracketSummary.upperTeams ?? 0)} />
-                    <InfoCard icon={Users} label="Lower Bracket" value={String(bracketSummary.lowerTeams ?? 0)} />
-                    <InfoCard icon={Users} label="Eliminated" value={String(bracketSummary.eliminatedTeams ?? 0)} />
+                    <InfoCard icon={Users} label={t("upperBracket")} value={String(bracketSummary.upperTeams ?? 0)} />
+                    <InfoCard icon={Users} label={t("lowerBracket")} value={String(bracketSummary.lowerTeams ?? 0)} />
+                    <InfoCard icon={Users} label={t("eliminated")} value={String(bracketSummary.eliminatedTeams ?? 0)} />
                   </div>
                 )}
                 <div className="ns-card ns-card-gold-edge rounded-xl p-6 overflow-x-auto">
@@ -322,7 +331,7 @@ export default async function TournamentDetailPage({ params }: Props) {
         </Tabs>
 
         <div className="mt-10 pt-8 border-t border-gold/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">Get updates on this tournament as they happen.</p>
+          <p className="text-sm text-muted-foreground">{t("telegramCta")}</p>
           <TelegramButtons />
         </div>
       </div>

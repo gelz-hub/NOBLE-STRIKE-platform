@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 // Content-Security-Policy, assembled explicitly (not string-templated) so
 // each directive's reasoning is visible in the diff. See SECURITY.md /
@@ -63,7 +66,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
+export default withSentryConfig(withNextIntl(nextConfig), {
   // Only uploads source maps / creates a release when these are set (CI or
   // a Vercel build with the Sentry integration configured) — silently
   // skipped otherwise, so this is safe to ship even before Sentry is wired

@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getMatch, getMatchDisputes, getRefereeOptions } from "@/lib/matches/queries";
+import { pickLocalized } from "@/lib/i18n/content";
 import { TeamMonogram, StatusPill } from "@/components/ns/ui";
 import { MatchScheduleForm } from "@/components/admin/match-schedule-form";
 import { MatchStatusActions } from "@/components/admin/match-status-actions";
@@ -10,6 +12,7 @@ import { MatchNotesForm } from "@/components/admin/match-notes-form";
 import { DisputeResolvePanel } from "@/components/admin/dispute-resolve-panel";
 import { Crown, ExternalLink, Users } from "lucide-react";
 import type { TeamMember } from "@/lib/types/database";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -25,6 +28,8 @@ export default async function AdminMatchDetailPage({ params }: Props) {
   const { id } = await params;
   const match = await getMatch(id);
   if (!match) notFound();
+  const locale = (await getLocale()) as Locale;
+  const tournamentName = match.tournament ? pickLocalized(match.tournament, "name", locale) : null;
 
   const supabase = await createClient();
   const [rosterA, rosterB, disputes, referees] = await Promise.all([
@@ -39,7 +44,8 @@ export default async function AdminMatchDetailPage({ params }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <p className="ns-kicker mb-2">
-            {match.tournament?.title} · Round {match.round_number} · {match.bracket_type.replace("_", " ")}
+            <span lang={locale}>{tournamentName}</span> · Round {match.round_number} ·{" "}
+            {match.bracket_type.replace("_", " ")}
           </p>
           <h1 className="font-display font-bold text-2xl text-white">
             {match.team_a?.team_name ?? "TBD"} vs {match.team_b?.team_name ?? "TBD"}

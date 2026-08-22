@@ -15,7 +15,7 @@ const { updateTeam } = await import("@/app/dashboard/teams/actions");
 
 function tournamentForm() {
   const fd = new FormData();
-  fd.set("title", "Winter Cup");
+  fd.set("name_en", "Winter Cup");
   fd.set("game_type", "MLBB");
   fd.set("max_teams", "16");
   fd.set("registration_deadline", new Date(Date.now() + 86400000).toISOString());
@@ -75,6 +75,10 @@ describe("Security — team ownership protection is an RLS concern, not an app-c
     );
     const fd = new FormData();
     fd.set("team_name", "Renamed By Attacker");
+    fd.set("game", "MLBB");
+    fd.set("contact_number", "+85512345678");
+    fd.set("captain_telegram", "@ns_captain");
+    fd.set("province", "Phnom Penh");
     const result = await updateTeam("team-1", null, fd);
 
     // Against the mock (no RLS), this "succeeds" — which is the point: it

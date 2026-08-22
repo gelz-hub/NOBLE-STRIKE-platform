@@ -268,7 +268,7 @@ async function notifyChampionCrowned(
 ) {
   const { data: tournament } = await supabase
     .from("tournaments")
-    .select("title, status, champion_team_id, champion_team_name, runner_up_team_id, runner_up_team_name")
+    .select("name_en, status, champion_team_id, champion_team_name, runner_up_team_id, runner_up_team_name")
     .eq("id", tournamentId)
     .single();
   if (!tournament || tournament.status !== "COMPLETED" || !tournament.champion_team_id) return;
@@ -285,7 +285,7 @@ async function notifyChampionCrowned(
       supabase,
       championTeam.owner_id,
       "Champion Crowned",
-      `${tournament.champion_team_name ?? "Your team"} won ${tournament.title}! Congratulations.`,
+      `${tournament.champion_team_name ?? "Your team"} won ${tournament.name_en}! Congratulations.`,
       "tournament"
     );
   }
@@ -294,7 +294,7 @@ async function notifyChampionCrowned(
       supabase,
       runnerUpTeam.owner_id,
       "Champion Crowned",
-      `${tournament.title} has a champion: ${tournament.champion_team_name ?? "the winning team"}. ${
+      `${tournament.name_en} has a champion: ${tournament.champion_team_name ?? "the winning team"}. ${
         tournament.runner_up_team_name ?? "Your team"
       } finished as runner-up — well played.`,
       "tournament"

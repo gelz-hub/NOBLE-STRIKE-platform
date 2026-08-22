@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { TournamentForm } from "@/components/admin/tournament-form";
 import { TournamentStatsCards } from "@/components/admin/tournament-stats-cards";
@@ -7,6 +8,8 @@ import { TournamentActionsMenu } from "@/components/admin/tournament-actions-men
 import { ExternalLink } from "lucide-react";
 import { updateTournament } from "../../actions";
 import { getTournamentStats } from "@/lib/tournament-stats";
+import { pickLocalized } from "@/lib/i18n/content";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,8 +18,11 @@ interface Props {
 export default async function EditTournamentPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
+  const locale = (await getLocale()) as Locale;
+  const t = await getTranslations("admin.tournaments");
   const { data: tournament } = await supabase.from("tournaments").select("*").eq("id", id).single();
   if (!tournament) notFound();
+  const tournamentName = pickLocalized(tournament, "name", locale);
 
   const stats = await getTournamentStats(id, tournament.max_teams);
   const boundUpdate = updateTournament.bind(null, id);
@@ -25,10 +31,10 @@ export default async function EditTournamentPage({ params }: Props) {
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Edit {tournament.title}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Changes apply immediately to the public tournament page.
-          </p>
+          <h1 className="font-display font-bold text-2xl text-white">
+            {t("editHeading", { name: tournamentName })}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("editSubheading")}</p>
         </div>
         <div className="flex items-center gap-2">
           <Link
@@ -36,9 +42,9 @@ export default async function EditTournamentPage({ params }: Props) {
             className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/60 hover:text-gold-light"
           >
             <ExternalLink className="w-3.5 h-3.5" />
-            View
+            {t("view")}
           </Link>
-          <TournamentActionsMenu tournamentId={id} title={tournament.title} redirectOnDelete />
+          <TournamentActionsMenu tournamentId={id} title={tournamentName} redirectOnDelete />
         </div>
       </div>
 

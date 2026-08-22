@@ -36,7 +36,7 @@ export async function registerTeamForTournament(
 
   const { data: tournament } = await supabase
     .from("tournaments")
-    .select("id, title, status, registration_deadline, max_teams")
+    .select("id, name_en, status, registration_deadline, max_teams")
     .eq("id", tournamentId)
     .single();
   if (!tournament) return { error: "Tournament not found." };
@@ -98,7 +98,7 @@ export async function registerTeamForTournament(
     supabase,
     user.id,
     "Registration Submitted",
-    `${team.team_name}'s registration for ${tournament.title} is pending review.`,
+    `${team.team_name}'s registration for ${tournament.name_en} is pending review.`,
     "tournament"
   );
 
@@ -117,7 +117,7 @@ export async function withdrawRegistration(registrationId: string): Promise<Acti
 
   const { data: registration } = await supabase
     .from("tournament_registrations")
-    .select("id, status, team_id, tournament_id, teams(team_name), tournaments(title)")
+    .select("id, status, team_id, tournament_id, teams(team_name), tournaments(name_en)")
     .eq("id", registrationId)
     .single<{
       id: string;
@@ -125,7 +125,7 @@ export async function withdrawRegistration(registrationId: string): Promise<Acti
       team_id: string;
       tournament_id: string;
       teams: { team_name: string } | null;
-      tournaments: { title: string } | null;
+      tournaments: { name_en: string } | null;
     }>();
 
   if (!registration) return { error: "Registration not found." };
@@ -144,7 +144,7 @@ export async function withdrawRegistration(registrationId: string): Promise<Acti
     user.id,
     "Registration Withdrawn",
     `${registration.teams?.team_name ?? "Your team"}'s registration for ${
-      registration.tournaments?.title ?? "the tournament"
+      registration.tournaments?.name_en ?? "the tournament"
     } was withdrawn.`,
     "tournament"
   );
@@ -162,7 +162,7 @@ export interface MyRegistrationRow {
   reviewed_at: string | null;
   rejection_reason: string | null;
   teams: { id: string; team_name: string } | null;
-  tournaments: { id: string; title: string } | null;
+  tournaments: { id: string; name_en: string; name_km: string | null } | null;
 }
 
 export async function getMyRegistrations(): Promise<MyRegistrationRow[]> {
@@ -178,7 +178,9 @@ export async function getMyRegistrations(): Promise<MyRegistrationRow[]> {
 
   const { data } = await supabase
     .from("tournament_registrations")
-    .select("id, status, created_at, reviewed_at, rejection_reason, teams(id, team_name), tournaments(id, title)")
+    .select(
+      "id, status, created_at, reviewed_at, rejection_reason, teams(id, team_name), tournaments(id, name_en, name_km)"
+    )
     .in("team_id", teamIds)
     .order("created_at", { ascending: false });
 

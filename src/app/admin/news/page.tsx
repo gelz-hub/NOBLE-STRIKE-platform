@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { getAdminNews, getNewsStats } from "@/lib/news/queries";
 import { NewsFilters } from "@/components/admin/news-filters";
 import { NewsRow } from "@/components/admin/news-row";
 import { PaginationLinks } from "@/components/admin/pagination-links";
 import { Button } from "@/components/ui/button";
 import { Newspaper, Plus, TrendingUp } from "lucide-react";
+import { pickLocalized } from "@/lib/i18n/content";
+import type { Locale } from "@/i18n/config";
 import type { NewsCategory, NewsStatus } from "@/lib/types/database";
 
 interface Props {
@@ -23,7 +26,7 @@ export default async function AdminNewsPage({ searchParams }: Props) {
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
 
-  const [{ rows, total }, stats] = await Promise.all([
+  const [{ rows, total }, stats, localeStr, t] = await Promise.all([
     getAdminNews({
       status: sp.status as NewsStatus | undefined,
       category: sp.category as NewsCategory | undefined,
@@ -33,20 +36,23 @@ export default async function AdminNewsPage({ searchParams }: Props) {
       pageSize: PAGE_SIZE,
     }),
     getNewsStats(),
+    getLocale(),
+    getTranslations("admin.news"),
   ]);
+  const locale = localeStr as Locale;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">News &amp; Announcements</h1>
-          <p className="text-sm text-muted-foreground mt-1">Create and manage every article on the platform.</p>
+          <h1 className="font-display font-bold text-2xl text-white">{t("heading")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("subheading")}</p>
         </div>
         <Link href="/admin/news/new">
           <Button className="ns-btn-gold h-10 px-4 text-xs uppercase tracking-wider">
             <Plus className="w-4 h-4" />
-            New Article
+            {t("newArticle")}
           </Button>
         </Link>
       </div>
@@ -54,15 +60,15 @@ export default async function AdminNewsPage({ searchParams }: Props) {
       <div className="grid grid-cols-3 gap-3">
         <div className="ns-card rounded-lg p-3 text-center">
           <div className="font-display font-bold text-xl text-white">{stats.draftCount}</div>
-          <div className="text-[0.6rem] text-muted-foreground uppercase tracking-wider mt-0.5">Draft</div>
+          <div className="text-[0.6rem] text-muted-foreground uppercase tracking-wider mt-0.5">{t("statusOption.DRAFT")}</div>
         </div>
         <div className="ns-card rounded-lg p-3 text-center">
           <div className="font-display font-bold text-xl text-white">{stats.publishedCount}</div>
-          <div className="text-[0.6rem] text-muted-foreground uppercase tracking-wider mt-0.5">Published</div>
+          <div className="text-[0.6rem] text-muted-foreground uppercase tracking-wider mt-0.5">{t("statusOption.PUBLISHED")}</div>
         </div>
         <div className="ns-card rounded-lg p-3 text-center">
           <div className="font-display font-bold text-xl text-white">{stats.archivedCount}</div>
-          <div className="text-[0.6rem] text-muted-foreground uppercase tracking-wider mt-0.5">Archived</div>
+          <div className="text-[0.6rem] text-muted-foreground uppercase tracking-wider mt-0.5">{t("statusOption.ARCHIVED")}</div>
         </div>
       </div>
 
@@ -70,7 +76,7 @@ export default async function AdminNewsPage({ searchParams }: Props) {
         <div className="ns-card rounded-lg p-4 space-y-2">
           <p className="text-xs font-heading font-semibold uppercase tracking-wider text-gold-light flex items-center gap-1.5">
             <TrendingUp className="w-3.5 h-3.5" />
-            Most Viewed
+            {t("mostViewed")}
           </p>
           <div className="flex flex-wrap gap-2">
             {stats.mostViewed.map((a) => (
@@ -78,8 +84,9 @@ export default async function AdminNewsPage({ searchParams }: Props) {
                 key={a.id}
                 href={`/admin/news/${a.id}/edit`}
                 className="text-xs text-white/70 hover:text-gold-light bg-black/30 border border-white/10 rounded-md px-2.5 py-1"
+                lang={locale}
               >
-                {a.title} · {a.view_count} views
+                {pickLocalized(a, "title", locale)} · {t("viewsCount", { count: a.view_count })}
               </Link>
             ))}
           </div>
@@ -91,7 +98,7 @@ export default async function AdminNewsPage({ searchParams }: Props) {
       {rows.length === 0 ? (
         <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
           <Newspaper className="w-8 h-8 text-gold/50" />
-          <p className="text-white/70">No articles match these filters.</p>
+          <p className="text-white/70">{t("noArticlesMatch")}</p>
         </div>
       ) : (
         <>

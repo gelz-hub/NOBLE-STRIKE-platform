@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useApp } from "@/lib/store";
 import { useFetch } from "../hooks";
 import { NSLogo } from "../logo";
@@ -41,6 +42,7 @@ import type {
 } from "@/lib/types";
 
 export function HomeView() {
+  const t = useTranslations("home");
   const setView = useApp((s) => s.setView);
   const openTournament = useApp((s) => s.openTournament);
   const openTeam = useApp((s) => s.openTeam);
@@ -118,7 +120,7 @@ export function HomeView() {
           {/* kicker */}
           <div className="flex items-center gap-3 mb-6 ns-fade-up" style={{ animationDelay: "0.1s" }}>
             <span className="h-px w-10 bg-gradient-to-r from-transparent to-gold/60" />
-            <span className="ns-kicker">Elite Esports Organization</span>
+            <span className="ns-kicker">{t("hero.kicker")}</span>
             <span className="h-px w-10 bg-gradient-to-l from-transparent to-gold/60" />
           </div>
 
@@ -135,8 +137,8 @@ export function HomeView() {
             className="mt-6 font-heading text-xl md:text-2xl lg:text-3xl font-light tracking-wide text-white/90 ns-fade-up"
             style={{ animationDelay: "0.25s" }}
           >
-            Compete. Conquer.{" "}
-            <span className="text-gold-gradient font-semibold">Become Legendary.</span>
+            {t("hero.subheadlinePrefix")}{" "}
+            <span className="text-gold-gradient font-semibold">{t("hero.subheadlineHighlight")}</span>
           </p>
 
           {/* New description */}
@@ -144,9 +146,7 @@ export function HomeView() {
             className="mt-5 max-w-2xl text-sm md:text-base text-muted-foreground leading-relaxed ns-fade-up"
             style={{ animationDelay: "0.3s" }}
           >
-            The official NOBLE STRIKE tournament platform. Compete in premier 5v5
-            esports events, build your legacy, and rise through the ranks against
-            the strongest teams.
+            {t("hero.description")}
           </p>
 
           {/* CTAs */}
@@ -159,7 +159,7 @@ export function HomeView() {
               className="ns-btn-gold h-12 px-8 text-sm uppercase tracking-widest group"
             >
               <Trophy className="w-4 h-4" />
-              Join Tournament
+              {t("hero.joinTournament")}
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </Button>
             <Button
@@ -167,14 +167,14 @@ export function HomeView() {
               className="ns-btn-outline h-12 px-8 text-sm uppercase tracking-widest"
             >
               <Users className="w-4 h-4" />
-              View Teams
+              {t("hero.viewTeams")}
             </Button>
           </div>
 
           {/* scroll hint */}
           <div className="mt-16 flex flex-col items-center gap-2 text-gold/50">
             <span className="font-mono text-[0.6rem] tracking-[0.3em] uppercase">
-              Scroll
+              {t("hero.scroll")}
             </span>
             <div className="w-px h-10 bg-gradient-to-b from-gold/60 to-transparent" />
           </div>
@@ -191,7 +191,7 @@ export function HomeView() {
                 value={stats ? stats.teams : 0}
                 displayValue={128}
                 suffix="+"
-                label="Registered Teams"
+                label={t("stats.registeredTeams")}
                 delay={0}
               />
             </Reveal>
@@ -201,7 +201,7 @@ export function HomeView() {
                 value={stats ? stats.players : 0}
                 displayValue={640}
                 suffix="+"
-                label="Players"
+                label={t("stats.players")}
                 delay={0.1}
               />
             </Reveal>
@@ -211,7 +211,7 @@ export function HomeView() {
                 value={stats ? stats.tournaments : 0}
                 displayValue={12}
                 suffix="+"
-                label="Active Tournaments"
+                label={t("stats.activeTournaments")}
                 delay={0.2}
               />
             </Reveal>
@@ -222,7 +222,7 @@ export function HomeView() {
                 displayValue={130000}
                 prefix="$"
                 suffix="+"
-                label="Prize Pool Awarded"
+                label={t("stats.prizePoolAwarded")}
                 delay={0.3}
                 format="k"
               />
@@ -237,16 +237,16 @@ export function HomeView() {
           <Reveal>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
               <SectionHeading
-                kicker="Now Battling"
-                title="Upcoming Tournaments"
-                description="Register your squad for the most prestigious 5v5 MOBA competitions."
+                kicker={t("tournaments.kicker")}
+                title={t("tournaments.title")}
+                description={t("tournaments.description")}
               />
               <Button
                 onClick={() => setView("tournaments")}
                 variant="ghost"
                 className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
               >
-                View All
+                {t("tournaments.viewAll")}
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -280,16 +280,16 @@ export function HomeView() {
           <Reveal>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
               <SectionHeading
-                kicker="The Contenders"
-                title="Featured Teams"
-                description="Elite rosters battling for glory across multiple tournaments."
+                kicker={t("teams.kicker")}
+                title={t("teams.title")}
+                description={t("teams.description")}
               />
               <Button
                 onClick={() => setView("teams")}
                 variant="ghost"
                 className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
               >
-                All Teams
+                {t("teams.viewAll")}
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -320,16 +320,16 @@ export function HomeView() {
           <Reveal>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
               <SectionHeading
-                kicker="From The Newsroom"
-                title="Latest Announcements"
-                description="Tournament news, player signings, results and official updates."
+                kicker={t("news.kicker")}
+                title={t("news.title")}
+                description={t("news.description")}
               />
               <Button
                 onClick={() => setView("news")}
                 variant="ghost"
                 className="text-gold-light hover:text-gold-light hover:bg-gold/10 self-start md:self-auto"
               >
-                All News
+                {t("news.viewAll")}
                 <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
@@ -349,7 +349,7 @@ export function HomeView() {
       {sponsorList.length > 0 && (
         <section className="relative py-16 border-y border-gold/10 bg-black overflow-hidden">
           <div className="mx-auto max-w-7xl px-4 md:px-6 mb-8">
-            <p className="ns-kicker text-center">Powered By Elite Partners</p>
+            <p className="ns-kicker text-center">{t("sponsors.poweredBy")}</p>
           </div>
           <div className="relative">
             <div className="flex ns-marquee gap-12 w-max">
@@ -383,27 +383,24 @@ export function HomeView() {
             <NSLogo size={72} className="justify-center" />
           </div>
           <h2 className="font-display font-black text-3xl md:text-5xl lg:text-6xl tracking-tight">
-            Ready To Become{" "}
-            <span className="text-gold-gradient">Legendary?</span>
+            {t("cta.headlinePrefix")}{" "}
+            <span className="text-gold-gradient">{t("cta.headlineHighlight")}</span>
           </h2>
-          <p className="mt-6 max-w-xl text-muted-foreground text-base md:text-lg">
-            Assemble your squad, enter the arena, and write your name into esports
-            history. The next champion could be you.
-          </p>
+          <p className="mt-6 max-w-xl text-muted-foreground text-base md:text-lg">{t("cta.description")}</p>
           <div className="mt-10 flex flex-col sm:flex-row items-center gap-4">
             <Button
               onClick={() => setView("teams")}
               className="ns-btn-gold h-12 px-8 text-sm uppercase tracking-widest"
             >
               <Swords className="w-4 h-4" />
-              Register Your Team
+              {t("cta.registerTeam")}
             </Button>
             <Button
               onClick={() => setView("ns-team")}
               className="ns-btn-outline h-12 px-8 text-sm uppercase tracking-widest"
             >
               <Shield className="w-4 h-4" />
-              Meet NS Squad
+              {t("cta.meetSquad")}
             </Button>
           </div>
           <TelegramButtons className="mt-8 justify-center" />
@@ -463,6 +460,7 @@ export function TournamentCard({
   tournament: Tournament;
   onClick?: () => void;
 }) {
+  const t = useTranslations("home.tournamentCard");
   const regCount = tournament._count?.registrations ?? tournament._count?.teams ?? 0;
   const startDate = new Date(tournament.startDate);
   const deadline = new Date(tournament.registrationDeadline);
@@ -514,8 +512,8 @@ export function TournamentCard({
           <span className="flex items-center gap-1.5 text-[0.7rem] text-muted-foreground">
             <Clock className="w-3.5 h-3.5" />
             {regOpen
-              ? `Ends ${deadline.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
-              : `Starts ${startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
+              ? t("ends", { date: deadline.toLocaleDateString("en-US", { month: "short", day: "numeric" }) })
+              : t("starts", { date: startDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }) })}
           </span>
           <span className="text-xs font-heading uppercase tracking-wider text-gold/70">
             {tournament.format}
@@ -533,6 +531,7 @@ export function TeamCard({
   team: Team;
   onClick?: () => void;
 }) {
+  const t = useTranslations("home.teamCard");
   // Tournament-centric: show registrations instead of game label
   const regs: Registration[] = team.registrations || [];
   const approvedRegs = regs.filter((r) => r.status === "APPROVED");
@@ -552,7 +551,7 @@ export function TeamCard({
             {team.name}
           </h3>
           {team.isOfficial && (
-            <span className="text-gold shrink-0" title="Official NS Team">
+            <span className="text-gold shrink-0" title={t("officialTeam")}>
               <Crown className="w-3.5 h-3.5" />
             </span>
           )}
@@ -561,21 +560,21 @@ export function TeamCard({
         <p className="mt-1 text-xs text-muted-foreground truncate">
           {primaryTournament ? (
             <>
-              <span className="text-gold/70">Tournament:</span>{" "}
+              <span className="text-gold/70">{t("tournamentLabel")}</span>{" "}
               <span className="text-white/80">{primaryTournament.name}</span>
             </>
           ) : (
-            <span className="italic">No active tournament</span>
+            <span className="italic">{t("noActiveTournament")}</span>
           )}
         </p>
         <div className="mt-2 flex items-center gap-3">
           <span className="flex items-center gap-1 text-[0.7rem] text-white/60">
             <Users className="w-3 h-3 text-gold/60" />
-            {playerCount} Players
+            {t("playersCount", { count: playerCount })}
           </span>
           {tournamentCount > 1 && (
             <span className="text-[0.7rem] text-gold-light font-semibold">
-              +{tournamentCount - 1} more
+              {t("moreCount", { count: tournamentCount - 1 })}
             </span>
           )}
         </div>

@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +30,8 @@ export function RecruitmentPostCard({
   post: RecruitmentPost;
   canManage: boolean;
 }) {
+  const t = useTranslations("recruitment");
+  const tCommon = useTranslations("common");
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -47,7 +50,7 @@ export function RecruitmentPostCard({
         toast.error(result.error);
         return;
       }
-      toast.success("Post deleted.");
+      toast.success(t("postDeleted"));
       setDeleteOpen(false);
     });
   }
@@ -62,19 +65,19 @@ export function RecruitmentPostCard({
           </p>
         </div>
         <span className={`ns-pill shrink-0 ${post.status === "OPEN" ? "ns-pill-open" : "ns-pill-closed"}`}>
-          {post.status === "OPEN" ? "Open" : "Closed"}
+          {post.status === "OPEN" ? t("statusOpen") : t("statusClosed")}
         </span>
       </div>
 
       {post.post_type === "LFT" && (
         <div className="flex flex-wrap gap-3 text-xs text-text-secondary">
-          {post.rank && <span>Rank: {post.rank}</span>}
+          {post.rank && <span>{t("rankLabel")}: {post.rank}</span>}
           {post.country && <span>{post.country}</span>}
         </div>
       )}
       {post.post_type === "LFP" && post.requirements && (
         <p className="text-xs text-text-secondary">
-          <span className="text-text-primary/80 font-medium">Requirements:</span> {post.requirements}
+          <span className="text-text-primary/80 font-medium">{t("requirementsLabel")}:</span> {post.requirements}
         </p>
       )}
 
@@ -98,7 +101,7 @@ export function RecruitmentPostCard({
               size="icon"
               disabled={pending}
               onClick={() => setEditOpen(true)}
-              title="Edit"
+              title={tCommon("edit")}
               className="h-7 w-7 text-text-secondary hover:text-gold-light"
             >
               <Pencil className="w-3.5 h-3.5" />
@@ -109,7 +112,7 @@ export function RecruitmentPostCard({
               size="icon"
               disabled={pending}
               onClick={handleToggleStatus}
-              title={post.status === "OPEN" ? "Close" : "Reopen"}
+              title={post.status === "OPEN" ? t("close") : t("reopen")}
               className="h-7 w-7 text-text-secondary hover:text-amber-400"
             >
               {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : post.status === "OPEN" ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
@@ -120,7 +123,7 @@ export function RecruitmentPostCard({
                   type="button"
                   variant="ghost"
                   size="icon"
-                  title="Delete"
+                  title={tCommon("delete")}
                   className="h-7 w-7 text-text-secondary hover:text-destructive"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -128,11 +131,11 @@ export function RecruitmentPostCard({
               </AlertDialogTrigger>
               <AlertDialogContent className="bg-popover border-gold/30">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-text-primary">Delete this post?</AlertDialogTitle>
-                  <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+                  <AlertDialogTitle className="text-text-primary">{t("deletePostConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription>{t("deletePostConfirmBody")}</AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
                   <AlertDialogAction
                     disabled={pending}
                     onClick={(e) => {
@@ -141,7 +144,7 @@ export function RecruitmentPostCard({
                     }}
                     className="bg-destructive text-white hover:bg-destructive/90"
                   >
-                    {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+                    {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : tCommon("delete")}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

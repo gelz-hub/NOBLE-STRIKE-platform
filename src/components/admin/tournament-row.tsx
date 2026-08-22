@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { StatusPill } from "@/components/ns/ui";
 import { TournamentActionsMenu } from "./tournament-actions-menu";
 import { Network, PenSquare, Users } from "lucide-react";
@@ -8,6 +9,7 @@ import { GAME_LABELS } from "@/lib/types";
 interface TournamentRowProps {
   id: string;
   title: string;
+  locale?: string;
   bannerUrl: string | null;
   gameType: string;
   status: string;
@@ -16,9 +18,10 @@ interface TournamentRowProps {
   startDate: string;
 }
 
-export function TournamentRow({
+export async function TournamentRow({
   id,
   title,
+  locale,
   bannerUrl,
   gameType,
   status,
@@ -26,6 +29,7 @@ export function TournamentRow({
   approvedCount,
   startDate,
 }: TournamentRowProps) {
+  const t = await getTranslations("admin.tournaments.row");
   return (
     <div className="ns-card rounded-lg p-3 flex items-center gap-3">
       <div className="relative w-16 h-10 rounded-md overflow-hidden bg-black/40 border border-gold/15 shrink-0">
@@ -37,7 +41,7 @@ export function TournamentRow({
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-white truncate">{title}</p>
+        <p className="text-sm font-medium text-white truncate" lang={locale}>{title}</p>
         <p className="text-xs text-muted-foreground truncate">
           {GAME_LABELS[gameType] || gameType} · {new Date(startDate).toLocaleDateString()}
         </p>
@@ -55,7 +59,7 @@ export function TournamentRow({
         className="flex items-center gap-1.5 h-8 px-3 rounded-md border border-gold/20 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light hover:border-gold/40 transition-colors shrink-0"
       >
         <Network className="w-3.5 h-3.5" />
-        Bracket
+        {t("bracket")}
       </Link>
 
       <Link
@@ -63,7 +67,7 @@ export function TournamentRow({
         className="flex items-center gap-1.5 h-8 px-3 rounded-md border border-gold/20 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light hover:border-gold/40 transition-colors shrink-0"
       >
         <PenSquare className="w-3.5 h-3.5" />
-        Edit
+        {t("edit")}
       </Link>
 
       <TournamentActionsMenu tournamentId={id} title={title} />

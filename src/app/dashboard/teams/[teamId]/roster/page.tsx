@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { TeamRosterForm } from "@/components/dashboard/team-roster-form";
 import type { TeamMember } from "@/lib/types/database";
@@ -9,13 +10,18 @@ interface Props {
 
 export default async function TeamRosterPage({ params }: Props) {
   const { teamId } = await params;
+  const t = await getTranslations("dashboard.team");
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect(`/login?next=/dashboard/teams/${teamId}/roster`);
 
-  const { data: team } = await supabase.from("teams").select("id, team_name, owner_id").eq("id", teamId).single();
+  const { data: team } = await supabase
+    .from("teams")
+    .select("id, team_name, owner_id, game, contact_number, captain_telegram")
+    .eq("id", teamId)
+    .single();
   if (!team) notFound();
   if (team.owner_id !== user.id) redirect("/dashboard/teams");
 
@@ -27,16 +33,20 @@ export default async function TeamRosterPage({ params }: Props) {
   return (
     <div className="max-w-3xl space-y-6">
       <div>
-        <p className="ns-kicker mb-2">Step 2 of 2</p>
+        <p className="ns-kicker mb-2">{t("stepTwoOfTwo")}</p>
         <h1 className="font-display font-bold text-2xl text-white">
-          Build {team.team_name}&apos;s Roster
+          {t("buildRosterTitle", { teamName: team.team_name })}
         </h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Fill the 5 starting roles, then optionally add substitutes and a coach.
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">{t("buildRosterSubtitle")}</p>
       </div>
 
-      <TeamRosterForm teamId={teamId} initialMembers={(members ?? []) as TeamMember[]} />
+      <TeamRosterForm
+        teamId={teamId}
+        game={team.game}
+        contactNumber={team.contact_number}
+        captainTelegram={team.captain_telegram}
+        initialMembers={(members ?? []) as TeamMember[]}
+      />
     </div>
   );
 }

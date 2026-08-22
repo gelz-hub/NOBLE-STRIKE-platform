@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
 import { updatePrivacySettings, type ActionResult } from "@/app/settings/actions";
@@ -10,15 +11,18 @@ import type { Profile } from "@/lib/types/database";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useTranslations("settings.privacy");
+  const tCommon = useTranslations("common");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold h-11 px-6">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {pending ? "Saving..." : "Save Changes"}
+      {pending ? tCommon("saving") : t("saveChanges")}
     </Button>
   );
 }
 
 export function PrivacySettingsForm({ profile }: { profile: Profile }) {
+  const t = useTranslations("settings.privacy");
   const [state, formAction] = useActionState<ActionResult | null, FormData>(updatePrivacySettings, null);
   const [publicProfile, setPublicProfile] = useState(profile.privacy_public_profile);
   const [showTeams, setShowTeams] = useState(profile.privacy_show_teams);
@@ -34,33 +38,33 @@ export function PrivacySettingsForm({ profile }: { profile: Profile }) {
 
       <div className="ns-card rounded-xl p-5">
         <ToggleRow
-          label="Public Profile"
-          description="Off hides your profile page from everyone but you and admins, and excludes you from Player Search."
+          label={t("publicProfile.label")}
+          description={t("publicProfile.description")}
           checked={publicProfile}
           onCheckedChange={setPublicProfile}
         />
         <ToggleRow
-          label="Show Teams"
-          description="Display your Current/Captain/Coach team memberships on your public profile."
+          label={t("showTeams.label")}
+          description={t("showTeams.description")}
           checked={showTeams}
           onCheckedChange={setShowTeams}
         />
         <ToggleRow
-          label="Show Match History"
-          description="Display tournament stats, achievements, and recent matches."
+          label={t("showMatchHistory.label")}
+          description={t("showMatchHistory.description")}
           checked={showMatchHistory}
           onCheckedChange={setShowMatchHistory}
         />
         <ToggleRow
-          label="Show Discord"
-          description="Display your Discord username on your public profile."
+          label={t("showDiscord.label")}
+          description={t("showDiscord.description")}
           checked={showDiscord}
           onCheckedChange={setShowDiscord}
         />
       </div>
 
       {state && "error" in state && <p className="text-sm text-destructive">{state.error}</p>}
-      {state && "success" in state && <p className="text-sm text-emerald-400">Saved.</p>}
+      {state && "success" in state && <p className="text-sm text-emerald-400">{t("saved")}</p>}
 
       <div className="flex justify-end pt-2 border-t border-gold/10">
         <SubmitButton />

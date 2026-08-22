@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { TournamentRow } from "@/components/admin/tournament-row";
 import { Button } from "@/components/ui/button";
 import { Plus, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { pickLocalized } from "@/lib/i18n/content";
 import type { TournamentStatus } from "@/lib/types/database";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   searchParams: Promise<{ status?: string }>;
@@ -25,6 +28,8 @@ export default async function AdminTournamentsPage({ searchParams }: Props) {
   const filter = (sp.status as TournamentStatus | "ALL") || "ALL";
 
   const supabase = await createClient();
+  const locale = (await getLocale()) as Locale;
+  const t = await getTranslations("admin.tournaments.list");
 
   let query = supabase.from("tournaments").select("*").order("created_at", { ascending: false });
   if (filter === "ALL") query = query.neq("status", "ARCHIVED");
@@ -59,15 +64,13 @@ export default async function AdminTournamentsPage({ searchParams }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Tournament Management</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Create, edit, and manage every NOBLE STRIKE tournament.
-          </p>
+          <h1 className="font-display font-bold text-2xl text-white">{t("heading")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("subheading")}</p>
         </div>
         <Link href="/admin/tournaments/new">
           <Button className="ns-btn-gold h-10 px-4 text-xs uppercase tracking-wider">
             <Plus className="w-4 h-4" />
-            Create Tournament
+            {t("createButton")}
           </Button>
         </Link>
       </div>
@@ -103,21 +106,22 @@ export default async function AdminTournamentsPage({ searchParams }: Props) {
       {!tournaments || tournaments.length === 0 ? (
         <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
           <Trophy className="w-8 h-8 text-gold/50" />
-          <p className="text-white/70">No tournaments match this filter.</p>
+          <p className="text-white/70">{t("emptyState")}</p>
         </div>
       ) : (
         <div className="space-y-2">
-          {tournaments.map((t) => (
+          {tournaments.map((row) => (
             <TournamentRow
-              key={t.id}
-              id={t.id}
-              title={t.title}
-              bannerUrl={t.banner_url}
-              gameType={t.game_type}
-              status={t.status}
-              maxTeams={t.max_teams}
-              approvedCount={approvedByTournament.get(t.id) ?? 0}
-              startDate={t.start_date}
+              key={row.id}
+              id={row.id}
+              title={pickLocalized(row, "name", locale)}
+              locale={locale}
+              bannerUrl={row.banner_url}
+              gameType={row.game_type}
+              status={row.status}
+              maxTeams={row.max_teams}
+              approvedCount={approvedByTournament.get(row.id) ?? 0}
+              startDate={row.start_date}
             />
           ))}
         </div>

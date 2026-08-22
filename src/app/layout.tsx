@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
-import { Orbitron, Rajdhani, Inter, JetBrains_Mono } from "next/font/google";
+import { Orbitron, Rajdhani, Inter, JetBrains_Mono, Noto_Sans_Khmer } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
@@ -29,6 +31,15 @@ const jetMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
+});
+
+// Loaded globally as a fallback in the font stack (see globals.css) — it
+// only supplies glyphs for the Khmer script and has no effect on Latin
+// text, so it's safe to include even for English-only page loads.
+const notoSansKhmer = Noto_Sans_Khmer({
+  variable: "--font-khmer",
+  subsets: ["khmer"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -94,19 +105,24 @@ export default async function RootLayout({
     // Anonymous / no session — keep the dark default.
   }
 
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <PlausibleScript />
       </head>
       <body
-        className={`${orbitron.variable} ${rajdhani.variable} ${inter.variable} ${jetMono.variable} antialiased`}
+        className={`${orbitron.variable} ${rajdhani.variable} ${inter.variable} ${jetMono.variable} ${notoSansKhmer.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme={initialTheme} enableSystem storageKey="ns-theme">
-          {children}
-          <Toaster />
-          <SonnerToaster theme="dark" position="bottom-right" />
-        </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ThemeProvider attribute="class" defaultTheme={initialTheme} enableSystem storageKey="ns-theme">
+            {children}
+            <Toaster />
+            <SonnerToaster theme="dark" position="bottom-right" />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -18,6 +19,7 @@ import type { RecruitmentPostType } from "@/lib/types/database";
 const GAME_LABELS: Record<string, string> = { MLBB: "Mobile Legends: Bang Bang", HOK: "Honor of Kings" };
 
 export function RecruitmentTabs({ active }: { active: RecruitmentPostType }) {
+  const t = useTranslations("recruitment");
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -41,7 +43,7 @@ export function RecruitmentTabs({ active }: { active: RecruitmentPostType }) {
               : "text-text-secondary hover:text-text-primary border-transparent hover:border-gold/20"
           )}
         >
-          {tab === "LFT" ? "Looking For Team" : "Looking For Player"}
+          {tab === "LFT" ? t("lookingForTeam") : t("lookingForPlayer")}
         </Link>
       ))}
     </div>
@@ -49,6 +51,7 @@ export function RecruitmentTabs({ active }: { active: RecruitmentPostType }) {
 }
 
 export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType }) {
+  const t = useTranslations("recruitment");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -76,7 +79,7 @@ export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="bg-popover border-gold/30">
-          <SelectItem value="ANY">All Games</SelectItem>
+          <SelectItem value="ANY">{t("allGames")}</SelectItem>
           {RECRUITMENT_GAMES.map((g) => (
             <SelectItem key={g} value={g}>
               {GAME_LABELS[g]}
@@ -90,7 +93,7 @@ export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="bg-popover border-gold/30">
-          <SelectItem value="ANY">All Roles</SelectItem>
+          <SelectItem value="ANY">{t("allRoles")}</SelectItem>
           {RECRUITMENT_ROLES.filter((r) => r !== "ANY").map((r) => (
             <SelectItem key={r} value={r}>
               {getRoleLabels(activeGame)[r]}
@@ -105,7 +108,7 @@ export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType
           onChange={(e) => setCountry(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && updateParams({ country: country || null })}
           onBlur={() => updateParams({ country: country || null })}
-          placeholder="Country"
+          placeholder={t("countryPlaceholder")}
           className="ns-input h-9 w-36 text-sm"
         />
       )}
@@ -115,10 +118,10 @@ export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="bg-popover border-gold/30">
-          <SelectItem value="ANY">Any Status</SelectItem>
+          <SelectItem value="ANY">{t("anyStatus")}</SelectItem>
           {RECRUITMENT_STATUSES.map((s) => (
             <SelectItem key={s} value={s}>
-              {s === "OPEN" ? "Open" : "Closed"}
+              {s === "OPEN" ? t("statusOpen") : t("statusClosed")}
             </SelectItem>
           ))}
         </SelectContent>

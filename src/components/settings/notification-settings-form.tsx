@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Loader2, Save } from "lucide-react";
 import { updateNotificationPreferences, type ActionResult } from "@/app/settings/actions";
@@ -10,15 +11,18 @@ import type { Profile } from "@/lib/types/database";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useTranslations("settings.notifications");
+  const tCommon = useTranslations("common");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold h-11 px-6">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {pending ? "Saving..." : "Save Changes"}
+      {pending ? tCommon("saving") : t("saveChanges")}
     </Button>
   );
 }
 
 export function NotificationSettingsForm({ profile }: { profile: Profile }) {
+  const t = useTranslations("settings.notifications");
   const [state, formAction] = useActionState<ActionResult | null, FormData>(
     updateNotificationPreferences,
     null
@@ -46,39 +50,39 @@ export function NotificationSettingsForm({ profile }: { profile: Profile }) {
 
       <div className="ns-card rounded-xl p-5">
         <ToggleRow
-          label="Tournament Notifications"
-          description="Registration approvals, rejections, and status changes."
+          label={t("tournament.label")}
+          description={t("tournament.description")}
           checked={tournament}
           onCheckedChange={setTournament}
         />
         <ToggleRow
-          label="Match Notifications"
-          description="Scheduling, results, and dispute activity."
+          label={t("match.label")}
+          description={t("match.description")}
           checked={match}
           onCheckedChange={setMatch}
         />
         <ToggleRow
-          label="News Notifications"
-          description="Major announcements and tournament news."
+          label={t("news.label")}
+          description={t("news.description")}
           checked={news}
           onCheckedChange={setNews}
         />
         <ToggleRow
-          label="System Notifications"
-          description="Platform-wide updates and account activity."
+          label={t("system.label")}
+          description={t("system.description")}
           checked={system}
           onCheckedChange={setSystem}
         />
         <ToggleRow
-          label="Email Notifications"
-          description="Future-ready — stored now, no emails are sent yet."
+          label={t("email.label")}
+          description={t("email.description")}
           checked={email}
           onCheckedChange={setEmail}
         />
       </div>
 
       {state && "error" in state && <p className="text-sm text-destructive">{state.error}</p>}
-      {state && "success" in state && <p className="text-sm text-emerald-400">Saved.</p>}
+      {state && "success" in state && <p className="text-sm text-emerald-400">{t("saved")}</p>}
 
       <div className="flex justify-end pt-2 border-t border-gold/10">
         <SubmitButton />

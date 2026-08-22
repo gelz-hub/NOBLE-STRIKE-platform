@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
-import { NEWS_CATEGORIES, NEWS_CATEGORY_LABELS, NEWS_STATUSES } from "@/lib/validation/news";
+import { NEWS_CATEGORIES, NEWS_STATUSES } from "@/lib/validation/news";
 
 export function NewsFilters() {
   const router = useRouter();
@@ -20,6 +21,9 @@ export function NewsFilters() {
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [, startTransition] = useTransition();
+  const t = useTranslations("admin.news");
+  const tCategory = useTranslations("news.category");
+  const tStatus = useTranslations("admin.news.statusOption");
 
   const activeStatus = searchParams.get("status") ?? "ALL";
   const activeCategory = searchParams.get("category") ?? "ALL";
@@ -49,7 +53,7 @@ export function NewsFilters() {
                 : "text-white/60 border-transparent hover:border-gold/20"
             )}
           >
-            {s}
+            {s === "ALL" ? t("statusOption.ALL") : tStatus(s)}
           </button>
         ))}
       </div>
@@ -66,20 +70,20 @@ export function NewsFilters() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search title..."
+            placeholder={t("searchTitlePlaceholder")}
             className="h-9 pl-9 ns-input text-sm"
           />
         </form>
 
         <Select value={activeCategory} onValueChange={(v) => updateParams({ category: v })}>
           <SelectTrigger className="h-9 w-full sm:w-48 ns-input text-sm">
-            <SelectValue placeholder="All Categories" />
+            <SelectValue placeholder={t("allCategories")} />
           </SelectTrigger>
           <SelectContent className="bg-popover border-gold/30">
-            <SelectItem value="ALL">All Categories</SelectItem>
+            <SelectItem value="ALL">{t("allCategories")}</SelectItem>
             {NEWS_CATEGORIES.map((c) => (
               <SelectItem key={c} value={c}>
-                {NEWS_CATEGORY_LABELS[c]}
+                {tCategory(c.toLowerCase())}
               </SelectItem>
             ))}
           </SelectContent>
@@ -87,12 +91,12 @@ export function NewsFilters() {
 
         <Select value={activePinned} onValueChange={(v) => updateParams({ pinned: v })}>
           <SelectTrigger className="h-9 w-full sm:w-36 ns-input text-sm">
-            <SelectValue placeholder="Pinned" />
+            <SelectValue placeholder={t("pinned")} />
           </SelectTrigger>
           <SelectContent className="bg-popover border-gold/30">
-            <SelectItem value="ALL">Pinned: All</SelectItem>
-            <SelectItem value="true">Pinned Only</SelectItem>
-            <SelectItem value="false">Not Pinned</SelectItem>
+            <SelectItem value="ALL">{t("pinnedAll")}</SelectItem>
+            <SelectItem value="true">{t("pinnedOnly")}</SelectItem>
+            <SelectItem value="false">{t("notPinned")}</SelectItem>
           </SelectContent>
         </Select>
       </div>

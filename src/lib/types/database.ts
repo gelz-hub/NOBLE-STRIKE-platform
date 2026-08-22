@@ -5,6 +5,7 @@
 
 export type Role = "user" | "admin";
 export type ThemePreference = "dark" | "light" | "system";
+export type LocalePreference = "en" | "km";
 
 export interface SocialLinkEntry {
   platform: string;
@@ -19,6 +20,7 @@ export interface Profile {
   discord_username: string | null;
   role: Role;
   theme_preference: ThemePreference;
+  locale: LocalePreference;
   display_name: string | null;
   bio: string | null;
   banner_url: string | null;
@@ -64,6 +66,10 @@ export interface Team {
   banner_url: string | null;
   description: string | null;
   is_official: boolean;
+  game: "MLBB" | "HOK" | null;
+  contact_number: string | null;
+  captain_telegram: string | null;
+  province: string | null;
   created_at: string;
 }
 
@@ -85,9 +91,7 @@ export interface TeamMember {
   is_captain: boolean;
   is_substitute: boolean;
   is_coach: boolean;
-  country: string | null;
   game_id: string | null;
-  discord: string | null;
   avatar_url: string | null;
   user_id: string | null;
   created_at: string;
@@ -106,8 +110,10 @@ export type SeedingMethod = "RANDOM";
 
 export interface Tournament {
   id: string;
-  title: string;
-  description: string | null;
+  name_en: string;
+  name_km: string | null;
+  description_en: string | null;
+  description_km: string | null;
   game_type: "MLBB" | "HOK";
   slug: string;
   max_teams: number;
@@ -244,10 +250,13 @@ export type NewsStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
 export interface News {
   id: string;
-  title: string;
+  title_en: string;
+  title_km: string | null;
   slug: string;
-  content: string;
-  excerpt: string | null;
+  content_en: string;
+  content_km: string | null;
+  excerpt_en: string | null;
+  excerpt_km: string | null;
   category: NewsCategory;
   featured: boolean;
   pinned: boolean;
@@ -259,6 +268,43 @@ export interface News {
   seo_description: string | null;
   seo_keywords: string[] | null;
   tournament_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type LegacyEventCategory = "TOURNAMENT" | "COMMUNITY";
+export type LegacyEventStatus = "COMPLETED" | "ARCHIVED" | "UPCOMING";
+
+export interface LegacyEvent {
+  id: string;
+  year: number;
+  title_en: string;
+  title_km: string | null;
+  category: LegacyEventCategory;
+  status: LegacyEventStatus;
+  event_date_label: string | null;
+  game: string | null;
+  teams_label: string | null;
+  teams_max: number | null;
+  format: string | null;
+  organized_by: string | null;
+  live_broadcast: boolean;
+  entry_fee: string | null;
+  tournament_mode: string | null;
+  prize_pool_label: string | null;
+  prize_pool_max: number | null;
+  champion: string | null;
+  runner_up: string | null;
+  top_3_4: string[];
+  support_team: string | null;
+  views: number;
+  description_en: string | null;
+  description_km: string | null;
+  cover_image_url: string | null;
+  gallery_urls: string[];
+  display_order: number;
+  is_published: boolean;
+  created_by: string | null;
   created_at: string;
   updated_at: string;
 }

@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from "react";
 import Image from "next/image";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
+import { pickLocalized } from "@/lib/i18n/content";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { TeamMonogram } from "@/components/ns/ui";
-import { Check, Crown, Eye, Loader2, X } from "lucide-react";
+import { Check, Crown, Eye, Loader2, Phone, Send, X } from "lucide-react";
 import {
   approveRegistration,
   getTeamRosterForReview,
@@ -20,6 +22,7 @@ import {
   type AdminRegistrationRow,
 } from "@/app/admin/registrations/actions";
 import type { Team, TeamMember } from "@/lib/types/database";
+import type { Locale } from "@/i18n/config";
 
 export function RegistrationReviewPanel({
   registration,
@@ -35,6 +38,11 @@ export function RegistrationReviewPanel({
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectInput, setShowRejectInput] = useState(false);
   const [pending, startTransition] = useTransition();
+  const locale = useLocale() as Locale;
+  const t = useTranslations("admin.registrations");
+  const tournamentName = registration.tournaments
+    ? pickLocalized(registration.tournaments, "name", locale)
+    : null;
 
   async function handleOpen(next: boolean) {
     setOpen(next);
@@ -57,7 +65,7 @@ export function RegistrationReviewPanel({
         toast.error(result.error);
         return;
       }
-      toast.success("Registration approved.");
+      toast.success(t("approveSuccess"));
       setOpen(false);
       onDone?.();
     });
@@ -65,7 +73,7 @@ export function RegistrationReviewPanel({
 
   function handleReject() {
     if (!rejectReason.trim()) {
-      toast.error("Please provide a rejection reason.");
+      toast.error(t("rejectReasonRequired"));
       return;
     }
     startTransition(async () => {
@@ -74,7 +82,7 @@ export function RegistrationReviewPanel({
         toast.error(result.error);
         return;
       }
-      toast.success("Registration rejected.");
+      toast.success(t("rejectSuccess"));
       setOpen(false);
       onDone?.();
     });
@@ -89,15 +97,15 @@ export function RegistrationReviewPanel({
         className="h-8 px-3 text-xs uppercase tracking-wider text-gold hover:text-gold-light"
       >
         <Eye className="w-3.5 h-3.5" />
-        Review
+        {t("review")}
       </Button>
 
       <DialogContent className="max-w-2xl max-h-[88vh] overflow-y-auto bg-popover border-gold/30">
         <DialogTitle className="text-white font-display">
           {registration.teams?.team_name}
         </DialogTitle>
-        <DialogDescription>
-          Registration for {registration.tournaments?.title}
+        <DialogDescription lang={locale}>
+          {t("registrationFor", { tournament: tournamentName ?? "" })}
         </DialogDescription>
 
         {loading ? (
@@ -119,15 +127,37 @@ export function RegistrationReviewPanel({
                 {captain && (
                   <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
                     <Crown className="w-3 h-3 text-gold" />
-                    Captain: {captain.player_name}
+                    {t("captainLabel", { name: captain.player_name })}
                   </p>
                 )}
               </div>
             </div>
 
+            {(team?.captain_telegram || team?.contact_number) && (
+              <div className="ns-card rounded-lg p-3 space-y-1.5">
+                <p className="text-[0.65rem] font-heading font-semibold uppercase tracking-wider text-gold-light">
+                  {t("captainContact")}
+                </p>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  {team?.captain_telegram && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Send className="w-3.5 h-3.5 text-gold/70 shrink-0" />
+                      <span className="text-white/90 truncate">{team.captain_telegram}</span>
+                    </div>
+                  )}
+                  {team?.contact_number && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-3.5 h-3.5 text-gold/70 shrink-0" />
+                      <span className="text-white/90 truncate">{team.contact_number}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div>
               <p className="text-xs font-heading font-semibold uppercase tracking-wider text-gold-light mb-2">
-                Roster ({members.length})
+                {t("roster", { count: members.length })}
               </p>
               <div className="grid sm:grid-cols-2 gap-2">
                 {members.map((m) => (
@@ -151,7 +181,7 @@ export function RegistrationReviewPanel({
                   <Textarea
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Reason for rejection..."
+                    placeholder={t("rejectReasonPlaceholder")}
                     className="ns-input text-sm"
                   />
                 )}
@@ -165,7 +195,7 @@ export function RegistrationReviewPanel({
                       className="h-10 px-4 text-xs uppercase tracking-wider text-destructive hover:bg-destructive/10 border border-destructive/30"
                     >
                       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
-                      Confirm Reject
+                      {t("confirmReject")}
                     </Button>
                   ) : (
                     <Button
@@ -175,7 +205,7 @@ export function RegistrationReviewPanel({
                       className="h-10 px-4 text-xs uppercase tracking-wider text-destructive hover:bg-destructive/10 border border-destructive/30"
                     >
                       <X className="w-4 h-4" />
-                      Reject
+                      {t("reject")}
                     </Button>
                   )}
                   <Button
@@ -185,7 +215,7 @@ export function RegistrationReviewPanel({
                     className="ns-btn-gold h-10 px-5 text-xs uppercase tracking-wider"
                   >
                     {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                    Approve
+                    {t("approve")}
                   </Button>
                 </div>
               </div>

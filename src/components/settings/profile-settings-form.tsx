@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,15 +43,18 @@ function FormSection({
 
 function SubmitButton() {
   const { pending } = useFormStatus();
+  const t = useTranslations("settings.profile");
+  const tCommon = useTranslations("common");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold h-11 px-6">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {pending ? "Saving..." : "Save Changes"}
+      {pending ? tCommon("saving") : t("saveChanges")}
     </Button>
   );
 }
 
 export function ProfileSettingsForm({ profile }: { profile: Profile }) {
+  const t = useTranslations("settings.profile");
   const [state, formAction] = useActionState<ActionResult | null, FormData>(updateProfileSettings, null);
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
   const [bannerUrl, setBannerUrl] = useState(profile.banner_url ?? "");
@@ -66,18 +70,18 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
       <input type="hidden" name="banner_url" value={bannerUrl} />
       <input type="hidden" name="social_links" value={JSON.stringify(links)} />
 
-      <FormSection icon={User} title="Avatar & Banner">
+      <FormSection icon={User} title={t("avatarBannerTitle")}>
         <div className="flex flex-wrap gap-6">
-          <ImageUpload useCase="profileAvatar" label="Avatar" shape="circle" size={120} currentUrl={avatarUrl} onUploaded={setAvatarUrl} />
-          <ImageUpload useCase="profileBanner" label="Banner" shape="wide" size={320} currentUrl={bannerUrl} onUploaded={setBannerUrl} />
+          <ImageUpload useCase="profileAvatar" label={t("avatarLabel")} shape="circle" size={120} currentUrl={avatarUrl} onUploaded={setAvatarUrl} />
+          <ImageUpload useCase="profileBanner" label={t("bannerLabel")} shape="wide" size={320} currentUrl={bannerUrl} onUploaded={setBannerUrl} />
         </div>
       </FormSection>
 
-      <FormSection icon={User} title="Identity">
+      <FormSection icon={User} title={t("identityTitle")}>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              Username <span className="text-gold">*</span>
+              {t("usernameLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               name="username"
@@ -86,21 +90,21 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
               placeholder="e.g. nightshade"
               className="ns-input"
             />
-            <p className="text-[0.7rem] text-muted-foreground">3-20 characters: letters, numbers, underscores.</p>
+            <p className="text-[0.7rem] text-muted-foreground">{t("usernameHint")}</p>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Display Name</Label>
+            <Label className="text-xs text-muted-foreground">{t("displayNameLabel")}</Label>
             <Input
               name="display_name"
               defaultValue={profile.display_name ?? ""}
-              placeholder="Shown instead of your username where set"
+              placeholder={t("displayNamePlaceholder")}
               className="ns-input"
             />
           </div>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Country</Label>
+            <Label className="text-xs text-muted-foreground">{t("countryLabel")}</Label>
             <Input
               name="country"
               defaultValue={profile.country ?? ""}
@@ -109,7 +113,7 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Discord Username</Label>
+            <Label className="text-xs text-muted-foreground">{t("discordUsernameLabel")}</Label>
             <Input
               name="discord_username"
               defaultValue={profile.discord_username ?? ""}
@@ -119,18 +123,18 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
           </div>
         </div>
         <div className="space-y-1.5">
-          <Label className="text-xs text-muted-foreground">Bio</Label>
+          <Label className="text-xs text-muted-foreground">{t("bioLabel")}</Label>
           <Textarea
             name="bio"
             defaultValue={profile.bio ?? ""}
             maxLength={500}
-            placeholder="Tell the community about yourself..."
+            placeholder={t("bioPlaceholder")}
             className="ns-input min-h-24"
           />
         </div>
       </FormSection>
 
-      <FormSection icon={User} title="Social Links">
+      <FormSection icon={User} title={t("socialLinksTitle")}>
         <div className="space-y-3">
           {links.map((link, i) => (
             <div key={i} className="flex flex-wrap items-center gap-2">
@@ -172,14 +176,14 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
               className="ns-btn-outline"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add Link
+              {t("addLink")}
             </Button>
           )}
         </div>
       </FormSection>
 
       {state && "error" in state && <p className="text-sm text-destructive">{state.error}</p>}
-      {state && "success" in state && <p className="text-sm text-emerald-400">Saved.</p>}
+      {state && "success" in state && <p className="text-sm text-emerald-400">{t("saved")}</p>}
 
       <div className="flex justify-end pt-2 border-t border-gold/10">
         <SubmitButton />

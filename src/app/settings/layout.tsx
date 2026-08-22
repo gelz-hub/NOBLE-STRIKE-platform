@@ -1,11 +1,13 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { SettingsNav } from "@/components/settings/settings-nav";
 import { NSLogo } from "@/components/ns/logo";
 import { ArrowLeft } from "lucide-react";
 
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("settings");
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,14 +31,14 @@ export default async function SettingsLayout({ children }: { children: React.Rea
             className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-text-secondary hover:text-gold-light transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Dashboard
+            {t("backToDashboard")}
           </Link>
         </div>
       </header>
 
       <main className="relative mx-auto max-w-4xl px-4 md:px-6 py-8">
         <h1 className="font-display font-extrabold text-2xl md:text-3xl text-text-primary mb-6">
-          Account Settings
+          {t("accountSettings")}
         </h1>
         <SettingsNav />
         {children}

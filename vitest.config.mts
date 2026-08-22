@@ -10,6 +10,8 @@ export default defineConfig({
       "@": path.resolve(dirname, "./src"),
       // See test/mocks/server-only.ts for why.
       "server-only": path.resolve(dirname, "./test/mocks/server-only.ts"),
+      // See test/mocks/next-intl-server.ts for why.
+      "next-intl/server": path.resolve(dirname, "./test/mocks/next-intl-server.ts"),
     },
   },
   test: {

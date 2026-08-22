@@ -1,5 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Profile, Team, Match, News } from "@/lib/types/database";
+import type { Locale } from "@/i18n/config";
+import { pickLocalized } from "@/lib/i18n/content";
 
 type DB = SupabaseClient;
 
@@ -97,7 +99,8 @@ export interface AchievementEntry {
  *  they're associated with (see getProfileTeams). */
 export async function getTournamentStats(
   supabase: DB,
-  teamIds: string[]
+  teamIds: string[],
+  locale: Locale = "en"
 ): Promise<{ stats: TournamentStats; titles: AchievementEntry[] }> {
   const empty = { stats: { played: 0, wins: 0, losses: 0, winRate: 0, championships: 0, runnerUps: 0 }, titles: [] };
   if (teamIds.length === 0) return empty;
@@ -116,11 +119,11 @@ export async function getTournamentStats(
         .or(`team_a_id.in.(${teamIds.join(",")}),team_b_id.in.(${teamIds.join(",")})`),
       supabase
         .from("tournaments")
-        .select("id, title, slug, champion_date")
+        .select("id, name_en, name_km, slug, champion_date")
         .in("champion_team_id", teamIds),
       supabase
         .from("tournaments")
-        .select("id, title, slug, champion_date")
+        .select("id, name_en, name_km, slug, champion_date")
         .in("runner_up_team_id", teamIds),
     ]);
 
@@ -139,14 +142,14 @@ export async function getTournamentStats(
   const titles: AchievementEntry[] = [
     ...(championTournaments ?? []).map((t) => ({
       tournamentId: t.id,
-      tournamentTitle: t.title,
+      tournamentTitle: pickLocalized(t, "name", locale),
       tournamentSlug: t.slug,
       placement: "champion" as const,
       date: t.champion_date,
     })),
     ...(runnerUpTournaments ?? []).map((t) => ({
       tournamentId: t.id,
-      tournamentTitle: t.title,
+      tournamentTitle: pickLocalized(t, "name", locale),
       tournamentSlug: t.slug,
       placement: "runner_up" as const,
       date: t.champion_date,
@@ -182,14 +185,15 @@ export interface RecentMatchEntry {
 export async function getRecentMatches(
   supabase: DB,
   teamIds: string[],
-  limit = 5
+  limit = 5,
+  locale: Locale = "en"
 ): Promise<RecentMatchEntry[]> {
   if (teamIds.length === 0) return [];
 
   const { data } = await supabase
     .from("matches")
     .select(
-      "id, status, score_a, score_b, winner_id, team_a_id, team_b_id, scheduled_at, updated_at, team_a:team_a_id(team_name), team_b:team_b_id(team_name), tournament:tournament_id(id, title)"
+      "id, status, score_a, score_b, winner_id, team_a_id, team_b_id, scheduled_at, updated_at, team_a:team_a_id(team_name), team_b:team_b_id(team_name), tournament:tournament_id(id, name_en, name_km)"
     )
     .or(`team_a_id.in.(${teamIds.join(",")}),team_b_id.in.(${teamIds.join(",")})`)
     .order("updated_at", { ascending: false })
@@ -206,7 +210,7 @@ export async function getRecentMatches(
     scheduled_at: string | null;
     team_a: { team_name: string } | null;
     team_b: { team_name: string } | null;
-    tournament: { id: string; title: string } | null;
+    tournament: { id: string; name_en: string; name_km: string | null } | null;
   }[]).map((m) => {
     const isTeamA = m.team_a_id ? teamIds.includes(m.team_a_id) : false;
     const teamName = (isTeamA ? m.team_a?.team_name : m.team_b?.team_name) ?? "Your team";
@@ -216,7 +220,7 @@ export async function getRecentMatches(
     const won = m.winner_id ? teamIds.includes(m.winner_id) : null;
     return {
       id: m.id,
-      tournamentTitle: m.tournament?.title ?? "Tournament",
+      tournamentTitle: m.tournament ? pickLocalized(m.tournament, "name", locale) : "Tournament",
       tournamentId: m.tournament?.id ?? "",
       opponentName,
       teamName,

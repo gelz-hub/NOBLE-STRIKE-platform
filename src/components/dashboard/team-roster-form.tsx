@@ -2,42 +2,34 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ImageUpload } from "@/components/cloudinary/image-upload";
-import { Crown, Loader2, Plus, Save, Trash2, UserRound } from "lucide-react";
+import { Crown, Loader2, Pencil, Phone, Plus, Save, Send, Trash2, UserRound } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { rosterSchema, REQUIRED_ROLES, type RosterMemberInput } from "@/lib/validation/team";
+import { rosterSchema, REQUIRED_ROLES, getRoleLabelsForGame, type RosterMemberInput } from "@/lib/validation/team";
 import type { RosterRole, TeamMember } from "@/lib/types/database";
 import { saveRoster } from "@/app/dashboard/teams/actions";
 
 interface TeamRosterFormProps {
   teamId: string;
+  game?: string | null;
+  contactNumber?: string | null;
+  captainTelegram?: string | null;
   initialMembers: TeamMember[];
 }
 
 type Row = RosterMemberInput;
-
-const ROLE_LABELS: Record<RosterRole, string> = {
-  EXP: "Exp Laner",
-  JUNGLE: "Jungler",
-  MID: "Mid Laner",
-  GOLD: "Gold Laner",
-  ROAM: "Roamer",
-  SUB1: "Substitute 1",
-  SUB2: "Substitute 2",
-  COACH: "Coach",
-};
 
 function emptyRow(role: RosterRole): Row {
   return {
     role,
     player_name: "",
     game_id: "",
-    country: "",
-    discord: "",
     avatar_url: "",
     is_captain: false,
   };
@@ -52,8 +44,6 @@ function buildInitialRows(initialMembers: TeamMember[]): Row[] {
           role,
           player_name: existing.player_name,
           game_id: existing.game_id ?? "",
-          country: existing.country ?? "",
-          discord: existing.discord ?? "",
           avatar_url: existing.avatar_url ?? "",
           is_captain: existing.is_captain,
         }
@@ -66,8 +56,6 @@ function buildInitialRows(initialMembers: TeamMember[]): Row[] {
         role,
         player_name: existing.player_name,
         game_id: existing.game_id ?? "",
-        country: existing.country ?? "",
-        discord: existing.discord ?? "",
         avatar_url: existing.avatar_url ?? "",
         is_captain: false,
       });
@@ -76,11 +64,27 @@ function buildInitialRows(initialMembers: TeamMember[]): Row[] {
   return rows;
 }
 
-export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) {
+export function TeamRosterForm({
+  teamId,
+  game,
+  contactNumber,
+  captainTelegram,
+  initialMembers,
+}: TeamRosterFormProps) {
+  const t = useTranslations();
+  const tRoster = useTranslations("dashboard.roster");
+  const roleLabels = getRoleLabelsForGame(game);
   const [rows, setRows] = useState<Row[]>(() => buildInitialRows(initialMembers));
   const [pending, startTransition] = useTransition();
   const [errors, setErrors] = useState<string[]>([]);
   const router = useRouter();
+
+  /** Zod messages are dot-path keys, optionally `key|role` — see src/lib/validation/team.ts. */
+  function resolveIssue(raw: string): string {
+    const [key, param] = raw.split("|");
+    if (!t.has(key)) return raw;
+    return param ? t(key, { role: param }) : t(key);
+  }
 
   const hasSub1 = rows.some((r) => r.role === "SUB1");
   const hasSub2 = rows.some((r) => r.role === "SUB2");
@@ -105,7 +109,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
   function handleSave() {
     const parsed = rosterSchema.safeParse(rows);
     if (!parsed.success) {
-      const messages = [...new Set(parsed.error.issues.map((i) => i.message))];
+      const messages = [...new Set(parsed.error.issues.map((i) => resolveIssue(i.message)))];
       setErrors(messages);
       return;
     }
@@ -116,7 +120,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
         toast.error(result.error);
         return;
       }
-      toast.success("Roster saved.");
+      toast.success(tRoster("rosterSaved"));
       router.push(`/teams/${teamId}`);
     });
   }
@@ -125,30 +129,63 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
   const subs = rows.filter((r) => r.role === "SUB1" || r.role === "SUB2");
   const coach = rows.find((r) => r.role === "COACH");
   const captainRow = rows.find((r) => r.is_captain);
+  const startingFilled = starting.filter((r) => r.player_name.trim().length > 0).length;
 
   return (
     <div className="space-y-8">
-      {/* Captain summary */}
+      {/* Roster progress */}
+      <section className="ns-card rounded-xl p-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs">
+        <ProgressStat label={tRoster("startingPlayers")} value={startingFilled} max={REQUIRED_ROLES.length} />
+        <ProgressStat label={tRoster("substitutes")} value={subs.length} max={2} />
+        <ProgressStat label={tRoster("coach")} value={coach ? 1 : 0} max={1} />
+      </section>
+
+      {/* Captain Information — the team's sole point of contact */}
       <section className="space-y-3">
-        <SectionLabel icon={Crown} title="Captain" />
-        <div className="ns-card rounded-xl p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center">
-            <Crown className="w-4 h-4 text-gold" />
+        <SectionLabel icon={Crown} title={tRoster("captainInfoTitle")} />
+        <div className="ns-card rounded-xl p-4 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gold/10 border border-gold/40 flex items-center justify-center shrink-0">
+              <Crown className="w-4 h-4 text-gold" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[0.65rem] text-muted-foreground uppercase tracking-wider">
+                {tRoster("captainIgn")}
+              </p>
+              <p className="text-white font-medium truncate">
+                {captainRow?.player_name || tRoster("noCaptainSelected")}
+              </p>
+            </div>
           </div>
-          <p className="text-white font-medium">
-            {captainRow?.player_name || "No captain selected yet"}
-          </p>
+          <div className="grid sm:grid-cols-2 gap-3 pt-1">
+            <div className="flex items-center gap-2 text-sm">
+              <Send className="w-3.5 h-3.5 text-gold/70 shrink-0" />
+              <span className="text-white/90 truncate">{captainTelegram || tRoster("notSet")}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm">
+              <Phone className="w-3.5 h-3.5 text-gold/70 shrink-0" />
+              <span className="text-white/90 truncate">{contactNumber || tRoster("notSet")}</span>
+            </div>
+          </div>
+          <Link
+            href={`/dashboard/teams/${teamId}/edit`}
+            className="inline-flex items-center gap-1.5 text-[0.7rem] text-gold hover:text-gold-light"
+          >
+            <Pencil className="w-3 h-3" />
+            {tRoster("editTelegramContact")}
+          </Link>
         </div>
       </section>
 
       {/* Starting five */}
       <section className="space-y-3">
-        <SectionLabel icon={UserRound} title="Starting Lineup" />
+        <SectionLabel icon={UserRound} title={tRoster("startingLineupTitle")} />
         <div className="grid sm:grid-cols-2 gap-4">
           {starting.map((row) => (
             <RosterRowCard
               key={row.role}
               row={row}
+              roleLabel={roleLabels[row.role]}
               onChange={(patch) => updateRow(row.role, patch)}
               onSetCaptain={() => setCaptain(row.role)}
               canBeCaptain
@@ -160,7 +197,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
       {/* Substitutes */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <SectionLabel icon={UserRound} title="Substitutes" />
+          <SectionLabel icon={UserRound} title={tRoster("substitutes")} />
           <div className="flex gap-2">
             {!hasSub1 && (
               <Button
@@ -170,7 +207,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
                 className="h-8 px-3 text-xs text-gold hover:text-gold-light"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Add Sub 1
+                {tRoster("addSub1")}
               </Button>
             )}
             {!hasSub2 && (
@@ -181,7 +218,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
                 className="h-8 px-3 text-xs text-gold hover:text-gold-light"
               >
                 <Plus className="w-3.5 h-3.5" />
-                Add Sub 2
+                {tRoster("addSub2")}
               </Button>
             )}
           </div>
@@ -192,20 +229,21 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
               <RosterRowCard
                 key={row.role}
                 row={row}
+                roleLabel={roleLabels[row.role]}
                 onChange={(patch) => updateRow(row.role, patch)}
                 onRemove={() => removeRow(row.role)}
               />
             ))}
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">No substitutes added.</p>
+          <p className="text-xs text-muted-foreground">{tRoster("noSubstitutesAdded")}</p>
         )}
       </section>
 
       {/* Coach */}
       <section className="space-y-3">
         <div className="flex items-center justify-between">
-          <SectionLabel icon={UserRound} title="Coach" />
+          <SectionLabel icon={UserRound} title={tRoster("coach")} />
           {!hasCoach && (
             <Button
               type="button"
@@ -214,7 +252,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
               className="h-8 px-3 text-xs text-gold hover:text-gold-light"
             >
               <Plus className="w-3.5 h-3.5" />
-              Add Coach
+              {tRoster("addCoach")}
             </Button>
           )}
         </div>
@@ -222,12 +260,13 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
           <div className="grid sm:grid-cols-2 gap-4">
             <RosterRowCard
               row={coach}
+              roleLabel={roleLabels[coach.role]}
               onChange={(patch) => updateRow("COACH", patch)}
               onRemove={() => removeRow("COACH")}
             />
           </div>
         ) : (
-          <p className="text-xs text-muted-foreground">Optional — no coach added.</p>
+          <p className="text-xs text-muted-foreground">{tRoster("coachOptional")}</p>
         )}
       </section>
 
@@ -244,7 +283,7 @@ export function TeamRosterForm({ teamId, initialMembers }: TeamRosterFormProps) 
       <div className="flex justify-end pt-4 border-t border-gold/10">
         <Button onClick={handleSave} disabled={pending} className="ns-btn-gold h-11 px-6">
           {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {pending ? "Saving..." : "Save Roster"}
+          {pending ? tRoster("saving") : tRoster("saveRoster")}
         </Button>
       </div>
     </div>
@@ -263,19 +302,31 @@ function SectionLabel({ icon: Icon, title }: { icon: React.ElementType; title: s
   );
 }
 
+function ProgressStat({ label, value, max }: { label: string; value: number; max: number }) {
+  const complete = value >= max;
+  return (
+    <span className={cn("font-medium", complete ? "text-gold" : "text-muted-foreground")}>
+      {value}/{max} {label}
+    </span>
+  );
+}
+
 function RosterRowCard({
   row,
+  roleLabel,
   onChange,
   onSetCaptain,
   onRemove,
   canBeCaptain,
 }: {
   row: Row;
+  roleLabel: string;
   onChange: (patch: Partial<Row>) => void;
   onSetCaptain?: () => void;
   onRemove?: () => void;
   canBeCaptain?: boolean;
 }) {
+  const t = useTranslations("dashboard.roster");
   return (
     <div
       className={cn(
@@ -285,7 +336,7 @@ function RosterRowCard({
     >
       <div className="flex items-center justify-between">
         <span className="text-xs font-heading font-bold uppercase tracking-wider text-gold-light">
-          {ROLE_LABELS[row.role]}
+          {roleLabel}
         </span>
         <div className="flex items-center gap-2">
           {canBeCaptain && (
@@ -300,7 +351,7 @@ function RosterRowCard({
               )}
             >
               <Crown className="w-3 h-3" />
-              Captain
+              {t("captain")}
             </button>
           )}
           {onRemove && (
@@ -308,7 +359,7 @@ function RosterRowCard({
               type="button"
               onClick={onRemove}
               className="text-white/40 hover:text-destructive transition-colors"
-              aria-label="Remove"
+              aria-label={t("remove")}
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -327,45 +378,26 @@ function RosterRowCard({
         <div className="flex-1 space-y-2.5">
           <div className="space-y-1">
             <Label className="text-[0.65rem] text-muted-foreground">
-              Player Name <span className="text-gold">*</span>
+              {t("ignLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               value={row.player_name}
               onChange={(e) => onChange({ player_name: e.target.value })}
-              placeholder="In-game name"
+              placeholder={t("ignPlaceholder")}
               className="h-8 ns-input text-sm"
             />
+            <p className="text-[0.65rem] text-muted-foreground">{t("ignHint")}</p>
           </div>
           <div className="space-y-1">
-            <Label className="text-[0.65rem] text-muted-foreground">Game ID</Label>
+            <Label className="text-[0.65rem] text-muted-foreground">{t("gameIdLabel")}</Label>
             <Input
               value={row.game_id}
               onChange={(e) => onChange({ game_id: e.target.value })}
               placeholder="e.g. 123456789 (1234)"
               className="h-8 ns-input text-sm"
             />
+            <p className="text-[0.65rem] text-muted-foreground">{t("gameIdHint")}</p>
           </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2.5">
-        <div className="space-y-1">
-          <Label className="text-[0.65rem] text-muted-foreground">Country</Label>
-          <Input
-            value={row.country}
-            onChange={(e) => onChange({ country: e.target.value })}
-            placeholder="e.g. PH"
-            className="h-8 ns-input text-sm"
-          />
-        </div>
-        <div className="space-y-1">
-          <Label className="text-[0.65rem] text-muted-foreground">Discord</Label>
-          <Input
-            value={row.discord}
-            onChange={(e) => onChange({ discord: e.target.value })}
-            placeholder="username"
-            className="h-8 ns-input text-sm"
-          />
         </div>
       </div>
     </div>

@@ -17,9 +17,11 @@ export const matchNotesSchema = z.object({
   result_notes: z.string().trim().max(2000).optional(),
 });
 
+// Zod messages are dot-path translation keys, resolved at the call site
+// (see src/app/matches/[id]/actions.ts), same convention as team.ts/legacy.ts.
 export const openDisputeSchema = z.object({
-  explanation: z.string().trim().min(10, "Please explain the dispute in at least 10 characters.").max(2000),
-  evidence_urls: z.array(z.string().url()).max(10, "Maximum 10 evidence files."),
+  explanation: z.string().trim().min(10, "validation.match.explanationTooShort").max(2000),
+  evidence_urls: z.array(z.string().url()).max(10, "validation.match.tooManyEvidenceFiles"),
 });
 
 export const resolveDisputeSchema = z.object({

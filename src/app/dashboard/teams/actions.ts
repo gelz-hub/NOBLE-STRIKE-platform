@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   teamIdentitySchema,
@@ -12,8 +13,18 @@ import {
 
 export type ActionResult = { error: string } | { success: true };
 
-function firstIssue(error: { issues: { message: string }[] }): string {
-  return error.issues[0]?.message ?? "Invalid input.";
+/**
+ * Zod messages produced by the team/roster schemas are dot-path translation
+ * keys (optionally `key|param` for messages needing a dynamic value, e.g. a
+ * role name) — see src/lib/validation/team.ts.
+ */
+async function firstIssue(error: { issues: { message: string }[] }): Promise<string> {
+  const raw = error.issues[0]?.message;
+  const t = await getTranslations();
+  if (!raw) return t("validation.generic");
+  const [key, param] = raw.split("|");
+  if (!t.has(key)) return raw;
+  return param ? t(key, { role: param }) : t(key);
 }
 
 function readTeamIdentity(formData: FormData) {
@@ -22,6 +33,10 @@ function readTeamIdentity(formData: FormData) {
     logo_url: String(formData.get("logo_url") || ""),
     banner_url: String(formData.get("banner_url") || ""),
     description: String(formData.get("description") || ""),
+    game: String(formData.get("game") || ""),
+    contact_number: String(formData.get("contact_number") || ""),
+    captain_telegram: String(formData.get("captain_telegram") || ""),
+    province: String(formData.get("province") || ""),
   };
 }
 
@@ -29,14 +44,15 @@ export async function createTeam(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations();
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "You must be signed in to create a team." };
+  if (!user) return { error: t("dashboard.team.signInToCreate") };
 
   const parsed = teamIdentitySchema.safeParse(readTeamIdentity(formData));
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { data, error } = await supabase
     .from("teams")
@@ -46,6 +62,10 @@ export async function createTeam(
       logo_url: parsed.data.logo_url || null,
       banner_url: parsed.data.banner_url || null,
       description: parsed.data.description || null,
+      game: parsed.data.game,
+      contact_number: parsed.data.contact_number,
+      captain_telegram: parsed.data.captain_telegram,
+      province: parsed.data.province,
     })
     .select("id")
     .single();
@@ -61,14 +81,15 @@ export async function updateTeam(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const parsed = teamIdentitySchema.safeParse(readTeamIdentity(formData));
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error } = await supabase
     .from("teams")
@@ -77,6 +98,10 @@ export async function updateTeam(
       logo_url: parsed.data.logo_url || null,
       banner_url: parsed.data.banner_url || null,
       description: parsed.data.description || null,
+      game: parsed.data.game,
+      contact_number: parsed.data.contact_number,
+      captain_telegram: parsed.data.captain_telegram,
+      province: parsed.data.province,
     })
     .eq("id", teamId);
 
@@ -91,11 +116,12 @@ export async function updateTeam(
 }
 
 export async function deleteTeam(teamId: string): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const { error } = await supabase.from("teams").delete().eq("id", teamId);
   if (error) return { error: error.message };
@@ -181,14 +207,15 @@ export async function saveRoster(
   teamId: string,
   members: RosterMemberInput[]
 ): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const parsed = rosterSchema.safeParse(members);
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error: deleteError } = await supabase
     .from("team_members")

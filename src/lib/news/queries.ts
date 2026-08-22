@@ -4,10 +4,10 @@ import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 export interface NewsWithAuthor extends News {
   author: { id: string; username: string | null } | null;
-  tournament: { id: string; title: string } | null;
+  tournament: { id: string; name_en: string; name_km: string | null } | null;
 }
 
-const NEWS_SELECT = "*, author:author_id(id, username), tournament:tournament_id(id, title)";
+const NEWS_SELECT = "*, author:author_id(id, username), tournament:tournament_id(id, name_en, name_km)";
 
 export interface PublicNewsFilters {
   category?: NewsCategory;
@@ -33,7 +33,10 @@ export async function getPublishedNews({
     .order("publish_at", { ascending: false });
 
   if (category) query = query.eq("category", category);
-  if (search && search.trim()) query = query.ilike("title", `%${search.trim()}%`);
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    query = query.or(`title_en.ilike.${term},title_km.ilike.${term}`);
+  }
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
@@ -158,7 +161,10 @@ export async function getAdminNews({
   if (status) query = query.eq("status", status);
   if (category) query = query.eq("category", category);
   if (pinned !== undefined) query = query.eq("pinned", pinned);
-  if (search && search.trim()) query = query.ilike("title", `%${search.trim()}%`);
+  if (search && search.trim()) {
+    const term = `%${search.trim()}%`;
+    query = query.or(`title_en.ilike.${term},title_km.ilike.${term}`);
+  }
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
@@ -171,7 +177,7 @@ export interface NewsStats {
   draftCount: number;
   publishedCount: number;
   archivedCount: number;
-  mostViewed: { id: string; title: string; slug: string; view_count: number }[];
+  mostViewed: { id: string; title_en: string; title_km: string | null; slug: string; view_count: number }[];
 }
 
 export async function getNewsStats(): Promise<NewsStats> {
@@ -181,7 +187,11 @@ export async function getNewsStats(): Promise<NewsStats> {
       supabase.from("news").select("id", { count: "exact", head: true }).eq("status", "DRAFT"),
       supabase.from("news").select("id", { count: "exact", head: true }).eq("status", "PUBLISHED"),
       supabase.from("news").select("id", { count: "exact", head: true }).eq("status", "ARCHIVED"),
-      supabase.from("news").select("id, title, slug, view_count").order("view_count", { ascending: false }).limit(5),
+      supabase
+        .from("news")
+        .select("id, title_en, title_km, slug, view_count")
+        .order("view_count", { ascending: false })
+        .limit(5),
     ]);
 
   return {

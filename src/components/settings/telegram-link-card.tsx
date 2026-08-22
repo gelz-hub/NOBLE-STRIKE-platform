@@ -2,12 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Loader2, Send, Unlink } from "lucide-react";
 import { generateTelegramLinkToken, unlinkTelegram } from "@/app/settings/actions";
 import type { Profile } from "@/lib/types/database";
 
 export function TelegramLinkCard({ profile }: { profile: Profile }) {
+  const t = useTranslations("settings.telegramLink");
   const [pending, startTransition] = useTransition();
   const [deepLink, setDeepLink] = useState<string | null>(null);
 
@@ -30,7 +32,7 @@ export function TelegramLinkCard({ profile }: { profile: Profile }) {
         toast.error(result.error);
         return;
       }
-      toast.success("Telegram account unlinked.");
+      toast.success(t("unlinked"));
       setDeepLink(null);
     });
   }
@@ -40,15 +42,21 @@ export function TelegramLinkCard({ profile }: { profile: Profile }) {
       <div className="ns-card rounded-xl p-5 flex items-center justify-between gap-4">
         <div>
           <p className="text-sm text-text-primary">
-            Linked as {profile.telegram_username ? `@${profile.telegram_username}` : `Telegram user ${profile.telegram_id}`}
+            {t("linkedAs", {
+              handle: profile.telegram_username
+                ? `@${profile.telegram_username}`
+                : t("telegramUserFallback", { id: profile.telegram_id }),
+            })}
           </p>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Since {profile.telegram_linked_at ? new Date(profile.telegram_linked_at).toLocaleDateString() : "—"}
+            {t("since", {
+              date: profile.telegram_linked_at ? new Date(profile.telegram_linked_at).toLocaleDateString() : "—",
+            })}
           </p>
         </div>
         <Button variant="outline" size="sm" onClick={handleUnlink} disabled={pending} className="ns-btn-outline">
           {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unlink className="w-3.5 h-3.5" />}
-          Unlink
+          {t("unlink")}
         </Button>
       </div>
     );
@@ -57,22 +65,20 @@ export function TelegramLinkCard({ profile }: { profile: Profile }) {
   return (
     <div className="ns-card rounded-xl p-5 space-y-3">
       <div>
-        <p className="text-sm text-text-primary">Link your Telegram account</p>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Opens Telegram and starts a chat with the NOBLE STRIKE bot to finish linking.
-        </p>
+        <p className="text-sm text-text-primary">{t("linkTitle")}</p>
+        <p className="text-xs text-muted-foreground mt-0.5">{t("linkHint")}</p>
       </div>
       <Button onClick={handleLink} disabled={pending} className="ns-btn-gold h-9 px-4 text-xs">
         {pending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-        {pending ? "Generating link..." : "Link Telegram"}
+        {pending ? t("generatingLink") : t("linkTelegram")}
       </Button>
       {deepLink && (
         <p className="text-xs text-muted-foreground">
-          Didn&apos;t open?{" "}
+          {t("didntOpen")}{" "}
           <a href={deepLink} target="_blank" rel="noopener noreferrer" className="text-gold-light hover:underline">
-            Tap here
+            {t("tapHere")}
           </a>{" "}
-          (expires in 15 minutes).
+          {t("expiresIn15")}
         </p>
       )}
     </div>

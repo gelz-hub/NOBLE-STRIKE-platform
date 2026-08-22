@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { sendTelegramMessage } from "@/lib/telegram/client";
+import { getTelegramLocale, tTelegram, type TelegramLocale } from "@/lib/telegram/i18n";
 import { logEvent, logError } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
@@ -67,6 +68,23 @@ interface TelegramUpdate {
   };
 }
 
+/**
+ * Looks up the locale of the profile (if any) linked to this Telegram chat.
+ * Uses get_telegram_profile_locale(), a SECURITY DEFINER RPC (see
+ * supabase/migrations/0020_telegram_locale_rpcs.sql) — same reasoning as
+ * consume_telegram_link_token(): the webhook has no Supabase Auth session,
+ * so a plain RLS-guarded select isn't an option. Defaults to 'en' when the
+ * chat hasn't linked a profile yet (or the lookup fails).
+ */
+async function getLocaleForChat(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  telegramId: number
+): Promise<TelegramLocale> {
+  const { data } = await supabase.rpc("get_telegram_profile_locale", { p_telegram_id: telegramId });
+  const row = Array.isArray(data) ? data[0] : undefined;
+  return getTelegramLocale(row?.locale as string | null | undefined);
+}
+
 async function handleUpdate(update: unknown) {
   const u = update as TelegramUpdate;
   const text = u.message?.text?.trim();
@@ -76,17 +94,17 @@ async function handleUpdate(update: unknown) {
 
   if (!text || !chatId || !fromId) return;
 
+  const supabase = await createClient();
+
   if (text.startsWith("/start")) {
     const token = text.slice("/start".length).trim();
+    const locale = await getLocaleForChat(supabase, fromId);
+
     if (!token) {
-      await sendTelegramMessage(
-        chatId,
-        "Welcome to NOBLE STRIKE. Link your account from your dashboard's Settings → Notifications page, then tap the link it gives you."
-      );
+      await sendTelegramMessage(chatId, tTelegram(locale, "welcome"));
       return;
     }
 
-    const supabase = await createClient();
     const { data, error } = await supabase.rpc("consume_telegram_link_token", {
       p_token: token,
       p_telegram_id: fromId,
@@ -96,17 +114,54 @@ async function handleUpdate(update: unknown) {
     const linkedUserId = Array.isArray(data) ? data[0]?.linked_user_id : undefined;
 
     if (error || !linkedUserId) {
-      await sendTelegramMessage(
-        chatId,
-        "That link has expired or was already used. Go back to Settings → Notifications and generate a new link."
-      );
+      await sendTelegramMessage(chatId, tTelegram(locale, "linkExpired"));
       return;
     }
 
     logEvent({ event: "telegram.account_linked", userId: linkedUserId, telegramId: fromId });
-    await sendTelegramMessage(
-      chatId,
-      "Your Telegram account is linked. You'll get notifications here based on your preferences in Settings → Notifications."
-    );
+    // Re-fetch: the linking RPC doesn't return locale, and the newly-linked
+    // profile might already carry a non-default preference (e.g. set from
+    // the dashboard before ever touching the bot).
+    const linkedLocale = await getLocaleForChat(supabase, fromId);
+    await sendTelegramMessage(chatId, tTelegram(linkedLocale, "linkSuccess"));
+    return;
+  }
+
+  if (text === "/help") {
+    const locale = await getLocaleForChat(supabase, fromId);
+    await sendTelegramMessage(chatId, tTelegram(locale, "help"));
+    return;
+  }
+
+  if (text.startsWith("/language")) {
+    const arg = text.slice("/language".length).trim().toLowerCase();
+    const currentLocale = await getLocaleForChat(supabase, fromId);
+
+    if (!arg) {
+      await sendTelegramMessage(chatId, tTelegram(currentLocale, "languageUsage"));
+      return;
+    }
+
+    if (arg !== "en" && arg !== "km") {
+      await sendTelegramMessage(chatId, tTelegram(currentLocale, "languageUnknown"));
+      return;
+    }
+
+    // Persists only if this chat is already linked to a profile (the RPC
+    // no-ops and returns no row otherwise) — but we still reply in the
+    // requested language either way, per spec: nothing to save yet for an
+    // unlinked chat isn't an error.
+    const { data, error } = await supabase.rpc("set_telegram_profile_locale", {
+      p_telegram_id: fromId,
+      p_locale: arg,
+    });
+    const updatedUserId = Array.isArray(data) ? data[0]?.updated_user_id : undefined;
+    if (error) {
+      logError(error, { event: "telegram.set_locale_failed", telegramId: fromId });
+    } else if (updatedUserId) {
+      logEvent({ event: "telegram.locale_changed", userId: updatedUserId, locale: arg });
+    }
+
+    await sendTelegramMessage(chatId, tTelegram(arg, "languageSet"));
   }
 }

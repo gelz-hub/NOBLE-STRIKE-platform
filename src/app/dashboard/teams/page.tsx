@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { TeamCard } from "@/components/dashboard/team-card";
 import { Button } from "@/components/ui/button";
 import { Plus, Shield } from "lucide-react";
 
 export default async function MyTeamsPage() {
+  const t = await getTranslations("dashboard.team");
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,15 +23,13 @@ export default async function MyTeamsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">My Teams</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Teams you own and manage.
-          </p>
+          <h1 className="font-display font-bold text-2xl text-white">{t("myTeamsTitle")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("myTeamsSubtitle")}</p>
         </div>
         <Link href="/dashboard/teams/new">
           <Button className="ns-btn-gold h-10 px-4 text-xs uppercase tracking-wider">
             <Plus className="w-4 h-4" />
-            Create Team
+            {t("createTeam")}
           </Button>
         </Link>
       </div>
@@ -50,11 +50,11 @@ export default async function MyTeamsPage() {
       ) : (
         <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
           <Shield className="w-8 h-8 text-gold/50" />
-          <p className="text-white/70">You don&apos;t own any teams yet.</p>
+          <p className="text-white/70">{t("noTeamsYet")}</p>
           <Link href="/dashboard/teams/new">
             <Button className="ns-btn-gold h-10 px-5 text-xs uppercase tracking-wider mt-2">
               <Plus className="w-4 h-4" />
-              Create Your First Team
+              {t("createFirstTeam")}
             </Button>
           </Link>
         </div>

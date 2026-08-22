@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   profileSettingsSchema,
@@ -11,8 +12,14 @@ import {
 
 export type ActionResult = { error: string } | { success: true };
 
-function firstIssue(error: { issues: { message: string }[] }): string {
-  return error.issues[0]?.message ?? "Invalid input.";
+/** Zod messages are dot-path keys, optionally `key|param` — see src/lib/validation/profile.ts. */
+async function firstIssue(error: { issues: { message: string }[] }): Promise<string> {
+  const raw = error.issues[0]?.message;
+  const t = await getTranslations();
+  if (!raw) return t("validation.generic");
+  const [key, param] = raw.split("|");
+  if (!t.has(key)) return raw;
+  return param ? t(key, { count: param }) : t(key);
 }
 
 async function requireUser() {
@@ -27,14 +34,15 @@ export async function updateProfileSettings(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   let socialLinks: unknown = [];
   try {
     socialLinks = JSON.parse(String(formData.get("social_links") || "[]"));
   } catch {
-    return { error: "Invalid social links." };
+    return { error: t("settings.errors.invalidSocialLinks") };
   }
 
   const parsed = profileSettingsSchema.safeParse({
@@ -47,7 +55,7 @@ export async function updateProfileSettings(
     banner_url: String(formData.get("banner_url") || ""),
     social_links: socialLinks,
   });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   // Username uniqueness — the DB has a unique constraint too, but check
   // here first so we can return a friendly message instead of a raw
@@ -58,7 +66,7 @@ export async function updateProfileSettings(
     .ilike("username", parsed.data.username)
     .neq("id", user.id)
     .maybeSingle();
-  if (existing) return { error: "That username is already taken." };
+  if (existing) return { error: t("settings.errors.usernameTaken") };
 
   const { error } = await supabase
     .from("profiles")
@@ -81,11 +89,12 @@ export async function updateProfileSettings(
 }
 
 export async function updateEmail(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const email = String(formData.get("email") || "").trim();
-  if (!email) return { error: "Please enter an email address." };
+  if (!email) return { error: t("settings.errors.enterEmail") };
 
   const { error } = await supabase.auth.updateUser({ email });
   if (error) return { error: error.message };
@@ -94,11 +103,12 @@ export async function updateEmail(_prev: ActionResult | null, formData: FormData
 }
 
 export async function updatePassword(_prev: ActionResult | null, formData: FormData): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const password = String(formData.get("password") || "");
-  if (password.length < 8) return { error: "Password must be at least 8 characters." };
+  if (password.length < 8) return { error: t("auth.errors.passwordTooShort") };
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: error.message };
@@ -110,8 +120,9 @@ export async function updateNotificationPreferences(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const parsed = notificationPreferencesSchema.safeParse({
     notify_tournament: formData.get("notify_tournament") === "true",
@@ -121,7 +132,7 @@ export async function updateNotificationPreferences(
     notify_email: formData.get("notify_email") === "true",
     notify_telegram: formData.get("notify_telegram") === "true",
   });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error } = await supabase.from("profiles").update(parsed.data).eq("id", user.id);
   if (error) return { error: error.message };
@@ -134,8 +145,9 @@ export async function updatePrivacySettings(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const parsed = privacySettingsSchema.safeParse({
     privacy_public_profile: formData.get("privacy_public_profile") === "true",
@@ -143,7 +155,7 @@ export async function updatePrivacySettings(
     privacy_show_match_history: formData.get("privacy_show_match_history") === "true",
     privacy_show_discord: formData.get("privacy_show_discord") === "true",
   });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error } = await supabase.from("profiles").update(parsed.data).eq("id", user.id);
   if (error) return { error: error.message };
@@ -156,13 +168,14 @@ export async function updateThemePreference(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const parsed = appearanceSettingsSchema.safeParse({
     theme_preference: String(formData.get("theme_preference") || "dark"),
   });
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error } = await supabase
     .from("profiles")
@@ -190,12 +203,13 @@ const LINK_TOKEN_TTL_MINUTES = 15;
  * no user session to work with otherwise.
  */
 export async function generateTelegramLinkToken(): Promise<TelegramLinkResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const botUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
   if (!botUsername) {
-    return { error: "Telegram isn't configured on this deployment yet." };
+    return { error: t("settings.errors.telegramNotConfigured") };
   }
 
   const token = crypto.randomUUID().replace(/-/g, "");
@@ -210,8 +224,9 @@ export async function generateTelegramLinkToken(): Promise<TelegramLinkResult> {
 }
 
 export async function unlinkTelegram(): Promise<ActionResult> {
+  const t = await getTranslations("errors");
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("unauthorized") };
 
   const { error } = await supabase
     .from("profiles")

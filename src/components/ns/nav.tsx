@@ -2,28 +2,35 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useApp } from "@/lib/store";
 import { NSLogo } from "./logo";
 import { cn } from "@/lib/utils";
-import { Menu, X, Trophy, Users } from "lucide-react";
+import { Menu, X, Trophy, Users, History } from "lucide-react";
 import type { NSView } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "./account-menu";
+import { LanguageSwitcher } from "./language-switcher";
 
-const NAV_ITEMS: { id: NSView; label: string }[] = [
-  { id: "home", label: "Home" },
-  { id: "tournaments", label: "Tournaments" },
-  { id: "teams", label: "Teams" },
-  { id: "ns-team", label: "NS Squad" },
-  { id: "news", label: "News" },
-  { id: "brackets", label: "Brackets" },
-];
+const NAV_ITEM_IDS: NSView[] = ["home", "tournaments", "teams", "ns-team", "news", "brackets"];
 
 export function NavBar() {
+  const t = useTranslations("navigation");
+  const tFooter = useTranslations("footer");
   const view = useApp((s) => s.view);
   const setView = useApp((s) => s.setView);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLabels: Record<NSView, string> = {
+    home: t("home"),
+    tournaments: t("tournaments"),
+    teams: t("teams"),
+    "ns-team": t("nsSquad"),
+    news: t("news"),
+    brackets: t("brackets"),
+  };
+  const NAV_ITEMS = NAV_ITEM_IDS.map((id) => ({ id, label: navLabels[id] }));
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -66,7 +73,7 @@ export function NavBar() {
             <button
               onClick={() => go("home")}
               className="flex items-center gap-3 group"
-              aria-label="NOBLE STRIKE home"
+              aria-label={t("homeAriaLabel")}
             >
               <div className="transition-transform group-hover:scale-105 group-hover:rotate-3 duration-500">
                 <NSLogo size={scrolled ? 38 : 44} />
@@ -104,18 +111,26 @@ export function NavBar() {
                 href="/recruitment"
                 className="relative px-4 py-2 font-heading font-semibold text-sm uppercase tracking-wider transition-colors text-text-secondary hover:text-text-primary"
               >
-                Recruitment
+                {t("recruitment")}
+              </Link>
+              <Link
+                href="/legacy"
+                className="relative px-4 py-2 font-heading font-semibold text-sm uppercase tracking-wider transition-colors text-text-secondary hover:text-text-primary"
+              >
+                {t("legacyAndHistory")}
               </Link>
             </nav>
 
             {/* Right actions */}
             <div className="flex items-center gap-2">
+              <LanguageSwitcher className="hidden md:inline-flex" />
+
               <Button
                 onClick={() => go("tournaments")}
                 className="ns-btn-gold hidden md:inline-flex h-9 px-4 text-xs uppercase tracking-wider"
               >
                 <Trophy className="w-3.5 h-3.5" />
-                Join Tournament
+                {t("joinTournament")}
               </Button>
 
               <div className="hidden md:block">
@@ -126,7 +141,7 @@ export function NavBar() {
               <button
                 onClick={() => setMobileOpen(true)}
                 className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-gold-light border border-gold/20 hover:bg-gold/10 transition-colors"
-                aria-label="Open menu"
+                aria-label={t("openMenu")}
               >
                 <Menu className="w-5 h-5" />
               </button>
@@ -161,7 +176,7 @@ export function NavBar() {
               <button
                 onClick={() => setMobileOpen(false)}
                 className="w-9 h-9 rounded-md flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-surface-secondary transition-colors"
-                aria-label="Close menu"
+                aria-label={t("closeMenu")}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -192,7 +207,18 @@ export function NavBar() {
               >
                 <span className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-gold/60" />
-                  Recruitment
+                  {t("recruitment")}
+                </span>
+                <ChevronRightSmall />
+              </Link>
+              <Link
+                href="/legacy"
+                onClick={() => setMobileOpen(false)}
+                className="ns-fade-in flex items-center justify-between px-4 py-3.5 font-heading font-semibold uppercase tracking-wider rounded-lg transition-all text-text-secondary hover:bg-surface-secondary border border-transparent"
+              >
+                <span className="flex items-center gap-2">
+                  <History className="w-4 h-4 text-gold/60" />
+                  {t("legacyAndHistory")}
                 </span>
                 <ChevronRightSmall />
               </Link>
@@ -200,6 +226,13 @@ export function NavBar() {
 
             {/* divider */}
             <div className="mx-5 ns-divider" />
+
+            {/* language */}
+            <div className="px-4">
+              <LanguageSwitcher />
+            </div>
+
+            <div className="mx-5 ns-divider mt-2" />
 
             {/* account */}
             <div className="px-4">
@@ -216,14 +249,14 @@ export function NavBar() {
                 style={{ animationDelay: "450ms" } as React.CSSProperties}
               >
                 <Trophy className="w-4 h-4" />
-                Join Tournament
+                {t("joinTournament")}
               </Button>
             </div>
 
             {/* footer */}
             <div className="mt-auto p-5 border-t border-gold/10">
               <p className="text-[0.65rem] uppercase tracking-widest text-muted-foreground text-center">
-                Compete. Conquer. Become Legendary.
+                {tFooter("tagline")}
               </p>
             </div>
           </div>

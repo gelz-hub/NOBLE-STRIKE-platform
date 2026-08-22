@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
+import { useTranslations } from "next-intl";
 import {
   Dialog,
   DialogContent,
@@ -29,10 +30,12 @@ const GAME_LABELS: Record<string, string> = { MLBB: "Mobile Legends: Bang Bang",
 
 function SubmitButton({ mode }: { mode: "create" | "edit" }) {
   const { pending } = useFormStatus();
+  const t = useTranslations("recruitment");
+  const tCommon = useTranslations("common");
   return (
     <Button type="submit" disabled={pending} className="ns-btn-gold h-10 px-5">
       {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-      {pending ? "Saving..." : mode === "create" ? "Post" : "Save Changes"}
+      {pending ? tCommon("saving") : mode === "create" ? t("postSubmit") : t("saveChanges")}
     </Button>
   );
 }
@@ -48,6 +51,7 @@ export function RecruitmentPostForm({
   onOpenChange: (open: boolean) => void;
   post?: RecruitmentPost;
 }) {
+  const t = useTranslations("recruitment");
   const mode = post ? "edit" : "create";
   const action = mode === "create"
     ? createRecruitmentPost.bind(null, postType)
@@ -66,12 +70,10 @@ export function RecruitmentPostForm({
       <DialogContent className="bg-popover border-gold/30 max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-text-primary">
-            {mode === "create" ? (postType === "LFT" ? "Post — Looking For Team" : "Post — Looking For Player") : "Edit Post"}
+            {mode === "create" ? (postType === "LFT" ? t("postLftTitle") : t("postLfpTitle")) : t("editPostTitle")}
           </DialogTitle>
           <DialogDescription>
-            {postType === "LFT"
-              ? "Let teams know you're available to recruit."
-              : "Let players know your team is recruiting."}
+            {postType === "LFT" ? t("lftDialogHint") : t("lfpDialogHint")}
           </DialogDescription>
         </DialogHeader>
 
@@ -82,20 +84,20 @@ export function RecruitmentPostForm({
 
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              {postType === "LFT" ? "Title" : "Team"} <span className="text-gold">*</span>
+              {postType === "LFT" ? t("titleLabel") : t("teamLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               name="title"
               required
               defaultValue={post?.title ?? ""}
-              placeholder={postType === "LFT" ? "e.g. Experienced Roamer looking for a squad" : "e.g. NOBLE STRIKE Academy"}
+              placeholder={postType === "LFT" ? t("lftTitlePlaceholder") : t("lfpTitlePlaceholder")}
               className="ns-input"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Game</Label>
+              <Label className="text-xs text-muted-foreground">{t("gameLabel")}</Label>
               <Select value={game} onValueChange={(v) => setGame(v as "MLBB" | "HOK")}>
                 <SelectTrigger className="ns-input">
                   <SelectValue />
@@ -110,7 +112,9 @@ export function RecruitmentPostForm({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">{postType === "LFT" ? "Preferred Role" : "Role Needed"}</Label>
+              <Label className="text-xs text-muted-foreground">
+                {postType === "LFT" ? t("preferredRole") : t("roleNeeded")}
+              </Label>
               <Select value={role} onValueChange={(v) => setRole(v as typeof role)}>
                 <SelectTrigger className="ns-input">
                   <SelectValue />
@@ -130,13 +134,13 @@ export function RecruitmentPostForm({
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">
-                  Rank <span className="text-gold">*</span>
+                  {t("rankLabel")} <span className="text-gold">*</span>
                 </Label>
                 <Input name="rank" required defaultValue={post?.rank ?? ""} placeholder="e.g. Mythic" className="ns-input" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-muted-foreground">
-                  Country <span className="text-gold">*</span>
+                  {t("countryLabel")} <span className="text-gold">*</span>
                 </Label>
                 <Input name="country" required defaultValue={post?.country ?? ""} placeholder="e.g. Philippines" className="ns-input" />
               </div>
@@ -144,13 +148,13 @@ export function RecruitmentPostForm({
           ) : (
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">
-                Requirements <span className="text-gold">*</span>
+                {t("requirementsLabel")} <span className="text-gold">*</span>
               </Label>
               <Textarea
                 name="requirements"
                 required
                 defaultValue={post?.requirements ?? ""}
-                placeholder="e.g. Mythic+ rank, available weeknights, mic required"
+                placeholder={t("requirementsPlaceholder")}
                 className="ns-input min-h-16"
               />
             </div>
@@ -158,7 +162,7 @@ export function RecruitmentPostForm({
 
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              Telegram Username <span className="text-gold">*</span>
+              {t("telegramUsernameLabel")} <span className="text-gold">*</span>
             </Label>
             <Input
               name="telegram_username"
@@ -171,13 +175,13 @@ export function RecruitmentPostForm({
 
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
-              Description <span className="text-gold">*</span>
+              {t("descriptionLabel")} <span className="text-gold">*</span>
             </Label>
             <Textarea
               name="description"
               required
               defaultValue={post?.description ?? ""}
-              placeholder="Tell them more..."
+              placeholder={t("descriptionPlaceholder")}
               className="ns-input min-h-24"
             />
           </div>

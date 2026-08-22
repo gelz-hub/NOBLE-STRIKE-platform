@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { TeamMonogram } from "@/components/ns/ui";
 import { Users, Trophy, PenSquare, ExternalLink } from "lucide-react";
 
@@ -11,6 +12,8 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ id, teamName, logoUrl, memberCount, registrationCount }: TeamCardProps) {
+  const t = useTranslations("dashboard.team");
+  const tCommon = useTranslations("common");
   return (
     <div className="ns-card ns-card-gold-edge rounded-xl p-5 flex flex-col gap-4">
       <div className="flex items-center gap-3">
@@ -20,11 +23,11 @@ export function TeamCard({ id, teamName, logoUrl, memberCount, registrationCount
           <div className="flex items-center gap-3 text-xs text-muted-foreground mt-1">
             <span className="flex items-center gap-1">
               <Users className="w-3.5 h-3.5" />
-              {memberCount} Players
+              {t("playersCount", { count: memberCount })}
             </span>
             <span className="flex items-center gap-1">
               <Trophy className="w-3.5 h-3.5" />
-              {registrationCount} Registrations
+              {t("registrationsCount", { count: registrationCount })}
             </span>
           </div>
         </div>
@@ -36,12 +39,12 @@ export function TeamCard({ id, teamName, logoUrl, memberCount, registrationCount
           className="ns-btn-outline flex-1 h-9 rounded-md flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider"
         >
           <PenSquare className="w-3.5 h-3.5" />
-          Edit
+          {tCommon("edit")}
         </Link>
         <Link
           href={`/teams/${id}`}
           className="flex items-center justify-center w-9 h-9 rounded-md border border-gold/20 text-white/60 hover:text-gold-light hover:border-gold/40 transition-colors"
-          aria-label="View team page"
+          aria-label={t("viewTeamPage")}
         >
           <ExternalLink className="w-4 h-4" />
         </Link>

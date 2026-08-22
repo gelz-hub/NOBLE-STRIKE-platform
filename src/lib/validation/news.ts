@@ -9,13 +9,21 @@ export const NEWS_CATEGORIES = [
   "COMMUNITY",
 ] as const;
 
-export const NEWS_CATEGORY_LABELS: Record<(typeof NEWS_CATEGORIES)[number], string> = {
-  ANNOUNCEMENT: "Announcement",
-  TOURNAMENT: "Tournament",
-  RESULTS: "Results",
-  MAINTENANCE: "Maintenance",
-  UPDATE: "Update",
-  COMMUNITY: "Community",
+/**
+ * Display labels for each category live under the `news.category.*`
+ * translation namespace (key = lowercased category, e.g. `news.category.announcement`).
+ * This map only carries the key shape / enum values — call sites should
+ * resolve the label via `t(\`news.category.${category.toLowerCase()}\`)`
+ * (or an equivalent `useTranslations("news.category")` scoped hook)
+ * instead of reading English text from here.
+ */
+export const NEWS_CATEGORY_LABEL_KEYS: Record<(typeof NEWS_CATEGORIES)[number], string> = {
+  ANNOUNCEMENT: "news.category.announcement",
+  TOURNAMENT: "news.category.tournament",
+  RESULTS: "news.category.results",
+  MAINTENANCE: "news.category.maintenance",
+  UPDATE: "news.category.update",
+  COMMUNITY: "news.category.community",
 };
 
 export const NEWS_STATUSES = ["DRAFT", "PUBLISHED", "ARCHIVED"] as const;
@@ -28,16 +36,23 @@ export function slugifyTitle(input: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+// Zod messages below are dot-path translation keys (e.g.
+// "validation.news.titleTooShort"), not literal English error text — see
+// src/app/admin/news/actions.ts's `firstIssue()` for how they get resolved
+// to a display string via next-intl.
 export const newsSchema = z.object({
-  title: z.string().trim().min(2, "Title must be at least 2 characters.").max(150),
+  title_en: z.string().trim().min(2, "validation.news.titleTooShort").max(150),
+  title_km: z.string().trim().max(150).optional(),
   slug: z
     .string()
     .trim()
-    .min(2, "Slug must be at least 2 characters.")
+    .min(2, "validation.news.slugTooShort")
     .max(160)
-    .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens."),
-  excerpt: z.string().trim().max(300).optional(),
-  content: z.string().trim().min(20, "Content must be at least 20 characters."),
+    .regex(/^[a-z0-9-]+$/, "validation.news.slugInvalid"),
+  excerpt_en: z.string().trim().max(300).optional(),
+  excerpt_km: z.string().trim().max(300).optional(),
+  content_en: z.string().trim().min(20, "validation.news.contentTooShort"),
+  content_km: z.string().trim().optional(),
   category: z.enum(NEWS_CATEGORIES),
   status: z.enum(NEWS_STATUSES),
   featured: z.enum(["true", "false"]).transform((v) => v === "true"),

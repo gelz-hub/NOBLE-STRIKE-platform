@@ -29,14 +29,14 @@ async function loadRegistrationForNotify(
 ) {
   const { data } = await supabase
     .from("tournament_registrations")
-    .select("id, team_id, tournament_id, teams(owner_id, team_name), tournaments(title)")
+    .select("id, team_id, tournament_id, teams(owner_id, team_name), tournaments(name_en)")
     .eq("id", registrationId)
     .single<{
       id: string;
       team_id: string;
       tournament_id: string;
       teams: { owner_id: string; team_name: string } | null;
-      tournaments: { title: string } | null;
+      tournaments: { name_en: string } | null;
     }>();
   return data;
 }
@@ -61,7 +61,7 @@ export async function approveRegistration(registrationId: string): Promise<Actio
       registration.teams.owner_id,
       "Registration Approved",
       `${registration.teams.team_name}'s registration for ${
-        registration.tournaments?.title ?? "the tournament"
+        registration.tournaments?.name_en ?? "the tournament"
       } was approved.`,
       "tournament"
     );
@@ -111,7 +111,7 @@ export async function rejectRegistration(
       registration.teams.owner_id,
       "Registration Rejected",
       `${registration.teams.team_name}'s registration for ${
-        registration.tournaments?.title ?? "the tournament"
+        registration.tournaments?.name_en ?? "the tournament"
       } was rejected. Reason: ${rejectionReason.trim()}`,
       "tournament"
     );
@@ -136,7 +136,7 @@ export interface AdminRegistrationRow {
     logo_url: string | null;
     banner_url: string | null;
   } | null;
-  tournaments: { id: string; title: string } | null;
+  tournaments: { id: string; name_en: string; name_km: string | null } | null;
 }
 
 export interface GetTournamentRegistrationsParams {
@@ -157,7 +157,7 @@ export async function getTournamentRegistrations({
   let query = supabase
     .from("tournament_registrations")
     .select(
-      "id, status, created_at, reviewed_at, rejection_reason, teams!inner(id, team_name, logo_url, banner_url), tournaments(id, title)",
+      "id, status, created_at, reviewed_at, rejection_reason, teams!inner(id, team_name, logo_url, banner_url), tournaments(id, name_en, name_km)",
       { count: "exact" }
     )
     .order("created_at", { ascending: false });

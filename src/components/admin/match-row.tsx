@@ -1,9 +1,13 @@
 import Link from "next/link";
+import { getLocale } from "next-intl/server";
 import { StatusPill, TeamMonogram } from "@/components/ns/ui";
+import { pickLocalized } from "@/lib/i18n/content";
 import { Calendar, Radio, User } from "lucide-react";
 import type { MatchWithContext } from "@/lib/matches/queries";
+import type { Locale } from "@/i18n/config";
 
-export function MatchRow({ match }: { match: MatchWithContext }) {
+export async function MatchRow({ match }: { match: MatchWithContext }) {
+  const locale = (await getLocale()) as Locale;
   return (
     <Link
       href={`/admin/matches/${match.id}`}
@@ -21,8 +25,8 @@ export function MatchRow({ match }: { match: MatchWithContext }) {
         </span>
       </div>
 
-      <div className="hidden md:block text-xs text-muted-foreground truncate max-w-[160px]">
-        {match.tournament?.title}
+      <div className="hidden md:block text-xs text-muted-foreground truncate max-w-[160px]" lang={locale}>
+        {match.tournament ? pickLocalized(match.tournament, "name", locale) : null}
       </div>
 
       {match.scheduled_at && (

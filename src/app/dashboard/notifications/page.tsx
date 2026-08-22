@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { MarkAllReadButton } from "@/components/dashboard/mark-all-read-button";
 import { Bell, BellOff } from "lucide-react";
@@ -5,6 +6,7 @@ import { cn } from "@/lib/utils";
 import type { Notification } from "@/lib/types/database";
 
 export default async function NotificationsPage() {
+  const t = await getTranslations("dashboard.notifications");
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,10 +26,8 @@ export default async function NotificationsPage() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Notifications</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Updates on your teams&apos; tournament registrations.
-          </p>
+          <h1 className="font-display font-bold text-2xl text-white">{t("title")}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("subtitle")}</p>
         </div>
         {unreadCount > 0 && <MarkAllReadButton />}
       </div>
@@ -35,7 +35,7 @@ export default async function NotificationsPage() {
       {notifications.length === 0 ? (
         <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
           <BellOff className="w-8 h-8 text-gold/50" />
-          <p className="text-white/70">No notifications yet.</p>
+          <p className="text-white/70">{t("noNotifications")}</p>
         </div>
       ) : (
         <div className="space-y-2">

@@ -2,18 +2,25 @@
 
 import { useActionState, useEffect, useState, useTransition } from "react";
 import { useTheme } from "next-themes";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Moon, Sun, Monitor, Check } from "lucide-react";
 import { updateThemePreference, type ActionResult } from "@/app/settings/actions";
 import type { ThemePreference } from "@/lib/types/database";
 
-const OPTIONS: { value: ThemePreference; label: string; icon: React.ElementType; description: string }[] = [
-  { value: "dark", label: "Dark Mode", icon: Moon, description: "The original black & gold NOBLE STRIKE look." },
-  { value: "light", label: "Light Mode", icon: Sun, description: "A lighter surface palette, same gold brand accents." },
-  { value: "system", label: "System", icon: Monitor, description: "Follows your device's appearance setting." },
+const OPTION_META: { value: ThemePreference; icon: React.ElementType }[] = [
+  { value: "dark", icon: Moon },
+  { value: "light", icon: Sun },
+  { value: "system", icon: Monitor },
 ];
 
 export function AppearanceSettingsForm({ initialTheme }: { initialTheme: ThemePreference }) {
+  const t = useTranslations("settings.appearance");
+  const OPTIONS = OPTION_META.map((opt) => ({
+    ...opt,
+    label: t(`options.${opt.value}.label`),
+    description: t(`options.${opt.value}.description`),
+  }));
   const { setTheme } = useTheme();
   const [selected, setSelected] = useState<ThemePreference>(initialTheme);
   const [, startTransition] = useTransition();
@@ -59,9 +66,7 @@ export function AppearanceSettingsForm({ initialTheme }: { initialTheme: ThemePr
         })}
       </div>
       {state && "error" in state && <p className="text-sm text-destructive">{state.error}</p>}
-      <p className="text-xs text-muted-foreground">
-        Applies immediately and syncs across your devices when signed in.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("syncHint")}</p>
     </div>
   );
 }

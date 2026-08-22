@@ -1,0 +1,933 @@
+{
+  "common": {
+    "language": "Language",
+    "english": "English",
+    "khmer": "Khmer",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "filter": "Filter",
+    "actions": "Actions",
+    "status": "Status",
+    "yes": "Yes",
+    "no": "No",
+    "saving": "Saving..."
+  },
+  "navigation": {
+    "home": "Home",
+    "tournaments": "Tournaments",
+    "teams": "Teams",
+    "nsSquad": "NS Squad",
+    "news": "News",
+    "brackets": "Brackets",
+    "recruitment": "Recruitment",
+    "legacyAndHistory": "Legacy & History",
+    "joinTournament": "Join Tournament",
+    "homeAriaLabel": "NOBLE STRIKE home",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "footer": {
+    "tagline": "Compete. Conquer. Become Legendary."
+  },
+  "admin": {
+    "nav": {
+      "tournaments": "Tournaments",
+      "registrations": "Registrations",
+      "matches": "Matches",
+      "news": "News",
+      "legacy": "Legacy",
+      "telegram": "Telegram"
+    },
+    "localeTabs": {
+      "english": "English",
+      "khmer": "Khmer (optional)",
+      "khmerHint": "Leave blank to fall back to the English text automatically."
+    },
+    "legacy": {
+      "title": "Legacy & History",
+      "subtitle": "Manage the public tournament archive.",
+      "newEvent": "New Event",
+      "emptyState": "No archive events yet.",
+      "teamsSuffix": "teams",
+      "published": "Published",
+      "hidden": "Hidden",
+      "edit": "Edit",
+      "unpublish": "Unpublish",
+      "publish": "Publish",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "deleteConfirmTitle": "Delete \"{title}\"?",
+      "deleteConfirmDescription": "This permanently deletes the event. This cannot be undone.",
+      "toasts": {
+        "unpublished": "Unpublished.",
+        "published": "Published.",
+        "deleted": "Deleted."
+      },
+      "newEventTitle": "New Archive Event",
+      "newEventSubtitle": "Add a past tournament or community event to the archive.",
+      "editEventTitle": "Edit Archive Event",
+      "errors": {
+        "unauthorized": "You must be signed in.",
+        "adminRequired": "Admin access required."
+      },
+      "saving": "Saving...",
+      "createEvent": "Create Event",
+      "saveChanges": "Save Changes",
+      "saved": "Saved.",
+      "sections": {
+        "identity": "Event Identity",
+        "details": "Details",
+        "results": "Results",
+        "assets": "Assets",
+        "statusAndDescription": "Status & Notes"
+      },
+      "fields": {
+        "year": "Year",
+        "category": "Category",
+        "title": "Title",
+        "date": "Date",
+        "coverImage": "Cover Image",
+        "game": "Game",
+        "format": "Format",
+        "teamsLabel": "Teams (display)",
+        "teamsMax": "Teams (max, numeric — feeds the overview stat)",
+        "prizePoolLabel": "Prize Pool (display)",
+        "prizePoolMax": "Prize Pool (max, numeric — feeds the overview stat)",
+        "entryFee": "Entry Fee",
+        "tournamentMode": "Tournament Mode",
+        "organizedBy": "Organized By",
+        "supportTeam": "Support Team",
+        "liveBroadcast": "Live Broadcast",
+        "champion": "Champion",
+        "runnerUp": "Runner-up",
+        "top34": "Top 3-4 (comma separated)",
+        "gallery": "Gallery (match schedules, result posters, e-certificates, etc.)",
+        "status": "Status",
+        "displayOrder": "Display Order (higher shows first within its year)",
+        "description": "Notes (shown on the public card, e.g. incomplete records)",
+        "isPublished": "Published (visible on the public archive)"
+      }
+    },
+    "news": {
+      "saving": "Saving...",
+      "createArticle": "Create Article",
+      "saveChanges": "Save Changes",
+      "basicInformation": "Basic Information",
+      "title": "Title",
+      "titlePlaceholder": "e.g. NS Season 2 Registration Now Open",
+      "slug": "Slug",
+      "excerpt": "Excerpt",
+      "excerptPlaceholder": "A short summary shown on listing cards...",
+      "bannerImage": "Banner Image",
+      "content": "Content",
+      "write": "Write",
+      "preview": "Preview",
+      "contentPlaceholder": "Markdown supported: # headings, **bold**, - lists, > quotes, ``` code blocks ```, tables, [links](url), ![images](url). Paste a YouTube/Vimeo/Twitch link on its own to embed it.",
+      "nothingToPreview": "Nothing to preview yet.",
+      "classification": "Classification",
+      "category": "Category",
+      "relatedTournament": "Related Tournament",
+      "none": "— None —",
+      "pinned": "Pinned",
+      "featured": "Featured",
+      "publishing": "Publishing",
+      "status": "Status",
+      "publishDate": "Publish Date (optional — schedule for later)",
+      "publishHint": "Set Status to Published and leave Publish Date blank to go live immediately, or set a future date to schedule it — the article stays hidden until that time passes.",
+      "seo": "SEO",
+      "seoDescription": "SEO Description",
+      "seoKeywords": "SEO Keywords (comma separated)",
+      "saved": "Saved.",
+      "unpublished": "Unpublished.",
+      "unpublish": "Unpublish",
+      "broadcastSuccess": "Broadcast to Telegram.",
+      "broadcastToTelegram": "Broadcast to Telegram",
+      "archived": "Archived.",
+      "archive": "Archive",
+      "deleteConfirmTitle": "Delete \"{title}\"?",
+      "deleteConfirmDescription": "This permanently deletes the article. This cannot be undone.",
+      "deleted": "Deleted.",
+      "statusOption": {
+        "ALL": "All",
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "searchTitlePlaceholder": "Search title...",
+      "allCategories": "All Categories",
+      "pinnedAll": "Pinned: All",
+      "pinnedOnly": "Pinned Only",
+      "notPinned": "Not Pinned",
+      "unknownAuthor": "Unknown",
+      "edit": "Edit",
+      "heading": "News & Announcements",
+      "subheading": "Create and manage every article on the platform.",
+      "newArticle": "New Article",
+      "mostViewed": "Most Viewed",
+      "viewsCount": "{count} views",
+      "noArticlesMatch": "No articles match these filters.",
+      "newArticleHeading": "New Article",
+      "newArticleSubheading": "Write and publish a news article or announcement.",
+      "editArticleHeading": "Edit Article",
+      "view": "View",
+      "notifyAnnouncementTitle": "Major Announcement Published",
+      "notifyTournamentTitle": "Tournament Announcement Published",
+      "telegram": {
+        "botNotConfigured": "TELEGRAM_BOT_TOKEN isn't set on this deployment.",
+        "channelNotConfigured": "No Telegram channel is configured (Admin → Telegram).",
+        "notificationsDisabled": "Telegram notifications are currently disabled (Admin → Telegram).",
+        "articleNotFound": "Article not found.",
+        "onlyPublished": "Only published articles can be broadcast.",
+        "sendFailed": "Failed to send."
+      }
+    },
+    "tournaments": {
+      "list": {
+        "heading": "Tournament Management",
+        "subheading": "Create, edit, and manage every NOBLE STRIKE tournament.",
+        "createButton": "Create Tournament",
+        "emptyState": "No tournaments match this filter."
+      },
+      "row": {
+        "bracket": "Bracket",
+        "edit": "Edit"
+      },
+      "editHeading": "Edit {name}",
+      "editSubheading": "Changes apply immediately to the public tournament page.",
+      "view": "View",
+      "form": {
+        "basicInformation": "Basic Information",
+        "nameLabel": "Tournament Name",
+        "slugLabel": "Slug",
+        "descriptionLabel": "Description",
+        "bannerImageLabel": "Banner Image",
+        "gameConfiguration": "Game Configuration",
+        "gameTypeLabel": "Game Type",
+        "matchFormatLabel": "Match Format",
+        "bo1": "Best of 1",
+        "bo3": "Best of 3",
+        "bo5": "Best of 5",
+        "tournamentSettings": "Tournament Settings",
+        "maxTeamsLabel": "Max Teams",
+        "prizePoolLabel": "Prize Pool ($)",
+        "registrationDeadlineLabel": "Registration Deadline",
+        "startDateLabel": "Tournament Start Date",
+        "locationLabel": "Location",
+        "organizerLabel": "Organizer",
+        "rulesLabel": "Rules",
+        "bracketSettings": "Bracket Settings",
+        "bracketFormatLabel": "Bracket Format",
+        "singleElimination": "Single Elimination",
+        "doubleElimination": "Double Elimination",
+        "grandFinalResetLabel": "Grand Final Reset",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "seedingMethodNote": "Seeding method: Random. Teams start in the upper bracket; a loss drops them to the lower bracket, a second loss eliminates them.",
+        "statusLabel": "Status",
+        "saveSuccess": "Tournament updated successfully.",
+        "saving": "Saving...",
+        "createSubmit": "Create Tournament",
+        "editSubmit": "Save Changes"
+      }
+    },
+    "registrations": {
+      "review": "Review",
+      "registrationFor": "Registration for {tournament}",
+      "captainLabel": "Captain: {name}",
+      "captainContact": "Captain Contact",
+      "roster": "Roster ({count})",
+      "rejectReasonPlaceholder": "Reason for rejection...",
+      "confirmReject": "Confirm Reject",
+      "reject": "Reject",
+      "approve": "Approve",
+      "approveSuccess": "Registration approved.",
+      "rejectReasonRequired": "Please provide a rejection reason.",
+      "rejectSuccess": "Registration rejected."
+    }
+  },
+  "dashboard": {
+    "registrations": {
+      "heading": "Tournament Registrations",
+      "subheading": "Track every registration your teams have submitted.",
+      "emptyState": "No registrations yet.",
+      "tournamentFallback": "Tournament",
+      "reason": "Reason: {reason}",
+      "viewTeam": "View Team",
+      "registrationWithdrawn": "Registration withdrawn.",
+      "withdraw": "Withdraw"
+    },
+    "team": {
+      "signInToCreate": "You must be signed in to create a team.",
+      "editTitle": "Edit {teamName}",
+      "editSubtitle": "Update your team's identity and roster.",
+      "editRoster": "Edit Roster",
+      "saveChanges": "Save Changes",
+      "dangerZone": "Danger Zone",
+      "dangerZoneHint": "Permanently delete this team.",
+      "stepTwoOfTwo": "Step 2 of 2",
+      "buildRosterTitle": "Build {teamName}'s Roster",
+      "buildRosterSubtitle": "Fill the 5 starting roles, then optionally add substitutes and a coach.",
+      "teamNameLabel": "Team Name",
+      "teamNamePlaceholder": "e.g. Eclipse Empire",
+      "teamLogoLabel": "Team Logo",
+      "teamLogoHint": "Upload a square logo (1:1 ratio recommended). Suggested size: 512×512px or larger.",
+      "teamBannerLabel": "Team Banner",
+      "gameLabel": "Game",
+      "provinceLabel": "Province / City",
+      "provinceHint": "Select the province or city your team represents.",
+      "captainContactTitle": "Captain Contact Information",
+      "captainContactHint": "The captain is the team's sole point of contact for tournament communication, match scheduling, and disputes.",
+      "captainTelegramLabel": "Captain Telegram Username",
+      "captainTelegramHint": "Used for tournament communication, match scheduling, and admin contact.",
+      "captainContactNumberLabel": "Captain Contact Number",
+      "captainContactNumberHint": "This number will only be visible to tournament administrators and will be used for urgent tournament communication.",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Tell us about your team...",
+      "teamUpdated": "Team updated successfully.",
+      "continue": "Continue",
+      "deleteTeam": "Delete Team",
+      "deleteTeamConfirmTitle": "Delete {teamName}?",
+      "deleteTeamConfirmBody": "This permanently deletes the team, its roster, and all tournament registrations. This cannot be undone.",
+      "teamDeleted": "Team deleted.",
+      "stepOneOfTwo": "Step 1 of 2",
+      "createTitle": "Create Your Team",
+      "createSubtitle": "Set up your team identity. You'll build your roster next.",
+      "continueToRoster": "Continue to Roster",
+      "myTeamsTitle": "My Teams",
+      "myTeamsSubtitle": "Teams you own and manage.",
+      "createTeam": "Create Team",
+      "noTeamsYet": "You don't own any teams yet.",
+      "createFirstTeam": "Create Your First Team",
+      "playersCount": "{count} Players",
+      "registrationsCount": "{count} Registrations",
+      "viewTeamPage": "View team page"
+    },
+    "roster": {
+      "rosterSaved": "Roster saved.",
+      "startingPlayers": "Starting Players",
+      "substitutes": "Substitutes",
+      "coach": "Coach",
+      "captainInfoTitle": "Captain Information",
+      "captainIgn": "Captain IGN",
+      "noCaptainSelected": "No captain selected yet",
+      "notSet": "Not set",
+      "editTelegramContact": "Edit Telegram / Contact Number",
+      "startingLineupTitle": "Player Information — Starting Lineup",
+      "addSub1": "Add Sub 1",
+      "addSub2": "Add Sub 2",
+      "noSubstitutesAdded": "No substitutes added.",
+      "addCoach": "Add Coach",
+      "coachOptional": "Optional — no coach added.",
+      "saving": "Saving...",
+      "saveRoster": "Save Roster",
+      "captain": "Captain",
+      "remove": "Remove",
+      "ignLabel": "IGN (In-Game Name)",
+      "ignPlaceholder": "In-game name",
+      "ignHint": "Your in-game nickname as shown inside the game.",
+      "gameIdLabel": "Game ID",
+      "gameIdHint": "Enter your in-game UID or Player ID."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Updates on your teams' tournament registrations.",
+      "noNotifications": "No notifications yet.",
+      "markAllRead": "Mark All Read"
+    },
+    "nav": {
+      "overview": "Overview",
+      "myTeams": "My Teams",
+      "registrations": "Registrations",
+      "notifications": "Notifications",
+      "settings": "Settings"
+    }
+  },
+  "tournaments": {
+    "detail": {
+      "back": "Back",
+      "prizePool": "Prize Pool",
+      "maxTeams": "Max Teams",
+      "regDeadline": "Reg. Deadline",
+      "startDate": "Start Date",
+      "registrationOpen": "Registration is open",
+      "registrationClosed": "Registration is closed",
+      "registerBeforeDeadline": "Register one of your teams before the deadline.",
+      "slotsFull": "All team slots have been filled.",
+      "deadlinePassed": "The registration deadline has passed.",
+      "noLongerAccepting": "This tournament is no longer accepting new registrations.",
+      "registerTeam": "Register Team",
+      "registrationClosedButton": "Registration Closed",
+      "tabOverview": "Overview",
+      "tabBracket": "Bracket",
+      "tournamentStatistics": "Tournament Statistics",
+      "matches": "Matches",
+      "liveNow": "Live Now",
+      "upcomingMatches": "Upcoming Matches",
+      "recentResults": "Recent Results",
+      "relatedNews": "Related News",
+      "approvedTeams": "Approved Teams ({count})",
+      "noTeamsApproved": "No teams approved yet.",
+      "champion": "Champion",
+      "crowned": "Crowned {date}",
+      "bracketNotGenerated": "The bracket hasn't been generated yet.",
+      "currentRound": "Current Round",
+      "remainingTeams": "Remaining Teams",
+      "tbd": "TBD",
+      "upperBracket": "Upper Bracket",
+      "lowerBracket": "Lower Bracket",
+      "eliminated": "Eliminated",
+      "telegramCta": "Get updates on this tournament as they happen."
+    }
+  },
+  "matches": {
+    "detail": {
+      "back": "Back",
+      "round": "Round {number}",
+      "winner": "Winner: {name}",
+      "watchLive": "Watch Live",
+      "evidence": "Evidence",
+      "disputes": "Disputes",
+      "adminLabel": "Admin:",
+      "tbd": "TBD",
+      "vs": "vs"
+    },
+    "errors": {
+      "signInToDispute": "You must be signed in to open a dispute.",
+      "tooManyDisputes": "Too many disputes opened recently. Try again in {seconds}s.",
+      "teamNotFound": "Team not found.",
+      "notYourTeam": "You do not own this team.",
+      "matchNotFound": "Match not found.",
+      "teamDidNotPlay": "Your team did not play in this match.",
+      "onlyCompletedCanDispute": "Only completed matches can be disputed."
+    },
+    "notifications": {
+      "disputeOpenedTitle": "Dispute Opened",
+      "disputeOpenedBody": "{teamName} opened a dispute for your match in {tournamentName}.",
+      "theTournament": "the tournament"
+    }
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {total}",
+    "showing": "Showing {from}–{to} of {total}",
+    "goToPrevious": "Go to previous page",
+    "goToNext": "Go to next page",
+    "morePages": "More pages"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "Not found.",
+    "unauthorized": "You must be signed in to do that.",
+    "adminRequired": "Admin access required.",
+    "network": "Network error. Check your connection and try again."
+  },
+  "emptyStates": {
+    "noResults": "No results found.",
+    "noItems": "Nothing here yet."
+  },
+  "validation": {
+    "generic": "This field is invalid.",
+    "required": "This field is required.",
+    "roster": {
+      "maxSubstitutes": "Maximum 2 substitutes.",
+      "ignRequired": "IGN is required.",
+      "roleRequired": "{role} is required.",
+      "duplicateRole": "Duplicate role: {role}. Each role can only be filled once.",
+      "maxCoach": "Maximum 1 coach.",
+      "selectCaptain": "Select a captain.",
+      "onlyOneCaptain": "Only one player can be captain.",
+      "captainMustStart": "The captain must be one of the starting five players.",
+      "minPlayers": "At least 5 players are required.",
+      "maxPlayers": "Maximum 7 players plus 1 coach."
+    },
+    "legacy": {
+      "invalidYear": "Enter a valid year.",
+      "titleTooShort": "Title must be at least 2 characters."
+    },
+    "news": {
+      "titleTooShort": "Title must be at least 2 characters.",
+      "slugTooShort": "Slug must be at least 2 characters.",
+      "slugInvalid": "Slug can only contain lowercase letters, numbers, and hyphens.",
+      "contentTooShort": "Content must be at least 20 characters.",
+      "slugTaken": "That slug is already in use."
+    },
+    "tournament": {
+      "nameRequired": "Tournament name must be at least 2 characters.",
+      "slugMinLength": "Slug must be at least 2 characters.",
+      "slugFormat": "Slug can only contain lowercase letters, numbers, and hyphens.",
+      "maxTeamsMin": "At least 2 teams required.",
+      "prizePoolNonNegative": "Prize pool cannot be negative.",
+      "registrationDeadlineRequired": "Registration deadline is required.",
+      "startDateRequired": "Start date is required.",
+      "startDateBeforeDeadline": "Start date should be on or after the registration deadline."
+    },
+    "team": {
+      "nameTooShort": "Team name must be at least 2 characters.",
+      "nameTooLong": "Team name must be 60 characters or fewer.",
+      "descriptionTooLong": "Description is too long.",
+      "selectGame": "Select a game.",
+      "invalidPhone": "Please enter a valid Cambodian phone number.",
+      "invalidTelegram": "Please enter a valid Telegram username.",
+      "selectProvince": "Select the province or city your team represents."
+    },
+    "recruitment": {
+      "titleTooShort": "Title must be at least 2 characters.",
+      "telegramTooShort": "Telegram username must be at least 3 characters.",
+      "descriptionTooShort": "Description must be at least 10 characters.",
+      "rankRequired": "Rank is required.",
+      "countryRequired": "Country is required.",
+      "requirementsTooShort": "Requirements must be at least 5 characters."
+    },
+    "match": {
+      "explanationTooShort": "Please explain the dispute in at least 10 characters.",
+      "tooManyEvidenceFiles": "Maximum 10 evidence files."
+    },
+    "profile": {
+      "invalidUrl": "Must be a valid URL.",
+      "invalidUsername": "Username must be 3-20 characters: letters, numbers, underscores only.",
+      "displayNameTooLong": "Display name is too long.",
+      "bioTooLong": "Bio must be 500 characters or fewer.",
+      "maxSocialLinks": "Maximum {count} social links."
+    }
+  },
+  "news": {
+    "category": {
+      "announcement": "Announcement",
+      "tournament": "Tournament",
+      "results": "Results",
+      "maintenance": "Maintenance",
+      "update": "Update",
+      "community": "Community"
+    },
+    "pinned": "Pinned",
+    "defaultAuthor": "NOBLE STRIKE",
+    "allCategory": "All",
+    "searchArticlesPlaceholder": "Search articles...",
+    "backToSite": "Back to Site",
+    "newsroom": "Newsroom",
+    "newsroomDescription": "The latest from NOBLE STRIKE — tournaments, results, and announcements.",
+    "pinnedAnnouncements": "Pinned Announcements",
+    "noArticlesFound": "No articles found.",
+    "published": "Published",
+    "updated": "Updated",
+    "viewsCount": "{count} views",
+    "relatedArticles": "Related Articles",
+    "share": {
+      "share": "Share:",
+      "shareOnX": "Share on X",
+      "shareOnFacebook": "Share on Facebook",
+      "copyLink": "Copy link",
+      "copied": "Copied!",
+      "linkCopied": "Link copied.",
+      "copyFailed": "Couldn't copy the link."
+    }
+  },
+  "legacy": {
+    "category": {
+      "tournament": "Tournament",
+      "community": "Community Event"
+    },
+    "status": {
+      "completed": "Completed",
+      "archived": "Archived",
+      "upcoming": "Upcoming"
+    },
+    "metaTitle": "Legacy & History — NOBLE STRIKE",
+    "metaDescription": "NOBLE STRIKE's tournament history since 2023 — past events, champions, and community milestones.",
+    "backToSite": "Back to Site",
+    "kicker": "Legacy & History",
+    "pageTitle": "Past Events Archive",
+    "pageIntro": "NOBLE STRIKE has been organizing esports events since 2023, hosting competitive tournaments and community events featuring hundreds of players and tournaments with up to 128 participating teams.",
+    "emptyState": "The archive is being built — check back soon.",
+    "archiveNotice": "Historical tournament records are being restored from archived community data. Some team, participant, and champion information from older events may be incomplete.",
+    "yes": "Yes",
+    "fields": {
+      "date": "Date",
+      "game": "Game",
+      "teams": "Teams",
+      "format": "Format",
+      "organizedBy": "Organized by",
+      "entryFee": "Entry Fee",
+      "mode": "Mode",
+      "prizePool": "Prize Pool",
+      "liveBroadcast": "Live Broadcast",
+      "supportTeam": "Support Team",
+      "champion": "Champion",
+      "runnerUp": "Runner-up",
+      "top34": "Top 3-4"
+    },
+    "stats": {
+      "founded": "Founded",
+      "largestTournament": "Largest Tournament",
+      "teamsCount": "{count} Teams",
+      "highestPrizePool": "Highest Prize Pool",
+      "eventsOrganized": "Events Organized",
+      "communityEventsHosted": "Community Events Hosted"
+    },
+    "gallery": {
+      "title": "Gallery",
+      "close": "Close",
+      "previousImage": "Previous image",
+      "nextImage": "Next image"
+    }
+  },
+  "telegram": {
+    "welcome": "Welcome to the NOBLE STRIKE bot! Use /language to switch between English and Khmer.",
+    "help": "Send /language en or /language km to change your language.",
+    "linkExpired": "This link has expired. Please request a new one from your dashboard.",
+    "linkSuccess": "Your Telegram account is now linked to NOBLE STRIKE.",
+    "languageSet": "Language set to English.",
+    "languageUsage": "Usage: /language en or /language km",
+    "languageUnknown": "Unrecognized language. Usage: /language en or /language km"
+  },
+  "auth": {
+    "errors": {
+      "fillAllFields": "Please fill in all fields.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "tooManyRegistrationAttempts": "Too many registration attempts. Try again in {seconds}s.",
+      "tooManyLoginAttempts": "Too many login attempts. Try again in {seconds}s.",
+      "invalidCredentials": "Invalid email or password.",
+      "enterEmail": "Please enter your email."
+    },
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to your NOBLE STRIKE account",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "signingIn": "Signing in...",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register"
+    },
+    "register": {
+      "title": "Create Your Account",
+      "subtitle": "Join NOBLE STRIKE and enter the arena",
+      "usernameLabel": "Username",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "creatingAccount": "Creating account...",
+      "submit": "Create Account",
+      "checkEmailTitle": "Check Your Email",
+      "checkEmailBody": "We've sent a confirmation link to your inbox. Verify your email to activate your account, then sign in.",
+      "backToSignIn": "Back to Sign In",
+      "haveAccount": "Already have an account?",
+      "signInLink": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot Password",
+      "subtitle": "Enter your email and we'll send you a reset link",
+      "emailLabel": "Email",
+      "sending": "Sending...",
+      "submit": "Send Reset Link",
+      "checkEmailTitle": "Check Your Email",
+      "checkEmailBody": "If an account exists for that email, a password reset link is on its way.",
+      "backToSignIn": "Back to Sign In",
+      "rememberedIt": "Remembered it?",
+      "signInLink": "Sign in"
+    },
+    "resetPassword": {
+      "title": "Set a New Password",
+      "subtitle": "Choose a new password for your account",
+      "newPasswordLabel": "New Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "updating": "Updating...",
+      "submit": "Update Password"
+    }
+  },
+  "recruitment": {
+    "errors": {
+      "signInToPost": "You must be signed in to post.",
+      "postNotFound": "Post not found.",
+      "editOwnPostsOnly": "You can only edit your own posts.",
+      "manageOwnPostsOnly": "You can only manage your own posts.",
+      "deleteOwnPostsOnly": "You can only delete your own posts."
+    },
+    "backToSite": "Back to Site",
+    "title": "Recruitment Hub",
+    "subtitle": "Find a team, or find your next player.",
+    "noPostsFound": "No posts found.",
+    "noPostsHint": "Try a different filter, or be the first to post.",
+    "lookingForTeam": "Looking For Team",
+    "lookingForPlayer": "Looking For Player",
+    "allGames": "All Games",
+    "allRoles": "All Roles",
+    "countryPlaceholder": "Country",
+    "anyStatus": "Any Status",
+    "statusOpen": "Open",
+    "statusClosed": "Closed",
+    "postLft": "Post LFT",
+    "postLfp": "Post LFP",
+    "postDeleted": "Post deleted.",
+    "rankLabel": "Rank",
+    "requirementsLabel": "Requirements",
+    "close": "Close",
+    "reopen": "Reopen",
+    "deletePostConfirmTitle": "Delete this post?",
+    "deletePostConfirmBody": "This cannot be undone.",
+    "postSubmit": "Post",
+    "saveChanges": "Save Changes",
+    "postLftTitle": "Post — Looking For Team",
+    "postLfpTitle": "Post — Looking For Player",
+    "editPostTitle": "Edit Post",
+    "lftDialogHint": "Let teams know you're available to recruit.",
+    "lfpDialogHint": "Let players know your team is recruiting.",
+    "titleLabel": "Title",
+    "teamLabel": "Team",
+    "lftTitlePlaceholder": "e.g. Experienced Roamer looking for a squad",
+    "lfpTitlePlaceholder": "e.g. NOBLE STRIKE Academy",
+    "gameLabel": "Game",
+    "preferredRole": "Preferred Role",
+    "roleNeeded": "Role Needed",
+    "countryLabel": "Country",
+    "requirementsPlaceholder": "e.g. Mythic+ rank, available weeknights, mic required",
+    "telegramUsernameLabel": "Telegram Username",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Tell them more..."
+  },
+  "home": {
+    "hero": {
+      "kicker": "Elite Esports Organization",
+      "subheadlinePrefix": "Compete. Conquer.",
+      "subheadlineHighlight": "Become Legendary.",
+      "description": "The official NOBLE STRIKE tournament platform. Compete in premier 5v5 esports events, build your legacy, and rise through the ranks against the strongest teams.",
+      "joinTournament": "Join Tournament",
+      "viewTeams": "View Teams",
+      "scroll": "Scroll"
+    },
+    "stats": {
+      "registeredTeams": "Registered Teams",
+      "players": "Players",
+      "activeTournaments": "Active Tournaments",
+      "prizePoolAwarded": "Prize Pool Awarded"
+    },
+    "tournaments": {
+      "kicker": "Now Battling",
+      "title": "Upcoming Tournaments",
+      "description": "Register your squad for the most prestigious 5v5 MOBA competitions.",
+      "viewAll": "View All"
+    },
+    "teams": {
+      "kicker": "The Contenders",
+      "title": "Featured Teams",
+      "description": "Elite rosters battling for glory across multiple tournaments.",
+      "viewAll": "All Teams"
+    },
+    "news": {
+      "kicker": "From The Newsroom",
+      "title": "Latest Announcements",
+      "description": "Tournament news, player signings, results and official updates.",
+      "viewAll": "All News"
+    },
+    "sponsors": {
+      "poweredBy": "Powered By Elite Partners"
+    },
+    "cta": {
+      "headlinePrefix": "Ready To Become",
+      "headlineHighlight": "Legendary?",
+      "description": "Assemble your squad, enter the arena, and write your name into esports history. The next champion could be you.",
+      "registerTeam": "Register Your Team",
+      "meetSquad": "Meet NS Squad"
+    },
+    "tournamentCard": {
+      "ends": "Ends {date}",
+      "starts": "Starts {date}"
+    },
+    "teamCard": {
+      "officialTeam": "Official NS Team",
+      "tournamentLabel": "Tournament:",
+      "noActiveTournament": "No active tournament",
+      "playersCount": "{count} Players",
+      "moreCount": "+{count} more"
+    }
+  },
+  "teamDetail": {
+    "back": "Back",
+    "officialTeam": "Official NS Team",
+    "rosterSize": "Roster Size",
+    "tournamentsJoined": "Tournaments Joined",
+    "approved": "Approved",
+    "roster": "Roster",
+    "captain": "Captain",
+    "startingLineup": "Starting Lineup",
+    "substitutes": "Substitutes",
+    "coach": "Coach",
+    "tournamentHistory": "Tournament History",
+    "noTournamentsYet": "This team hasn't registered for any tournaments yet.",
+    "tournamentFallback": "Tournament",
+    "openSlot": "Open Slot"
+  },
+  "userProfile": {
+    "playerNotFound": "Player Not Found",
+    "privateProfileTitle": "Private Profile",
+    "privateProfileBody": "This player has set their profile to private.",
+    "backToSite": "Back to Site",
+    "back": "Back",
+    "editProfile": "Edit Profile",
+    "adminBadge": "Admin",
+    "joined": "Joined {date}",
+    "tournamentHistory": "Tournament History",
+    "stats": {
+      "played": "Played",
+      "wins": "Wins",
+      "losses": "Losses",
+      "winRate": "Win Rate",
+      "championships": "Championships",
+      "runnerUps": "Runner-ups"
+    },
+    "teams": "Teams",
+    "currentTeams": "Current Teams",
+    "captainOf": "Captain Of",
+    "coaching": "Coaching",
+    "pastTeams": "Past Teams",
+    "noPastTeams": "No past team history tracked yet.",
+    "achievements": "Achievements",
+    "tournamentTitles": "Tournament Titles",
+    "noTitlesYet": "No titles yet.",
+    "champion": "Champion",
+    "runnerUp": "Runner-up",
+    "mvpAwards": "MVP Awards",
+    "comingSoon": "Coming soon.",
+    "specialBadges": "Special Badges",
+    "recentMatches": "Recent Matches",
+    "matchVs": "{team} vs {opponent}",
+    "win": "Win",
+    "loss": "Loss",
+    "newsContributions": "News Contributions",
+    "official": "Official",
+    "tbd": "TBD"
+  },
+  "settings": {
+    "backToDashboard": "Back to Dashboard",
+    "accountSettings": "Account Settings",
+    "tabs": {
+      "profile": "Profile",
+      "account": "Account",
+      "notifications": "Notifications",
+      "privacy": "Privacy",
+      "appearance": "Appearance"
+    },
+    "errors": {
+      "invalidSocialLinks": "Invalid social links.",
+      "usernameTaken": "That username is already taken.",
+      "enterEmail": "Please enter an email address.",
+      "telegramNotConfigured": "Telegram isn't configured on this deployment yet."
+    },
+    "account": {
+      "emailAddressTitle": "Email Address",
+      "emailLabel": "Email",
+      "emailChangeHint": "Changing your email sends a confirmation link to the new address before it takes effect.",
+      "emailChangeSuccess": "Check your new inbox to confirm the change.",
+      "updateEmail": "Update Email",
+      "passwordTitle": "Password",
+      "newPasswordLabel": "New Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "passwordUpdated": "Password updated.",
+      "updatePassword": "Update Password"
+    },
+    "appearance": {
+      "options": {
+        "dark": {
+          "label": "Dark Mode",
+          "description": "The original black & gold NOBLE STRIKE look."
+        },
+        "light": {
+          "label": "Light Mode",
+          "description": "A lighter surface palette, same gold brand accents."
+        },
+        "system": {
+          "label": "System",
+          "description": "Follows your device's appearance setting."
+        }
+      },
+      "syncHint": "Applies immediately and syncs across your devices when signed in."
+    },
+    "notifications": {
+      "saveChanges": "Save Changes",
+      "tournament": {
+        "label": "Tournament Notifications",
+        "description": "Registration approvals, rejections, and status changes."
+      },
+      "match": {
+        "label": "Match Notifications",
+        "description": "Scheduling, results, and dispute activity."
+      },
+      "news": {
+        "label": "News Notifications",
+        "description": "Major announcements and tournament news."
+      },
+      "system": {
+        "label": "System Notifications",
+        "description": "Platform-wide updates and account activity."
+      },
+      "email": {
+        "label": "Email Notifications",
+        "description": "Future-ready — stored now, no emails are sent yet."
+      },
+      "saved": "Saved."
+    },
+    "privacy": {
+      "saveChanges": "Save Changes",
+      "publicProfile": {
+        "label": "Public Profile",
+        "description": "Off hides your profile page from everyone but you and admins, and excludes you from Player Search."
+      },
+      "showTeams": {
+        "label": "Show Teams",
+        "description": "Display your Current/Captain/Coach team memberships on your public profile."
+      },
+      "showMatchHistory": {
+        "label": "Show Match History",
+        "description": "Display tournament stats, achievements, and recent matches."
+      },
+      "showDiscord": {
+        "label": "Show Discord",
+        "description": "Display your Discord username on your public profile."
+      },
+      "saved": "Saved."
+    },
+    "profile": {
+      "saveChanges": "Save Changes",
+      "avatarBannerTitle": "Avatar & Banner",
+      "avatarLabel": "Avatar",
+      "bannerLabel": "Banner",
+      "identityTitle": "Identity",
+      "usernameLabel": "Username",
+      "usernameHint": "3-20 characters: letters, numbers, underscores.",
+      "displayNameLabel": "Display Name",
+      "displayNamePlaceholder": "Shown instead of your username where set",
+      "countryLabel": "Country",
+      "discordUsernameLabel": "Discord Username",
+      "bioLabel": "Bio",
+      "bioPlaceholder": "Tell the community about yourself...",
+      "socialLinksTitle": "Social Links",
+      "addLink": "Add Link",
+      "saved": "Saved."
+    },
+    "telegramLink": {
+      "unlinked": "Telegram account unlinked.",
+      "linkedAs": "Linked as {handle}",
+      "telegramUserFallback": "Telegram user {id}",
+      "since": "Since {date}",
+      "unlink": "Unlink",
+      "linkTitle": "Link your Telegram account",
+      "linkHint": "Opens Telegram and starts a chat with the NOBLE STRIKE bot to finish linking.",
+      "generatingLink": "Generating link...",
+      "linkTelegram": "Link Telegram",
+      "didntOpen": "Didn't open?",
+      "tapHere": "Tap here",
+      "expiresIn15": "(expires in 15 minutes)."
+    }
+  }
+}

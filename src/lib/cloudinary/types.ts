@@ -6,7 +6,8 @@ export type ImageCategory =
   | "players"
   | "news"
   | "match-evidence"
-  | "profiles";
+  | "profiles"
+  | "legacy-events";
 
 export const CLOUDINARY_FOLDERS: Record<ImageCategory, string> = {
   logos: "noble-strike/logos",
@@ -17,6 +18,7 @@ export const CLOUDINARY_FOLDERS: Record<ImageCategory, string> = {
   news: "noble-strike/news",
   "match-evidence": "noble-strike/match-evidence",
   profiles: "noble-strike/profiles",
+  "legacy-events": "noble-strike/legacy-events",
 };
 
 /** Max upload size in bytes, per use case. */
@@ -29,6 +31,7 @@ export const IMAGE_SIZE_LIMITS = {
   matchEvidence: 10 * 1024 * 1024,
   profileAvatar: 5 * 1024 * 1024,
   profileBanner: 10 * 1024 * 1024,
+  legacyEventImage: 10 * 1024 * 1024,
 } as const;
 
 export type ImageUseCase = keyof typeof IMAGE_SIZE_LIMITS;
@@ -43,6 +46,7 @@ export const USE_CASE_FOLDER: Record<ImageUseCase, ImageCategory> = {
   matchEvidence: "match-evidence",
   profileAvatar: "profiles",
   profileBanner: "profiles",
+  legacyEventImage: "legacy-events",
 };
 
 export const ACCEPTED_IMAGE_TYPES = [

@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
+import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getBracket, getBracketMatches } from "@/lib/bracket/queries";
 import { summarizeBracket } from "@/lib/bracket/summary";
 import { BracketControls } from "@/components/admin/bracket-controls";
 import { BracketView } from "@/components/bracket/bracket-view";
 import { GAME_LABELS } from "@/lib/types";
+import { pickLocalized } from "@/lib/i18n/content";
 import { ListChecks, Trophy, Users, Zap } from "lucide-react";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -14,8 +17,10 @@ interface Props {
 export default async function AdminBracketPage({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
+  const locale = (await getLocale()) as Locale;
   const { data: tournament } = await supabase.from("tournaments").select("*").eq("id", id).single();
   if (!tournament) notFound();
+  const tournamentName = pickLocalized(tournament, "name", locale);
 
   const bracket = await getBracket(id);
   const rounds = await getBracketMatches(id);
@@ -26,8 +31,8 @@ export default async function AdminBracketPage({ params }: Props) {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">
-            {tournament.title} — Bracket
+          <h1 className="font-display font-bold text-2xl text-white" lang={locale}>
+            {tournamentName} — Bracket
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             {tournament.bracket_format === "SINGLE_ELIMINATION"

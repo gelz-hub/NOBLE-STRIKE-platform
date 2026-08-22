@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { pickLocalized } from "@/lib/i18n/content";
+import type { Locale } from "@/i18n/config";
 import { TeamMonogram } from "@/components/ns/ui";
 import { StatCard } from "@/components/ui/stat-card";
 import {
@@ -37,7 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { username } = await params;
   const supabase = await createClient();
   const profile = await getProfileByUsername(supabase, username);
-  if (!profile) return { title: "Player Not Found" };
+  if (!profile) {
+    const t = await getTranslations("userProfile");
+    return { title: t("playerNotFound") };
+  }
   return {
     title: `${profile.display_name || profile.username} — NOBLE STRIKE`,
     description: profile.bio || `${profile.username}'s player profile on NOBLE STRIKE.`,
@@ -49,6 +55,8 @@ export default async function PublicProfilePage({ params }: Props) {
   const supabase = await createClient();
   const profile = await getProfileByUsername(supabase, username);
   if (!profile) notFound();
+  const locale = (await getLocale()) as Locale;
+  const t = await getTranslations("userProfile");
 
   const {
     data: { user: viewer },
@@ -66,10 +74,10 @@ export default async function PublicProfilePage({ params }: Props) {
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
         <div className="ns-card rounded-xl p-10 text-center max-w-sm">
           <Lock className="w-8 h-8 text-gold/50 mx-auto mb-4" />
-          <h1 className="font-display font-bold text-xl text-text-primary mb-2">Private Profile</h1>
-          <p className="text-sm text-muted-foreground">This player has set their profile to private.</p>
+          <h1 className="font-display font-bold text-xl text-text-primary mb-2">{t("privateProfileTitle")}</h1>
+          <p className="text-sm text-muted-foreground">{t("privateProfileBody")}</p>
           <Link href="/" className="ns-btn-outline inline-flex mt-6 px-4 py-2 rounded-md text-xs">
-            Back to Site
+            {t("backToSite")}
           </Link>
         </div>
       </div>
@@ -84,8 +92,10 @@ export default async function PublicProfilePage({ params }: Props) {
   const teamIds = teams?.current.map((e) => e.team.id) ?? [];
 
   const [{ stats, titles }, recentMatches, authoredNews] = await Promise.all([
-    showMatchHistory ? getTournamentStats(supabase, teamIds) : Promise.resolve({ stats: null, titles: [] }),
-    showMatchHistory ? getRecentMatches(supabase, teamIds) : Promise.resolve([]),
+    showMatchHistory
+      ? getTournamentStats(supabase, teamIds, locale)
+      : Promise.resolve({ stats: null, titles: [] }),
+    showMatchHistory ? getRecentMatches(supabase, teamIds, 5, locale) : Promise.resolve([]),
     profile.role === "admin" ? getAuthoredNews(supabase, profile.id) : Promise.resolve([]),
   ]);
 
@@ -103,14 +113,14 @@ export default async function PublicProfilePage({ params }: Props) {
           className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-text-secondary hover:text-gold-light bg-background/40 backdrop-blur-sm border border-border rounded-md px-3 py-1.5"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Back
+          {t("back")}
         </Link>
         {isOwner && (
           <Link
             href="/settings/profile"
             className="absolute top-5 right-4 md:right-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-text-secondary hover:text-gold-light bg-background/40 backdrop-blur-sm border border-border rounded-md px-3 py-1.5"
           >
-            Edit Profile
+            {t("editProfile")}
           </Link>
         )}
       </div>
@@ -130,7 +140,7 @@ export default async function PublicProfilePage({ params }: Props) {
               </h1>
               {profile.role === "admin" && (
                 <span className="ns-pill ns-pill-approved">
-                  <Shield className="w-3 h-3" /> Admin
+                  <Shield className="w-3 h-3" /> {t("adminBadge")}
                 </span>
               )}
             </div>
@@ -145,7 +155,7 @@ export default async function PublicProfilePage({ params }: Props) {
             </span>
           )}
           <span className="flex items-center gap-1.5">
-            <Calendar className="w-3.5 h-3.5" /> Joined {new Date(profile.created_at).toLocaleDateString()}
+            <Calendar className="w-3.5 h-3.5" /> {t("joined", { date: new Date(profile.created_at).toLocaleDateString() })}
           </span>
           {showDiscord && profile.discord_username && (
             <span className="flex items-center gap-1.5">
@@ -175,63 +185,67 @@ export default async function PublicProfilePage({ params }: Props) {
         {showMatchHistory && stats && (
           <section className="mt-10 space-y-4">
             <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">
-              Tournament History
+              {t("tournamentHistory")}
             </h2>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              <StatCard icon={Trophy} label="Played" value={stats.played} />
-              <StatCard icon={Swords} label="Wins" value={stats.wins} />
-              <StatCard icon={Swords} label="Losses" value={stats.losses} />
-              <StatCard icon={Percent} label="Win Rate" value={`${stats.winRate}%`} />
-              <StatCard icon={Crown} label="Championships" value={stats.championships} />
-              <StatCard icon={Award} label="Runner-ups" value={stats.runnerUps} />
+              <StatCard icon={Trophy} label={t("stats.played")} value={stats.played} />
+              <StatCard icon={Swords} label={t("stats.wins")} value={stats.wins} />
+              <StatCard icon={Swords} label={t("stats.losses")} value={stats.losses} />
+              <StatCard icon={Percent} label={t("stats.winRate")} value={`${stats.winRate}%`} />
+              <StatCard icon={Crown} label={t("stats.championships")} value={stats.championships} />
+              <StatCard icon={Award} label={t("stats.runnerUps")} value={stats.runnerUps} />
             </div>
           </section>
         )}
 
         {showTeams && teams && (
           <section className="mt-10 space-y-6">
-            <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">Teams</h2>
-            <TeamBucket title="Current Teams" entries={teams.current} />
-            <TeamBucket title="Captain Of" entries={teams.captain} icon={Crown} />
-            <TeamBucket title="Coaching" entries={teams.coach} />
+            <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">{t("teams")}</h2>
+            <TeamBucket title={t("currentTeams")} entries={teams.current} officialLabel={t("official")} />
+            <TeamBucket title={t("captainOf")} entries={teams.captain} icon={Crown} officialLabel={t("official")} />
+            <TeamBucket title={t("coaching")} entries={teams.coach} officialLabel={t("official")} />
             {teams.past.length === 0 && (
               <div>
                 <p className="text-xs font-heading font-semibold uppercase tracking-wider text-gold-light mb-3">
-                  Past Teams
+                  {t("pastTeams")}
                 </p>
-                <p className="text-sm text-muted-foreground">No past team history tracked yet.</p>
+                <p className="text-sm text-muted-foreground">{t("noPastTeams")}</p>
               </div>
             )}
           </section>
         )}
 
         <section className="mt-10 space-y-6">
-          <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">Achievements</h2>
+          <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">{t("achievements")}</h2>
           <div>
             <p className="text-xs font-heading font-semibold uppercase tracking-wider text-gold-light mb-3">
-              Tournament Titles
+              {t("tournamentTitles")}
             </p>
             {titles.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No titles yet.</p>
+              <p className="text-sm text-muted-foreground">{t("noTitlesYet")}</p>
             ) : (
               <div className="space-y-2">
-                {titles.map((t) => (
-                  <div key={`${t.tournamentId}-${t.placement}`} className="ns-card rounded-lg p-4 flex items-center justify-between gap-3">
+                {titles.map((title) => (
+                  <div key={`${title.tournamentId}-${title.placement}`} className="ns-card rounded-lg p-4 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      {t.placement === "champion" ? (
+                      {title.placement === "champion" ? (
                         <Crown className="w-4 h-4 text-gold shrink-0" />
                       ) : (
                         <Award className="w-4 h-4 text-text-secondary shrink-0" />
                       )}
                       <div className="min-w-0">
-                        <Link href={`/tournaments/${t.tournamentId}`} className="text-sm font-medium text-text-primary truncate hover:text-gold-light">
-                          {t.tournamentTitle}
+                        <Link
+                          href={`/tournaments/${title.tournamentId}`}
+                          className="text-sm font-medium text-text-primary truncate hover:text-gold-light"
+                          lang={locale}
+                        >
+                          {title.tournamentTitle}
                         </Link>
-                        {t.date && <p className="text-xs text-muted-foreground">{new Date(t.date).toLocaleDateString()}</p>}
+                        {title.date && <p className="text-xs text-muted-foreground">{new Date(title.date).toLocaleDateString()}</p>}
                       </div>
                     </div>
-                    <span className={`ns-pill ${t.placement === "champion" ? "ns-pill-approved" : "ns-pill-completed"}`}>
-                      {t.placement === "champion" ? "Champion" : "Runner-up"}
+                    <span className={`ns-pill ${title.placement === "champion" ? "ns-pill-approved" : "ns-pill-completed"}`}>
+                      {title.placement === "champion" ? t("champion") : t("runnerUp")}
                     </span>
                   </div>
                 ))}
@@ -241,30 +255,32 @@ export default async function PublicProfilePage({ params }: Props) {
           <div className="grid sm:grid-cols-2 gap-6">
             <div>
               <p className="text-xs font-heading font-semibold uppercase tracking-wider text-gold-light mb-3 flex items-center gap-1.5">
-                <Star className="w-3.5 h-3.5" /> MVP Awards
+                <Star className="w-3.5 h-3.5" /> {t("mvpAwards")}
               </p>
-              <p className="text-sm text-muted-foreground">Coming soon.</p>
+              <p className="text-sm text-muted-foreground">{t("comingSoon")}</p>
             </div>
             <div>
               <p className="text-xs font-heading font-semibold uppercase tracking-wider text-gold-light mb-3 flex items-center gap-1.5">
-                <Coins className="w-3.5 h-3.5" /> Special Badges
+                <Coins className="w-3.5 h-3.5" /> {t("specialBadges")}
               </p>
-              <p className="text-sm text-muted-foreground">Coming soon.</p>
+              <p className="text-sm text-muted-foreground">{t("comingSoon")}</p>
             </div>
           </div>
         </section>
 
         {showMatchHistory && recentMatches.length > 0 && (
           <section className="mt-10 space-y-4">
-            <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">Recent Matches</h2>
+            <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary">{t("recentMatches")}</h2>
             <div className="space-y-2">
               {recentMatches.map((m) => (
                 <div key={m.id} className="ns-card rounded-lg p-4 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm text-text-primary truncate">
-                      {m.teamName} vs {m.opponentName ?? "TBD"}
+                      {t("matchVs", { team: m.teamName, opponent: m.opponentName ?? t("tbd") })}
                     </p>
-                    <p className="text-xs text-muted-foreground">{m.tournamentTitle}</p>
+                    <p className="text-xs text-muted-foreground" lang={locale}>
+                      {m.tournamentTitle}
+                    </p>
                   </div>
                   <div className="flex items-center gap-3 shrink-0">
                     <span className="text-sm font-mono text-text-primary">
@@ -272,7 +288,7 @@ export default async function PublicProfilePage({ params }: Props) {
                     </span>
                     {m.won !== null && (
                       <span className={`ns-pill ${m.won ? "ns-pill-approved" : "ns-pill-rejected"}`}>
-                        {m.won ? "Win" : "Loss"}
+                        {m.won ? t("win") : t("loss")}
                       </span>
                     )}
                   </div>
@@ -285,12 +301,14 @@ export default async function PublicProfilePage({ params }: Props) {
         {profile.role === "admin" && authoredNews.length > 0 && (
           <section className="mt-10 space-y-4">
             <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-text-primary flex items-center gap-2">
-              <Newspaper className="w-4 h-4 text-gold" /> News Contributions
+              <Newspaper className="w-4 h-4 text-gold" /> {t("newsContributions")}
             </h2>
             <div className="grid sm:grid-cols-2 gap-3">
               {authoredNews.map((n) => (
                 <Link key={n.id} href={`/news/${n.slug}`} className="ns-card rounded-lg p-4 block">
-                  <p className="text-sm font-medium text-text-primary truncate">{n.title}</p>
+                  <p className="text-sm font-medium text-text-primary truncate" lang={locale}>
+                    {pickLocalized(n, "title", locale)}
+                  </p>
                   {n.publish_at && (
                     <p className="text-xs text-muted-foreground mt-1">{new Date(n.publish_at).toLocaleDateString()}</p>
                   )}
@@ -308,10 +326,12 @@ function TeamBucket({
   title,
   entries,
   icon: Icon,
+  officialLabel = "Official",
 }: {
   title: string;
   entries: { team: { id: string; team_name: string; logo_url: string | null; is_official: boolean } }[];
   icon?: React.ElementType;
+  officialLabel?: string;
 }) {
   if (entries.length === 0) return null;
   return (
@@ -326,7 +346,7 @@ function TeamBucket({
                 {team.team_name}
                 {Icon && <Icon className="w-3.5 h-3.5 text-gold shrink-0" />}
               </p>
-              {team.is_official && <span className="ns-pill ns-pill-approved mt-1 inline-flex">Official</span>}
+              {team.is_official && <span className="ns-pill ns-pill-approved mt-1 inline-flex">{officialLabel}</span>}
             </div>
           </Link>
         ))}

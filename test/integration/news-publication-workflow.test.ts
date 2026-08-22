@@ -28,9 +28,9 @@ function seed(role: "admin" | "user" = "admin", profiles: Record<string, unknown
 function draftForm(overrides: Record<string, string> = {}) {
   const fd = new FormData();
   const defaults: Record<string, string> = {
-    title: "Season 2 Registration Opens",
+    title_en: "Season 2 Registration Opens",
     slug: "season-2-registration-opens",
-    content: "Registration for Season 2 is now open to all teams across the region.",
+    content_en: "Registration for Season 2 is now open to all teams across the region.",
     category: "TOURNAMENT",
     status: "DRAFT",
     featured: "false",
@@ -103,7 +103,7 @@ describe("News publication workflow", () => {
 
   it("rejects a title that's too short", async () => {
     seed("admin");
-    const result = await createNews(null, draftForm({ title: "x" }));
+    const result = await createNews(null, draftForm({ title_en: "x" }));
     expect("error" in result).toBe(true);
   });
 });

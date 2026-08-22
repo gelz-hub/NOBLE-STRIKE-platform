@@ -1,0 +1,933 @@
+{
+  "common": {
+    "language": "ភាសា",
+    "english": "អង់គ្លេស",
+    "khmer": "ខ្មែរ",
+    "loading": "កំពុងផ្ទុក...",
+    "save": "រក្សាទុក",
+    "cancel": "បោះបង់",
+    "submit": "ដាក់ស្នើ",
+    "edit": "កែសម្រួល",
+    "delete": "លុប",
+    "confirm": "បញ្ជាក់",
+    "close": "បិទ",
+    "back": "ថយក្រោយ",
+    "next": "បន្ទាប់",
+    "search": "ស្វែងរក",
+    "filter": "តម្រង",
+    "actions": "សកម្មភាព",
+    "status": "ស្ថានភាព",
+    "yes": "បាទ/ចាស",
+    "no": "ទេ",
+    "saving": "កំពុងរក្សាទុក..."
+  },
+  "navigation": {
+    "home": "ទំព័រដើម",
+    "tournaments": "ការប្រកួត",
+    "teams": "ក្រុម",
+    "nsSquad": "ក្រុម NS",
+    "news": "ព័ត៌មាន",
+    "brackets": "តារាងប្រកួត",
+    "recruitment": "ជ្រើសរើសសមាជិក",
+    "legacyAndHistory": "មរតក និងប្រវត្តិ",
+    "joinTournament": "ចូលរួមការប្រកួត",
+    "homeAriaLabel": "ទំព័រដើម NOBLE STRIKE",
+    "openMenu": "បើកម៉ឺនុយ",
+    "closeMenu": "បិទម៉ឺនុយ"
+  },
+  "footer": {
+    "tagline": "ប្រកួត។ ដណ្ដើមជ័យ។ ក្លាយជាតំណាន់។"
+  },
+  "admin": {
+    "nav": {
+      "tournaments": "ការប្រកួត",
+      "registrations": "ការចុះឈ្មោះ",
+      "matches": "ការប្រកួតប្រជែង",
+      "news": "ព័ត៌មាន",
+      "legacy": "មរតក",
+      "telegram": "តេឡេក្រាម"
+    },
+    "localeTabs": {
+      "english": "អង់គ្លេស",
+      "khmer": "ខ្មែរ (ស្រេចចិត្ត)",
+      "khmerHint": "ទុកទទេ ដើម្បីប្រើអត្ថបទអង់គ្លេសដោយស្វ័យប្រវត្តិ។"
+    },
+    "legacy": {
+      "title": "បេតិកភណ្ឌ និងប្រវត្តិសាស្ត្រ",
+      "subtitle": "គ្រប់គ្រងបណ្ណសារព្រឹត្តិការណ៍សាធារណៈ។",
+      "newEvent": "ព្រឹត្តិការណ៍ថ្មី",
+      "emptyState": "មិនទាន់មានព្រឹត្តិការណ៍ក្នុងបណ្ណសារទេ។",
+      "teamsSuffix": "ក្រុម",
+      "published": "បានផ្សព្វផ្សាយ",
+      "hidden": "លាក់",
+      "edit": "កែសម្រួល",
+      "unpublish": "ដកការផ្សព្វផ្សាយ",
+      "publish": "ផ្សព្វផ្សាយ",
+      "delete": "លុប",
+      "cancel": "បោះបង់",
+      "deleteConfirmTitle": "លុប \"{title}\" មែនទេ?",
+      "deleteConfirmDescription": "នេះនឹងលុបព្រឹត្តិការណ៍នេះជាអចិន្ត្រៃយ៍។ សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។",
+      "toasts": {
+        "unpublished": "បានដកការផ្សព្វផ្សាយ។",
+        "published": "បានផ្សព្វផ្សាយ។",
+        "deleted": "បានលុប។"
+      },
+      "newEventTitle": "ព្រឹត្តិការណ៍ថ្មីក្នុងបណ្ណសារ",
+      "newEventSubtitle": "បន្ថែមព្រឹត្តិការណ៍ប្រកួត ឬសហគមន៍ចាស់ទៅក្នុងបណ្ណសារ។",
+      "editEventTitle": "កែសម្រួលព្រឹត្តិការណ៍ក្នុងបណ្ណសារ",
+      "errors": {
+        "unauthorized": "អ្នកត្រូវតែចូលគណនីសិន។",
+        "adminRequired": "ត្រូវការសិទ្ធិជាអ្នកគ្រប់គ្រង។"
+      },
+      "saving": "កំពុងរក្សាទុក...",
+      "createEvent": "បង្កើតព្រឹត្តិការណ៍",
+      "saveChanges": "រក្សាទុកការផ្លាស់ប្តូរ",
+      "saved": "បានរក្សាទុក។",
+      "sections": {
+        "identity": "អត្តសញ្ញាណព្រឹត្តិការណ៍",
+        "details": "ព័ត៌មានលម្អិត",
+        "results": "លទ្ធផល",
+        "assets": "ឯកសារភ្ជាប់",
+        "statusAndDescription": "ស្ថានភាព និងកំណត់ចំណាំ"
+      },
+      "fields": {
+        "year": "ឆ្នាំ",
+        "category": "ប្រភេទ",
+        "title": "ចំណងជើង",
+        "date": "កាលបរិច្ឆេទ",
+        "coverImage": "រូបភាពគម្រប",
+        "game": "ហ្គេម",
+        "format": "ទម្រង់",
+        "teamsLabel": "ចំនួនក្រុម (បង្ហាញ)",
+        "teamsMax": "ចំនួនក្រុមអតិបរមា (លេខ — ប្រើសម្រាប់ស្ថិតិសង្ខេប)",
+        "prizePoolLabel": "ប្រាក់រង្វាន់ (បង្ហាញ)",
+        "prizePoolMax": "ប្រាក់រង្វាន់អតិបរមា (លេខ — ប្រើសម្រាប់ស្ថិតិសង្ខេប)",
+        "entryFee": "ថ្លៃចូលរួម",
+        "tournamentMode": "របៀបប្រកួត",
+        "organizedBy": "រៀបចំដោយ",
+        "supportTeam": "ក្រុមគាំទ្រ",
+        "liveBroadcast": "ផ្សាយផ្ទាល់",
+        "champion": "ជើងឯក",
+        "runnerUp": "ជើងឯករង",
+        "top34": "លំដាប់ទី ៣-៤ (បំបែកដោយសញ្ញា comma)",
+        "gallery": "វិចិត្រសាល (កាលវិភាគប្រកួត, ផ្ទាំងលទ្ធផល, វិញ្ញាបនបត្រអេឡិចត្រូនិក ។ល។)",
+        "status": "ស្ថានភាព",
+        "displayOrder": "លំដាប់បង្ហាញ (លេខខ្ពស់បង្ហាញមុនក្នុងឆ្នាំដដែល)",
+        "description": "កំណត់ចំណាំ (បង្ហាញលើកាតសាធារណៈ ឧ. កំណត់ត្រាមិនពេញលេញ)",
+        "isPublished": "បានផ្សព្វផ្សាយ (មើលឃើញនៅលើបណ្ណសារសាធារណៈ)"
+      }
+    },
+    "news": {
+      "saving": "កំពុងរក្សាទុក...",
+      "createArticle": "បង្កើតអត្ថបទ",
+      "saveChanges": "រក្សាទុកការផ្លាស់ប្តូរ",
+      "basicInformation": "ព័ត៌មានមូលដ្ឋាន",
+      "title": "ចំណងជើង",
+      "titlePlaceholder": "ឧ. NS រដូវកាលទី ២ បើកចុះឈ្មោះហើយ",
+      "slug": "Slug",
+      "excerpt": "សេចក្តីសង្ខេប",
+      "excerptPlaceholder": "សេចក្តីសង្ខេបខ្លីៗបង្ហាញនៅលើកាតបញ្ជី...",
+      "bannerImage": "រូបភាពបដា",
+      "content": "មាតិកា",
+      "write": "សរសេរ",
+      "preview": "មើលជាមុន",
+      "contentPlaceholder": "គាំទ្រ Markdown៖ # ចំណងជើង, **អក្សរដិត**, - បញ្ជី, > សម្រង់, ``` កូដ ```, តារាង, [តំណ](url), ![រូបភាព](url)។ បិទភ្ជាប់តំណ YouTube/Vimeo/Twitch ដោយឡែកដើម្បីបង្កប់វា។",
+      "nothingToPreview": "មិនទាន់មានអ្វីត្រូវមើលជាមុនទេ។",
+      "classification": "ចំណាត់ថ្នាក់",
+      "category": "ប្រភេទ",
+      "relatedTournament": "ព្រឹត្តិការណ៍ពាក់ព័ន្ធ",
+      "none": "— គ្មាន —",
+      "pinned": "ខ្ទាស់",
+      "featured": "លេចធ្លោ",
+      "publishing": "ការផ្សាយ",
+      "status": "ស្ថានភាព",
+      "publishDate": "កាលបរិច្ឆេទផ្សាយ (ស្រេចចិត្ត — កំណត់ពេលក្រោយ)",
+      "publishHint": "កំណត់ស្ថានភាពទៅជា Published ហើយទុកកាលបរិច្ឆេទផ្សាយឱ្យទទេដើម្បីផ្សាយភ្លាមៗ ឬកំណត់កាលបរិច្ឆេទនាពេលអនាគតដើម្បីកំណត់ពេល — អត្ថបទនឹងលាក់រហូតដល់ដល់ពេលនោះ។",
+      "seo": "SEO",
+      "seoDescription": "ការពិពណ៌នា SEO",
+      "seoKeywords": "ពាក្យគន្លឹះ SEO (បំបែកដោយសញ្ញាក្បៀស)",
+      "saved": "បានរក្សាទុក។",
+      "unpublished": "បានដកចេញពីការផ្សាយ។",
+      "unpublish": "ដកចេញពីការផ្សាយ",
+      "broadcastSuccess": "បានផ្សាយទៅ Telegram។",
+      "broadcastToTelegram": "ផ្សាយទៅ Telegram",
+      "archived": "បានទុកក្នុងបណ្ណសារ។",
+      "archive": "ទុកក្នុងបណ្ណសារ",
+      "deleteConfirmTitle": "លុប \"{title}\" ឬ?",
+      "deleteConfirmDescription": "សកម្មភាពនេះលុបអត្ថបទជាអចិន្ត្រៃយ៍ ហើយមិនអាចត្រឡប់វិញបានទេ។",
+      "deleted": "បានលុប។",
+      "statusOption": {
+        "ALL": "ទាំងអស់",
+        "DRAFT": "សេចក្តីព្រាង",
+        "PUBLISHED": "បានផ្សាយ",
+        "ARCHIVED": "បណ្ណសារ"
+      },
+      "searchTitlePlaceholder": "ស្វែងរកចំណងជើង...",
+      "allCategories": "គ្រប់ប្រភេទទាំងអស់",
+      "pinnedAll": "ខ្ទាស់៖ ទាំងអស់",
+      "pinnedOnly": "ខ្ទាស់ប៉ុណ្ណោះ",
+      "notPinned": "មិនខ្ទាស់",
+      "unknownAuthor": "មិនស្គាល់",
+      "edit": "កែសម្រួល",
+      "heading": "ព័ត៌មាន និងសេចក្តីប្រកាស",
+      "subheading": "បង្កើត និងគ្រប់គ្រងអត្ថបទទាំងអស់នៅលើវេទិកា។",
+      "newArticle": "អត្ថបទថ្មី",
+      "mostViewed": "មើលច្រើនបំផុត",
+      "viewsCount": "{count} ចំនួនមើល",
+      "noArticlesMatch": "គ្មានអត្ថបទត្រូវនឹងតម្រងទាំងនេះទេ។",
+      "newArticleHeading": "អត្ថបទថ្មី",
+      "newArticleSubheading": "សរសេរ និងផ្សាយអត្ថបទព័ត៌មាន ឬសេចក្តីប្រកាស។",
+      "editArticleHeading": "កែសម្រួលអត្ថបទ",
+      "view": "មើល",
+      "notifyAnnouncementTitle": "សេចក្តីប្រកាសសំខាន់ត្រូវបានផ្សាយ",
+      "notifyTournamentTitle": "សេចក្តីប្រកាសព្រឹត្តិការណ៍ត្រូវបានផ្សាយ",
+      "telegram": {
+        "botNotConfigured": "TELEGRAM_BOT_TOKEN មិនត្រូវបានកំណត់នៅលើការដាក់ឱ្យប្រើប្រាស់នេះទេ។",
+        "channelNotConfigured": "គ្មានឆានែល Telegram ត្រូវបានកំណត់រចនាសម្ព័ន្ធទេ (អ្នកគ្រប់គ្រង → Telegram)។",
+        "notificationsDisabled": "ការជូនដំណឹង Telegram បច្ចុប្បន្នត្រូវបានបិទ (អ្នកគ្រប់គ្រង → Telegram)។",
+        "articleNotFound": "រកមិនឃើញអត្ថបទទេ។",
+        "onlyPublished": "មានតែអត្ថបទដែលបានផ្សាយប៉ុណ្ណោះដែលអាចផ្សាយបន្តបាន។",
+        "sendFailed": "បរាជ័យក្នុងការផ្ញើ។"
+      }
+    },
+    "tournaments": {
+      "list": {
+        "heading": "ការគ្រប់គ្រងការប្រកួត",
+        "subheading": "បង្កើត កែសម្រួល និងគ្រប់គ្រងរាល់ការប្រកួតរបស់ NOBLE STRIKE។",
+        "createButton": "បង្កើតការប្រកួត",
+        "emptyState": "គ្មានការប្រកួតត្រូវនឹងតម្រងនេះទេ។"
+      },
+      "row": {
+        "bracket": "តារាងប្រកួត",
+        "edit": "កែសម្រួល"
+      },
+      "editHeading": "កែសម្រួល {name}",
+      "editSubheading": "ការផ្លាស់ប្តូរនឹងមានប្រសិទ្ធភាពភ្លាមៗលើទំព័រការប្រកួតសាធារណៈ។",
+      "view": "មើល",
+      "form": {
+        "basicInformation": "ព័ត៌មានមូលដ្ឋាន",
+        "nameLabel": "ឈ្មោះការប្រកួត",
+        "slugLabel": "Slug",
+        "descriptionLabel": "សេចក្តីពិពណ៌នា",
+        "bannerImageLabel": "រូបភាពបដា",
+        "gameConfiguration": "ការកំណត់ហ្គេម",
+        "gameTypeLabel": "ប្រភេទហ្គេម",
+        "matchFormatLabel": "ទម្រង់ការប្រកួត",
+        "bo1": "ឈ្នះ ១ លើក",
+        "bo3": "ឈ្នះ ២ លើក ៣",
+        "bo5": "ឈ្នះ ៣ លើក ៥",
+        "tournamentSettings": "ការកំណត់ការប្រកួត",
+        "maxTeamsLabel": "ចំនួនក្រុមអតិបរមា",
+        "prizePoolLabel": "ប្រាក់រង្វាន់ ($)",
+        "registrationDeadlineLabel": "ថ្ងៃផុតកំណត់ចុះឈ្មោះ",
+        "startDateLabel": "ថ្ងៃចាប់ផ្តើមការប្រកួត",
+        "locationLabel": "ទីតាំង",
+        "organizerLabel": "អ្នករៀបចំ",
+        "rulesLabel": "ច្បាប់",
+        "bracketSettings": "ការកំណត់តារាងប្រកួត",
+        "bracketFormatLabel": "ទម្រង់តារាងប្រកួត",
+        "singleElimination": "ដួលម្តងចេញ",
+        "doubleElimination": "ដួលពីរដងចេញ",
+        "grandFinalResetLabel": "កំណត់ជុំផ្តាច់ព្រ័ត្តជាថ្មី",
+        "enabled": "បើក",
+        "disabled": "បិទ",
+        "seedingMethodNote": "វិធីសាស្ត្រចាប់ឆ្នោត៖ ចៃដន្យ។ ក្រុមចាប់ផ្តើមនៅតារាងខាងលើ ការចាញ់ម្តងធ្វើឱ្យធ្លាក់ទៅតារាងខាងក្រោម ការចាញ់ជាលើកទីពីរធ្វើឱ្យត្រូវលុបចេញ។",
+        "statusLabel": "ស្ថានភាព",
+        "saveSuccess": "ការប្រកួតត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ។",
+        "saving": "កំពុងរក្សាទុក...",
+        "createSubmit": "បង្កើតការប្រកួត",
+        "editSubmit": "រក្សាទុកការផ្លាស់ប្តូរ"
+      }
+    },
+    "registrations": {
+      "review": "ពិនិត្យ",
+      "registrationFor": "ការចុះឈ្មោះសម្រាប់ {tournament}",
+      "captainLabel": "ប្រធានក្រុម៖ {name}",
+      "captainContact": "ទំនាក់ទំនងប្រធានក្រុម",
+      "roster": "បញ្ជីឈ្មោះក្រុម ({count})",
+      "rejectReasonPlaceholder": "មូលហេតុនៃការបដិសេធ...",
+      "confirmReject": "បញ្ជាក់ការបដិសេធ",
+      "reject": "បដិសេធ",
+      "approve": "អនុម័ត",
+      "approveSuccess": "ការចុះឈ្មោះត្រូវបានអនុម័ត។",
+      "rejectReasonRequired": "សូមផ្តល់មូលហេតុនៃការបដិសេធ។",
+      "rejectSuccess": "ការចុះឈ្មោះត្រូវបានបដិសេធ។"
+    }
+  },
+  "dashboard": {
+    "registrations": {
+      "heading": "ការចុះឈ្មោះការប្រកួត",
+      "subheading": "តាមដានរាល់ការចុះឈ្មោះដែលក្រុមរបស់អ្នកបានដាក់ស្នើ។",
+      "emptyState": "មិនទាន់មានការចុះឈ្មោះនៅឡើយទេ។",
+      "tournamentFallback": "ការប្រកួត",
+      "reason": "មូលហេតុ៖ {reason}",
+      "viewTeam": "មើលក្រុម",
+      "registrationWithdrawn": "ការចុះឈ្មោះត្រូវបានដកចេញ។",
+      "withdraw": "ដកចេញ"
+    },
+    "team": {
+      "signInToCreate": "អ្នកត្រូវតែចូលគណនីដើម្បីបង្កើតក្រុម។",
+      "editTitle": "កែសម្រួល {teamName}",
+      "editSubtitle": "ធ្វើបច្ចុប្បន្នភាពអត្តសញ្ញាណ និងបញ្ជីអ្នកលេងក្រុមរបស់អ្នក។",
+      "editRoster": "កែសម្រួលបញ្ជីអ្នកលេង",
+      "saveChanges": "រក្សាទុកការផ្លាស់ប្ដូរ",
+      "dangerZone": "តំបន់គ្រោះថ្នាក់",
+      "dangerZoneHint": "លុបក្រុមនេះជាអចិន្ត្រៃយ៍។",
+      "stepTwoOfTwo": "ជំហានទី ២ នៃ ២",
+      "buildRosterTitle": "បង្កើតបញ្ជីអ្នកលេងរបស់ {teamName}",
+      "buildRosterSubtitle": "បំពេញតួនាទីចាប់ផ្ដើមទាំង ៥ បន្ទាប់មកបន្ថែមអ្នកជំនួស និងគ្រូបង្វឹកតាមចិត្ត។",
+      "teamNameLabel": "ឈ្មោះក្រុម",
+      "teamNamePlaceholder": "ឧទាហរណ៍៖ Eclipse Empire",
+      "teamLogoLabel": "រូបសញ្ញាក្រុម",
+      "teamLogoHint": "ផ្ទុករូបសញ្ញាការ៉េ (សមាមាត្រ ១:១ ត្រូវបានណែនាំ)។ ទំហំណែនាំ៖ 512×512px ឬធំជាងនេះ។",
+      "teamBannerLabel": "បដាក្រុម",
+      "gameLabel": "ហ្គេម",
+      "provinceLabel": "ខេត្ត / ក្រុង",
+      "provinceHint": "សូមជ្រើសរើសខេត្ត/ក្រុងដែលក្រុមរបស់អ្នកតំណាង។",
+      "captainContactTitle": "ព័ត៌មានទំនាក់ទំនងមេក្រុម",
+      "captainContactHint": "មេក្រុមគឺជាចំណុចទំនាក់ទំនងតែមួយគត់របស់ក្រុមសម្រាប់ការទំនាក់ទំនងការប្រកួត កាលវិភាគប្រកួត និងវិវាទ។",
+      "captainTelegramLabel": "ឈ្មោះអ្នកប្រើ Telegram របស់មេក្រុម",
+      "captainTelegramHint": "ប្រើសម្រាប់ការទំនាក់ទំនងការប្រកួត កាលវិភាគប្រកួត និងទំនាក់ទំនងអ្នកគ្រប់គ្រង។",
+      "captainContactNumberLabel": "លេខទូរស័ព្ទមេក្រុម",
+      "captainContactNumberHint": "លេខនេះនឹងមើលឃើញតែដោយអ្នកគ្រប់គ្រងការប្រកួតប៉ុណ្ណោះ ហើយប្រើសម្រាប់ការទំនាក់ទំនងបន្ទាន់ក្នុងការប្រកួត។",
+      "descriptionLabel": "ការពិពណ៌នា",
+      "descriptionPlaceholder": "ប្រាប់អំពីក្រុមរបស់អ្នក...",
+      "teamUpdated": "ក្រុមត្រូវបានធ្វើបច្ចុប្បន្នភាពដោយជោគជ័យ។",
+      "continue": "បន្ត",
+      "deleteTeam": "លុបក្រុម",
+      "deleteTeamConfirmTitle": "លុប {teamName}?",
+      "deleteTeamConfirmBody": "សកម្មភាពនេះនឹងលុបក្រុម បញ្ជីអ្នកលេង និងការចុះឈ្មោះការប្រកួតទាំងអស់ជាអចិន្ត្រៃយ៍។ មិនអាចត្រឡប់វិញបានទេ។",
+      "teamDeleted": "ក្រុមត្រូវបានលុប។",
+      "stepOneOfTwo": "ជំហានទី ១ នៃ ២",
+      "createTitle": "បង្កើតក្រុមរបស់អ្នក",
+      "createSubtitle": "រៀបចំអត្តសញ្ញាណក្រុមរបស់អ្នក។ បន្ទាប់មកអ្នកនឹងបង្កើតបញ្ជីអ្នកលេង។",
+      "continueToRoster": "បន្តទៅបញ្ជីអ្នកលេង",
+      "myTeamsTitle": "ក្រុមរបស់ខ្ញុំ",
+      "myTeamsSubtitle": "ក្រុមដែលអ្នកជាម្ចាស់ និងគ្រប់គ្រង។",
+      "createTeam": "បង្កើតក្រុម",
+      "noTeamsYet": "អ្នកមិនទាន់មានក្រុមណាមួយនៅឡើយទេ។",
+      "createFirstTeam": "បង្កើតក្រុមដំបូងរបស់អ្នក",
+      "playersCount": "អ្នកលេង {count} នាក់",
+      "registrationsCount": "ការចុះឈ្មោះ {count}",
+      "viewTeamPage": "មើលទំព័រក្រុម"
+    },
+    "roster": {
+      "rosterSaved": "បញ្ជីអ្នកលេងត្រូវបានរក្សាទុក។",
+      "startingPlayers": "អ្នកលេងចាប់ផ្ដើម",
+      "substitutes": "អ្នកជំនួស",
+      "coach": "គ្រូបង្វឹក",
+      "captainInfoTitle": "ព័ត៌មានមេក្រុម",
+      "captainIgn": "ឈ្មោះក្នុងហ្គេមរបស់មេក្រុម",
+      "noCaptainSelected": "មិនទាន់បានជ្រើសរើសមេក្រុមនៅឡើយទេ",
+      "notSet": "មិនទាន់កំណត់",
+      "editTelegramContact": "កែសម្រួល Telegram / លេខទូរស័ព្ទ",
+      "startingLineupTitle": "ព័ត៌មានអ្នកលេង — ក្រុមចាប់ផ្ដើម",
+      "addSub1": "បន្ថែមអ្នកជំនួស ១",
+      "addSub2": "បន្ថែមអ្នកជំនួស ២",
+      "noSubstitutesAdded": "មិនទាន់មានអ្នកជំនួសបន្ថែម។",
+      "addCoach": "បន្ថែមគ្រូបង្វឹក",
+      "coachOptional": "ស្រេចចិត្ត — មិនទាន់មានគ្រូបង្វឹក។",
+      "saving": "កំពុងរក្សាទុក...",
+      "saveRoster": "រក្សាទុកបញ្ជីអ្នកលេង",
+      "captain": "មេក្រុម",
+      "remove": "លុបចេញ",
+      "ignLabel": "ឈ្មោះក្នុងហ្គេម (IGN)",
+      "ignPlaceholder": "ឈ្មោះក្នុងហ្គេម",
+      "ignHint": "ឈ្មោះហៅក្រៅរបស់អ្នកនៅក្នុងហ្គេម។",
+      "gameIdLabel": "លេខសម្គាល់ក្នុងហ្គេម",
+      "gameIdHint": "បញ្ចូល UID ឬលេខសម្គាល់អ្នកលេងក្នុងហ្គេមរបស់អ្នក។"
+    },
+    "notifications": {
+      "title": "ការជូនដំណឹង",
+      "subtitle": "ព័ត៌មានថ្មីស្ដីពីការចុះឈ្មោះការប្រកួតរបស់ក្រុមអ្នក។",
+      "noNotifications": "មិនទាន់មានការជូនដំណឹងនៅឡើយទេ។",
+      "markAllRead": "សម្គាល់ថាបានអានទាំងអស់"
+    },
+    "nav": {
+      "overview": "ទិដ្ឋភាពទូទៅ",
+      "myTeams": "ក្រុមរបស់ខ្ញុំ",
+      "registrations": "ការចុះឈ្មោះ",
+      "notifications": "ការជូនដំណឹង",
+      "settings": "ការកំណត់"
+    }
+  },
+  "tournaments": {
+    "detail": {
+      "back": "ត្រឡប់ក្រោយ",
+      "prizePool": "ប្រាក់រង្វាន់",
+      "maxTeams": "ចំនួនក្រុមអតិបរមា",
+      "regDeadline": "ថ្ងៃផុតកំណត់ចុះឈ្មោះ",
+      "startDate": "ថ្ងៃចាប់ផ្តើម",
+      "registrationOpen": "ការចុះឈ្មោះកំពុងបើក",
+      "registrationClosed": "ការចុះឈ្មោះបានបិទ",
+      "registerBeforeDeadline": "ចុះឈ្មោះក្រុមមួយរបស់អ្នកមុនថ្ងៃផុតកំណត់។",
+      "slotsFull": "កន្លែងក្រុមទាំងអស់ត្រូវបានបំពេញរួច។",
+      "deadlinePassed": "ថ្ងៃផុតកំណត់ចុះឈ្មោះបានកន្លងផុតទៅហើយ។",
+      "noLongerAccepting": "ការប្រកួតនេះលែងទទួលការចុះឈ្មោះថ្មីទៀតហើយ។",
+      "registerTeam": "ចុះឈ្មោះក្រុម",
+      "registrationClosedButton": "ការចុះឈ្មោះបានបិទ",
+      "tabOverview": "ទិដ្ឋភាពទូទៅ",
+      "tabBracket": "តារាងប្រកួត",
+      "tournamentStatistics": "ស្ថិតិការប្រកួត",
+      "matches": "ការប្រកួត",
+      "liveNow": "កំពុងផ្សាយផ្ទាល់",
+      "upcomingMatches": "ការប្រកួតខាងមុខ",
+      "recentResults": "លទ្ធផលថ្មីៗ",
+      "relatedNews": "ព័ត៌មានពាក់ព័ន្ធ",
+      "approvedTeams": "ក្រុមដែលបានអនុម័ត ({count})",
+      "noTeamsApproved": "មិនទាន់មានក្រុមណាមួយត្រូវបានអនុម័តទេ។",
+      "champion": "ជើងឯក",
+      "crowned": "បានទទួលព្រះកិរិយាកាលពី {date}",
+      "bracketNotGenerated": "តារាងប្រកួតមិនទាន់ត្រូវបានបង្កើតនៅឡើយទេ។",
+      "currentRound": "ជុំបច្ចុប្បន្ន",
+      "remainingTeams": "ក្រុមនៅសល់",
+      "tbd": "មិនទាន់កំណត់",
+      "upperBracket": "តារាងខាងលើ",
+      "lowerBracket": "តារាងខាងក្រោម",
+      "eliminated": "ត្រូវបានលុបចេញ",
+      "telegramCta": "ទទួលបានព័ត៌មានថ្មីៗអំពីការប្រកួតនេះភ្លាមៗ។"
+    }
+  },
+  "matches": {
+    "detail": {
+      "back": "ត្រឡប់ក្រោយ",
+      "round": "ជុំទី {number}",
+      "winner": "អ្នកឈ្នះ៖ {name}",
+      "watchLive": "មើលផ្ទាល់",
+      "evidence": "ភស្តុតាង",
+      "disputes": "វិវាទ",
+      "adminLabel": "អ្នកគ្រប់គ្រង៖",
+      "tbd": "មិនទាន់កំណត់",
+      "vs": "ទល់នឹង"
+    },
+    "errors": {
+      "signInToDispute": "អ្នកត្រូវតែចូលគណនីដើម្បីបើកវិវាទ។",
+      "tooManyDisputes": "បានបើកវិវាទច្រើនដងពេកថ្មីៗនេះ។ សូមព្យាយាមម្ដងទៀតក្នុងរយៈពេល {seconds} វិនាទី។",
+      "teamNotFound": "រកមិនឃើញក្រុម។",
+      "notYourTeam": "អ្នកមិនមែនជាម្ចាស់ក្រុមនេះទេ។",
+      "matchNotFound": "រកមិនឃើញការប្រកួត។",
+      "teamDidNotPlay": "ក្រុមរបស់អ្នកមិនបានលេងក្នុងការប្រកួតនេះទេ។",
+      "onlyCompletedCanDispute": "មានតែការប្រកួតដែលបានបញ្ចប់ប៉ុណ្ណោះដែលអាចជំទាស់បាន។"
+    },
+    "notifications": {
+      "disputeOpenedTitle": "វិវាទត្រូវបានបើក",
+      "disputeOpenedBody": "{teamName} បានបើកវិវាទសម្រាប់ការប្រកួតរបស់អ្នកនៅក្នុង {tournamentName}។",
+      "theTournament": "ការប្រកួត"
+    }
+  },
+  "pagination": {
+    "previous": "មុន",
+    "next": "បន្ទាប់",
+    "page": "ទំព័រ {page} នៃ {total}",
+    "showing": "បង្ហាញ {from}–{to} នៃ {total}",
+    "goToPrevious": "ទៅទំព័រមុន",
+    "goToNext": "ទៅទំព័របន្ទាប់",
+    "morePages": "ទំព័របន្ថែម"
+  },
+  "errors": {
+    "generic": "មានបញ្ហាកើតឡើង។ សូមព្យាយាមម្ដងទៀត។",
+    "notFound": "រកមិនឃើញ។",
+    "unauthorized": "អ្នកត្រូវតែចូលគណនីសិន។",
+    "adminRequired": "តម្រូវឱ្យមានសិទ្ធិជាអ្នកគ្រប់គ្រង។",
+    "network": "បញ្ហាបណ្ដាញ។ សូមពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្ដងទៀត។"
+  },
+  "emptyStates": {
+    "noResults": "រកមិនឃើញលទ្ធផលទេ។",
+    "noItems": "មិនទាន់មានអ្វីនៅទីនេះទេ។"
+  },
+  "validation": {
+    "generic": "វាលនេះមិនត្រឹមត្រូវទេ។",
+    "required": "វាលនេះត្រូវការបំពេញ។",
+    "roster": {
+      "maxSubstitutes": "អតិបរមា 2 អ្នកជំនួស។",
+      "ignRequired": "ត្រូវការឈ្មោះក្នុងហ្គេម (IGN)។",
+      "roleRequired": "តម្រូវឱ្យមាន {role}។",
+      "duplicateRole": "តួនាទីស្ទួន៖ {role}។ តួនាទីនីមួយៗអាចបំពេញបានតែម្ដង។",
+      "maxCoach": "អតិបរមា ១ គ្រូបង្វឹក។",
+      "selectCaptain": "សូមជ្រើសរើសមេក្រុម។",
+      "onlyOneCaptain": "មានតែអ្នកលេងម្នាក់ប៉ុណ្ណោះអាចជាមេក្រុម។",
+      "captainMustStart": "មេក្រុមត្រូវតែជាមួយក្នុងចំណោមអ្នកលេងចាប់ផ្ដើមទាំង ៥ នាក់។",
+      "minPlayers": "ត្រូវការអ្នកលេងយ៉ាងតិច ៥ នាក់។",
+      "maxPlayers": "អតិបរមា ៧ អ្នកលេង បូក ១ គ្រូបង្វឹក។"
+    },
+    "legacy": {
+      "invalidYear": "សូមបញ្ចូលឆ្នាំត្រឹមត្រូវ។",
+      "titleTooShort": "ចំណងជើងត្រូវមានយ៉ាងតិច ២ តួអក្សរ។"
+    },
+    "news": {
+      "titleTooShort": "ចំណងជើងត្រូវមានយ៉ាងតិច ២ តួអក្សរ។",
+      "slugTooShort": "Slug ត្រូវមានយ៉ាងតិច ២ តួអក្សរ។",
+      "slugInvalid": "Slug អាចមានតែអក្សរតូច លេខ និងសញ្ញា (-) ប៉ុណ្ណោះ។",
+      "contentTooShort": "មាតិកាត្រូវមានយ៉ាងតិច ២០ តួអក្សរ។",
+      "slugTaken": "Slug នេះកំពុងប្រើប្រាស់រួចហើយ។"
+    },
+    "tournament": {
+      "nameRequired": "ឈ្មោះការប្រកួតត្រូវមានយ៉ាងតិច ២ តួអក្សរ។",
+      "slugMinLength": "Slug ត្រូវមានយ៉ាងតិច ២ តួអក្សរ។",
+      "slugFormat": "Slug អាចមានតែអក្សរតូច លេខ និងសញ្ញា (-) ប៉ុណ្ណោះ។",
+      "maxTeamsMin": "ត្រូវការយ៉ាងតិច ២ ក្រុម។",
+      "prizePoolNonNegative": "ប្រាក់រង្វាន់មិនអាចជាចំនួនអវិជ្ជមានទេ។",
+      "registrationDeadlineRequired": "ត្រូវការកំណត់ថ្ងៃផុតកំណត់ចុះឈ្មោះ។",
+      "startDateRequired": "ត្រូវការកំណត់ថ្ងៃចាប់ផ្តើម។",
+      "startDateBeforeDeadline": "ថ្ងៃចាប់ផ្តើមគួរតែស្មើ ឬក្រោយថ្ងៃផុតកំណត់ចុះឈ្មោះ។"
+    },
+    "team": {
+      "nameTooShort": "ឈ្មោះក្រុមត្រូវមានយ៉ាងតិច ២ តួអក្សរ។",
+      "nameTooLong": "ឈ្មោះក្រុមមិនត្រូវលើសពី ៦០ តួអក្សរ។",
+      "descriptionTooLong": "ការពិពណ៌នាវែងពេក។",
+      "selectGame": "សូមជ្រើសរើសហ្គេម។",
+      "invalidPhone": "សូមបញ្ចូលលេខទូរស័ព្ទកម្ពុជាដែលត្រឹមត្រូវ។",
+      "invalidTelegram": "សូមបញ្ចូលឈ្មោះអ្នកប្រើ Telegram ដែលត្រឹមត្រូវ។",
+      "selectProvince": "សូមជ្រើសរើសខេត្ត/ក្រុងដែលក្រុមរបស់អ្នកតំណាង។"
+    },
+    "recruitment": {
+      "titleTooShort": "ចំណងជើងត្រូវមានយ៉ាងតិច ២ តួអក្សរ។",
+      "telegramTooShort": "ឈ្មោះអ្នកប្រើ Telegram ត្រូវមានយ៉ាងតិច ៣ តួអក្សរ។",
+      "descriptionTooShort": "ការពិពណ៌នាត្រូវមានយ៉ាងតិច ១០ តួអក្សរ។",
+      "rankRequired": "ត្រូវការចំណាត់ថ្នាក់។",
+      "countryRequired": "ត្រូវការប្រទេស។",
+      "requirementsTooShort": "លក្ខខណ្ឌតម្រូវត្រូវមានយ៉ាងតិច ៥ តួអក្សរ។"
+    },
+    "match": {
+      "explanationTooShort": "សូមពន្យល់ពីវិវាទក្នុងចំនួនយ៉ាងតិច ១០ តួអក្សរ។",
+      "tooManyEvidenceFiles": "អតិបរមា ១០ ឯកសារភស្តុតាង។"
+    },
+    "profile": {
+      "invalidUrl": "ត្រូវតែជា URL ត្រឹមត្រូវ។",
+      "invalidUsername": "ឈ្មោះអ្នកប្រើត្រូវមាន ៣-២០ តួអក្សរ៖ អក្សរ លេខ និងសញ្ញា underscore ប៉ុណ្ណោះ។",
+      "displayNameTooLong": "ឈ្មោះបង្ហាញវែងពេក។",
+      "bioTooLong": "ជីវប្រវត្តិសង្ខេបមិនត្រូវលើសពី ៥០០ តួអក្សរ។",
+      "maxSocialLinks": "អតិបរមា {count} តំណបណ្ដាញសង្គម។"
+    }
+  },
+  "news": {
+    "category": {
+      "announcement": "សេចក្តីប្រកាស",
+      "tournament": "ព្រឹត្តិការណ៍",
+      "results": "លទ្ធផល",
+      "maintenance": "ការថែទាំ",
+      "update": "ព័ត៌មានថ្មី",
+      "community": "សហគមន៍"
+    },
+    "pinned": "បានខ្ទាស់",
+    "defaultAuthor": "NOBLE STRIKE",
+    "allCategory": "ទាំងអស់",
+    "searchArticlesPlaceholder": "ស្វែងរកអត្ថបទ...",
+    "backToSite": "ត្រឡប់ទៅគេហទំព័រ",
+    "newsroom": "បន្ទប់ព័ត៌មាន",
+    "newsroomDescription": "ព័ត៌មានចុងក្រោយបំផុតពី NOBLE STRIKE — ព្រឹត្តិការណ៍ លទ្ធផល និងសេចក្តីប្រកាស។",
+    "pinnedAnnouncements": "សេចក្តីប្រកាសដែលបានខ្ទាស់",
+    "noArticlesFound": "រកមិនឃើញអត្ថបទទេ។",
+    "published": "បានផ្សាយ",
+    "updated": "បានធ្វើបច្ចុប្បន្នភាព",
+    "viewsCount": "{count} ចំនួនមើល",
+    "relatedArticles": "អត្ថបទពាក់ព័ន្ធ",
+    "share": {
+      "share": "ចែករំលែក៖",
+      "shareOnX": "ចែករំលែកលើ X",
+      "shareOnFacebook": "ចែករំលែកលើ Facebook",
+      "copyLink": "ចម្លងតំណ",
+      "copied": "បានចម្លង!",
+      "linkCopied": "តំណត្រូវបានចម្លង។",
+      "copyFailed": "មិនអាចចម្លងតំណបានទេ។"
+    }
+  },
+  "legacy": {
+    "category": {
+      "tournament": "ការប្រកួត",
+      "community": "ព្រឹត្តិការណ៍សហគមន៍"
+    },
+    "status": {
+      "completed": "បានបញ្ចប់",
+      "archived": "ក្នុងបណ្ណសារ",
+      "upcoming": "នឹងមកដល់"
+    },
+    "metaTitle": "បេតិកភណ្ឌ និងប្រវត្តិសាស្ត្រ — NOBLE STRIKE",
+    "metaDescription": "ប្រវត្តិការប្រកួតរបស់ NOBLE STRIKE ចាប់តាំងពីឆ្នាំ ២០២៣ — ព្រឹត្តិការណ៍កន្លងមក, ជើងឯក, និងសមិទ្ធិផលសហគមន៍។",
+    "backToSite": "ត្រឡប់ទៅគេហទំព័រ",
+    "kicker": "បេតិកភណ្ឌ និងប្រវត្តិសាស្ត្រ",
+    "pageTitle": "បណ្ណសារព្រឹត្តិការណ៍កន្លងមក",
+    "pageIntro": "NOBLE STRIKE បានរៀបចំព្រឹត្តិការណ៍អេស្ព័រតាំងពីឆ្នាំ ២០២៣ មក ដោយបានរៀបចំការប្រកួតប្រជែង និងព្រឹត្តិការណ៍សហគមន៍ដែលមានអ្នកលេងរាប់រយនាក់ និងក្រុមចូលរួមរហូតដល់ ១២៨ ក្រុម។",
+    "emptyState": "បណ្ណសារកំពុងត្រូវបានបង្កើត — សូមចូលមកមើលម្តងទៀត។",
+    "archiveNotice": "កំណត់ត្រាប្រវត្តិការប្រកួតកំពុងត្រូវបានស្តារឡើងវិញពីទិន្នន័យសហគមន៍ចាស់។ ព័ត៌មានក្រុម អ្នកចូលរួម និងជើងឯកមួយចំនួនអាចនឹងមិនពេញលេញ។",
+    "yes": "បាទ/ចាស",
+    "fields": {
+      "date": "កាលបរិច្ឆេទ",
+      "game": "ហ្គេម",
+      "teams": "ក្រុម",
+      "format": "ទម្រង់",
+      "organizedBy": "រៀបចំដោយ",
+      "entryFee": "ថ្លៃចូលរួម",
+      "mode": "របៀប",
+      "prizePool": "ប្រាក់រង្វាន់",
+      "liveBroadcast": "ផ្សាយផ្ទាល់",
+      "supportTeam": "ក្រុមគាំទ្រ",
+      "champion": "ជើងឯក",
+      "runnerUp": "ជើងឯករង",
+      "top34": "លំដាប់ទី ៣-៤"
+    },
+    "stats": {
+      "founded": "បង្កើតឡើង",
+      "largestTournament": "ការប្រកួតធំបំផុត",
+      "teamsCount": "{count} ក្រុម",
+      "highestPrizePool": "ប្រាក់រង្វាន់ខ្ពស់បំផុត",
+      "eventsOrganized": "ព្រឹត្តិការណ៍ដែលបានរៀបចំ",
+      "communityEventsHosted": "ព្រឹត្តិការណ៍សហគមន៍ដែលបានរៀបចំ"
+    },
+    "gallery": {
+      "title": "វិចិត្រសាល",
+      "close": "បិទ",
+      "previousImage": "រូបភាពមុន",
+      "nextImage": "រូបភាពបន្ទាប់"
+    }
+  },
+  "telegram": {
+    "welcome": "សូមស្វាគមន៍មកកាន់ bot NOBLE STRIKE! ប្រើ /language ដើម្បីប្ដូររវាងភាសាអង់គ្លេស និងខ្មែរ។",
+    "help": "ផ្ញើ /language en ឬ /language km ដើម្បីប្ដូរភាសារបស់អ្នក។",
+    "linkExpired": "តំណនេះបានផុតកំណត់។ សូមស្នើសុំតំណថ្មីពីផ្ទាំងគ្រប់គ្រងរបស់អ្នក។",
+    "linkSuccess": "គណនី Telegram របស់អ្នកត្រូវបានភ្ជាប់ជាមួយ NOBLE STRIKE ហើយ។",
+    "languageSet": "ភាសាត្រូវបានកំណត់ជាភាសាខ្មែរ។",
+    "languageUsage": "របៀបប្រើ៖ /language en ឬ /language km",
+    "languageUnknown": "មិនស្គាល់ភាសានេះទេ។ របៀបប្រើ៖ /language en ឬ /language km"
+  },
+  "auth": {
+    "errors": {
+      "fillAllFields": "សូមបំពេញគ្រប់ចន្លោះទាំងអស់។",
+      "passwordTooShort": "ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ៨ តួអក្សរ។",
+      "tooManyRegistrationAttempts": "ព្យាយាមចុះឈ្មោះច្រើនដងពេក។ សូមព្យាយាមម្ដងទៀតក្នុងរយៈពេល {seconds} វិនាទី។",
+      "tooManyLoginAttempts": "ព្យាយាមចូលគណនីច្រើនដងពេក។ សូមព្យាយាមម្ដងទៀតក្នុងរយៈពេល {seconds} វិនាទី។",
+      "invalidCredentials": "អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ។",
+      "enterEmail": "សូមបញ្ចូលអ៊ីមែលរបស់អ្នក។"
+    },
+    "login": {
+      "title": "សូមស្វាគមន៍ត្រឡប់មកវិញ",
+      "subtitle": "ចូលគណនី NOBLE STRIKE របស់អ្នក",
+      "emailLabel": "អ៊ីមែល",
+      "passwordLabel": "ពាក្យសម្ងាត់",
+      "forgotPassword": "ភ្លេចពាក្យសម្ងាត់?",
+      "signingIn": "កំពុងចូល...",
+      "submit": "ចូលគណនី",
+      "noAccount": "មិនទាន់មានគណនី?",
+      "registerLink": "ចុះឈ្មោះ"
+    },
+    "register": {
+      "title": "បង្កើតគណនីរបស់អ្នក",
+      "subtitle": "ចូលរួមជាមួយ NOBLE STRIKE ហើយចូលកន្លែងប្រកួត",
+      "usernameLabel": "ឈ្មោះអ្នកប្រើ",
+      "emailLabel": "អ៊ីមែល",
+      "passwordLabel": "ពាក្យសម្ងាត់",
+      "passwordPlaceholder": "យ៉ាងតិច ៨ តួអក្សរ",
+      "creatingAccount": "កំពុងបង្កើតគណនី...",
+      "submit": "បង្កើតគណនី",
+      "checkEmailTitle": "ពិនិត្យអ៊ីមែលរបស់អ្នក",
+      "checkEmailBody": "យើងបានផ្ញើតំណបញ្ជាក់ទៅប្រអប់សំបុត្ររបស់អ្នក។ សូមផ្ទៀងផ្ទាត់អ៊ីមែលដើម្បីបើកគណនី រួចចូលគណនី។",
+      "backToSignIn": "ត្រឡប់ទៅចូលគណនី",
+      "haveAccount": "មានគណនីរួចហើយ?",
+      "signInLink": "ចូលគណនី"
+    },
+    "forgotPassword": {
+      "title": "ភ្លេចពាក្យសម្ងាត់",
+      "subtitle": "បញ្ចូលអ៊ីមែលរបស់អ្នក ហើយយើងនឹងផ្ញើតំណកំណត់ពាក្យសម្ងាត់ឡើងវិញ",
+      "emailLabel": "អ៊ីមែល",
+      "sending": "កំពុងផ្ញើ...",
+      "submit": "ផ្ញើតំណកំណត់ពាក្យសម្ងាត់ឡើងវិញ",
+      "checkEmailTitle": "ពិនិត្យអ៊ីមែលរបស់អ្នក",
+      "checkEmailBody": "ប្រសិនបើមានគណនីសម្រាប់អ៊ីមែលនោះ តំណកំណត់ពាក្យសម្ងាត់ឡើងវិញកំពុងផ្ញើទៅ។",
+      "backToSignIn": "ត្រឡប់ទៅចូលគណនី",
+      "rememberedIt": "នឹកឃើញហើយ?",
+      "signInLink": "ចូលគណនី"
+    },
+    "resetPassword": {
+      "title": "កំណត់ពាក្យសម្ងាត់ថ្មី",
+      "subtitle": "ជ្រើសរើសពាក្យសម្ងាត់ថ្មីសម្រាប់គណនីរបស់អ្នក",
+      "newPasswordLabel": "ពាក្យសម្ងាត់ថ្មី",
+      "passwordPlaceholder": "យ៉ាងតិច ៨ តួអក្សរ",
+      "updating": "កំពុងកែប្រែ...",
+      "submit": "កែប្រែពាក្យសម្ងាត់"
+    }
+  },
+  "recruitment": {
+    "errors": {
+      "signInToPost": "អ្នកត្រូវតែចូលគណនីដើម្បីប្រកាស។",
+      "postNotFound": "រកមិនឃើញការប្រកាស។",
+      "editOwnPostsOnly": "អ្នកអាចកែសម្រួលបានតែការប្រកាសផ្ទាល់ខ្លួនប៉ុណ្ណោះ។",
+      "manageOwnPostsOnly": "អ្នកអាចគ្រប់គ្រងបានតែការប្រកាសផ្ទាល់ខ្លួនប៉ុណ្ណោះ។",
+      "deleteOwnPostsOnly": "អ្នកអាចលុបបានតែការប្រកាសផ្ទាល់ខ្លួនប៉ុណ្ណោះ។"
+    },
+    "backToSite": "ត្រឡប់ទៅគេហទំព័រ",
+    "title": "មជ្ឈមណ្ឌលជ្រើសរើសសមាជិក",
+    "subtitle": "ស្វែងរកក្រុម ឬស្វែងរកអ្នកលេងបន្ទាប់របស់អ្នក។",
+    "noPostsFound": "រកមិនឃើញការប្រកាសទេ។",
+    "noPostsHint": "សូមព្យាយាមតម្រងផ្សេង ឬធ្វើជាអ្នកប្រកាសដំបូង។",
+    "lookingForTeam": "កំពុងស្វែងរកក្រុម",
+    "lookingForPlayer": "កំពុងស្វែងរកអ្នកលេង",
+    "allGames": "ហ្គេមទាំងអស់",
+    "allRoles": "តួនាទីទាំងអស់",
+    "countryPlaceholder": "ប្រទេស",
+    "anyStatus": "ស្ថានភាពទាំងអស់",
+    "statusOpen": "បើក",
+    "statusClosed": "បិទ",
+    "postLft": "ប្រកាសស្វែងរកក្រុម",
+    "postLfp": "ប្រកាសស្វែងរកអ្នកលេង",
+    "postDeleted": "ការប្រកាសត្រូវបានលុប។",
+    "rankLabel": "ចំណាត់ថ្នាក់",
+    "requirementsLabel": "លក្ខខណ្ឌតម្រូវ",
+    "close": "បិទ",
+    "reopen": "បើកឡើងវិញ",
+    "deletePostConfirmTitle": "លុបការប្រកាសនេះ?",
+    "deletePostConfirmBody": "មិនអាចត្រឡប់វិញបានទេ។",
+    "postSubmit": "ប្រកាស",
+    "saveChanges": "រក្សាទុកការផ្លាស់ប្ដូរ",
+    "postLftTitle": "ប្រកាស — កំពុងស្វែងរកក្រុម",
+    "postLfpTitle": "ប្រកាស — កំពុងស្វែងរកអ្នកលេង",
+    "editPostTitle": "កែសម្រួលការប្រកាស",
+    "lftDialogHint": "ប្រាប់ក្រុមថាអ្នកអាចត្រូវបានជ្រើសរើស។",
+    "lfpDialogHint": "ប្រាប់អ្នកលេងថាក្រុមរបស់អ្នកកំពុងជ្រើសរើសសមាជិក។",
+    "titleLabel": "ចំណងជើង",
+    "teamLabel": "ក្រុម",
+    "lftTitlePlaceholder": "ឧទាហរណ៍៖ Roamer មានបទពិសោធន៍កំពុងស្វែងរកក្រុម",
+    "lfpTitlePlaceholder": "ឧទាហរណ៍៖ NOBLE STRIKE Academy",
+    "gameLabel": "ហ្គេម",
+    "preferredRole": "តួនាទីពេញចិត្ត",
+    "roleNeeded": "តួនាទីត្រូវការ",
+    "countryLabel": "ប្រទេស",
+    "requirementsPlaceholder": "ឧទាហរណ៍៖ ចំណាត់ថ្នាក់ Mythic+ ទំនេរពេលយប់ថ្ងៃធ្វើការ ត្រូវការមីក្រូ",
+    "telegramUsernameLabel": "ឈ្មោះអ្នកប្រើ Telegram",
+    "descriptionLabel": "ការពិពណ៌នា",
+    "descriptionPlaceholder": "ប្រាប់ព័ត៌មានបន្ថែម..."
+  },
+  "home": {
+    "hero": {
+      "kicker": "អង្គការអេស្ព័រកម្រិតកំពូល",
+      "subheadlinePrefix": "ប្រកួត។ ដណ្ដើមជ័យ។",
+      "subheadlineHighlight": "ក្លាយជាតំណាន់។",
+      "description": "វេទិកាការប្រកួតផ្លូវការរបស់ NOBLE STRIKE។ ប្រកួតក្នុងព្រឹត្តិការណ៍អេស្ព័រ 5v5 កំពូល បង្កើតមរតករបស់អ្នក និងឡើងចំណាត់ថ្នាក់ប្រកួតជាមួយក្រុមខ្លាំងបំផុត។",
+      "joinTournament": "ចូលរួមការប្រកួត",
+      "viewTeams": "មើលក្រុម",
+      "scroll": "រំកិល"
+    },
+    "stats": {
+      "registeredTeams": "ក្រុមបានចុះឈ្មោះ",
+      "players": "អ្នកលេង",
+      "activeTournaments": "ការប្រកួតកំពុងដំណើរការ",
+      "prizePoolAwarded": "ប្រាក់រង្វាន់បានប្រគល់"
+    },
+    "tournaments": {
+      "kicker": "កំពុងប្រកួត",
+      "title": "ការប្រកួតខាងមុខ",
+      "description": "ចុះឈ្មោះក្រុមរបស់អ្នកសម្រាប់ការប្រកួត MOBA 5v5 កម្រិតកិត្តិយសបំផុត។",
+      "viewAll": "មើលទាំងអស់"
+    },
+    "teams": {
+      "kicker": "អ្នកប្រកួតប្រជែង",
+      "title": "ក្រុមលេចធ្លោ",
+      "description": "ក្រុមកំពូលកំពុងប្រកួតដណ្ដើមកិត្តិយសនៅក្នុងការប្រកួតជាច្រើន។",
+      "viewAll": "ក្រុមទាំងអស់"
+    },
+    "news": {
+      "kicker": "ពីបន្ទប់ព័ត៌មាន",
+      "title": "សេចក្ដីប្រកាសថ្មីៗ",
+      "description": "ព័ត៌មានការប្រកួត ការចុះកិច្ចសន្យាអ្នកលេង លទ្ធផល និងព័ត៌មានផ្លូវការ។",
+      "viewAll": "ព័ត៌មានទាំងអស់"
+    },
+    "sponsors": {
+      "poweredBy": "គាំទ្រដោយដៃគូកំពូល"
+    },
+    "cta": {
+      "headlinePrefix": "ត្រៀមខ្លួនក្លាយជា",
+      "headlineHighlight": "តំណាន់?",
+      "description": "ប្រមូលផ្ដុំក្រុមរបស់អ្នក ចូលកន្លែងប្រកួត ហើយសរសេរឈ្មោះអ្នកទៅក្នុងប្រវត្តិសាស្ត្រអេស្ព័រ។ ជើងឯកបន្ទាប់អាចជាអ្នក។",
+      "registerTeam": "ចុះឈ្មោះក្រុមរបស់អ្នក",
+      "meetSquad": "ស្គាល់ក្រុម NS"
+    },
+    "tournamentCard": {
+      "ends": "បញ្ចប់ {date}",
+      "starts": "ចាប់ផ្ដើម {date}"
+    },
+    "teamCard": {
+      "officialTeam": "ក្រុមផ្លូវការ NS",
+      "tournamentLabel": "ការប្រកួត៖",
+      "noActiveTournament": "គ្មានការប្រកួតកំពុងដំណើរការ",
+      "playersCount": "អ្នកលេង {count} នាក់",
+      "moreCount": "+{count} ទៀត"
+    }
+  },
+  "teamDetail": {
+    "back": "ថយក្រោយ",
+    "officialTeam": "ក្រុមផ្លូវការ NS",
+    "rosterSize": "ចំនួនអ្នកលេង",
+    "tournamentsJoined": "ការប្រកួតបានចូលរួម",
+    "approved": "បានអនុម័ត",
+    "roster": "បញ្ជីអ្នកលេង",
+    "captain": "មេក្រុម",
+    "startingLineup": "ក្រុមចាប់ផ្ដើម",
+    "substitutes": "អ្នកជំនួស",
+    "coach": "គ្រូបង្វឹក",
+    "tournamentHistory": "ប្រវត្តិការប្រកួត",
+    "noTournamentsYet": "ក្រុមនេះមិនទាន់បានចុះឈ្មោះការប្រកួតណាមួយនៅឡើយទេ។",
+    "tournamentFallback": "ការប្រកួត",
+    "openSlot": "កន្លែងទំនេរ"
+  },
+  "userProfile": {
+    "playerNotFound": "រកមិនឃើញអ្នកលេង",
+    "privateProfileTitle": "ប្រវត្តិរូបឯកជន",
+    "privateProfileBody": "អ្នកលេងនេះបានកំណត់ប្រវត្តិរូបជាឯកជន។",
+    "backToSite": "ត្រឡប់ទៅគេហទំព័រ",
+    "back": "ថយក្រោយ",
+    "editProfile": "កែសម្រួលប្រវត្តិរូប",
+    "adminBadge": "អ្នកគ្រប់គ្រង",
+    "joined": "ចូលរួមនៅ {date}",
+    "tournamentHistory": "ប្រវត្តិការប្រកួត",
+    "stats": {
+      "played": "បានលេង",
+      "wins": "ឈ្នះ",
+      "losses": "ចាញ់",
+      "winRate": "អត្រាឈ្នះ",
+      "championships": "ជើងឯក",
+      "runnerUps": "អនុជើងឯក"
+    },
+    "teams": "ក្រុម",
+    "currentTeams": "ក្រុមបច្ចុប្បន្ន",
+    "captainOf": "មេក្រុមនៃ",
+    "coaching": "ជាគ្រូបង្វឹក",
+    "pastTeams": "ក្រុមពីមុន",
+    "noPastTeams": "មិនទាន់មានប្រវត្តិក្រុមពីមុនត្រូវបានកត់ត្រានៅឡើយទេ។",
+    "achievements": "សមិទ្ធិផល",
+    "tournamentTitles": "ងារជើងឯកការប្រកួត",
+    "noTitlesYet": "មិនទាន់មានងារនៅឡើយទេ។",
+    "champion": "ជើងឯក",
+    "runnerUp": "អនុជើងឯក",
+    "mvpAwards": "រង្វាន់ MVP",
+    "comingSoon": "មកដល់ឆាប់ៗនេះ។",
+    "specialBadges": "ស្លាកសញ្ញាពិសេស",
+    "recentMatches": "ការប្រកួតថ្មីៗ",
+    "matchVs": "{team} ទល់នឹង {opponent}",
+    "win": "ឈ្នះ",
+    "loss": "ចាញ់",
+    "newsContributions": "ការចូលរួមសរសេរព័ត៌មាន",
+    "official": "ផ្លូវការ",
+    "tbd": "មិនទាន់កំណត់"
+  },
+  "settings": {
+    "backToDashboard": "ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង",
+    "accountSettings": "ការកំណត់គណនី",
+    "tabs": {
+      "profile": "ប្រវត្តិរូប",
+      "account": "គណនី",
+      "notifications": "ការជូនដំណឹង",
+      "privacy": "ភាពឯកជន",
+      "appearance": "រូបរាង"
+    },
+    "errors": {
+      "invalidSocialLinks": "តំណបណ្ដាញសង្គមមិនត្រឹមត្រូវ។",
+      "usernameTaken": "ឈ្មោះអ្នកប្រើនេះត្រូវបានប្រើរួចហើយ។",
+      "enterEmail": "សូមបញ្ចូលអាសយដ្ឋានអ៊ីមែល។",
+      "telegramNotConfigured": "Telegram មិនទាន់ត្រូវបានកំណត់រចនាសម្ព័ន្ធនៅលើប្រព័ន្ធនេះនៅឡើយទេ។"
+    },
+    "account": {
+      "emailAddressTitle": "អាសយដ្ឋានអ៊ីមែល",
+      "emailLabel": "អ៊ីមែល",
+      "emailChangeHint": "ការផ្លាស់ប្ដូរអ៊ីមែលនឹងផ្ញើតំណបញ្ជាក់ទៅអាសយដ្ឋានថ្មីមុនពេលចូលជាធរមាន។",
+      "emailChangeSuccess": "ពិនិត្យប្រអប់សំបុត្រថ្មីរបស់អ្នកដើម្បីបញ្ជាក់ការផ្លាស់ប្ដូរ។",
+      "updateEmail": "ធ្វើបច្ចុប្បន្នភាពអ៊ីមែល",
+      "passwordTitle": "ពាក្យសម្ងាត់",
+      "newPasswordLabel": "ពាក្យសម្ងាត់ថ្មី",
+      "passwordPlaceholder": "យ៉ាងតិច ៨ តួអក្សរ",
+      "passwordUpdated": "ពាក្យសម្ងាត់ត្រូវបានកែប្រែ។",
+      "updatePassword": "ធ្វើបច្ចុប្បន្នភាពពាក្យសម្ងាត់"
+    },
+    "appearance": {
+      "options": {
+        "dark": {
+          "label": "របៀបងងឹត",
+          "description": "រូបរាងខ្មៅ និងមាសដើមរបស់ NOBLE STRIKE។"
+        },
+        "light": {
+          "label": "របៀបភ្លឺ",
+          "description": "ពណ៌ផ្ទៃភ្លឺជាង ជាមួយពណ៌មាសដដែល។"
+        },
+        "system": {
+          "label": "ប្រព័ន្ធ",
+          "description": "អនុវត្តតាមការកំណត់រូបរាងឧបករណ៍របស់អ្នក។"
+        }
+      },
+      "syncHint": "អនុវត្តភ្លាមៗ និងធ្វើសមកាលកម្មរវាងឧបករណ៍របស់អ្នកនៅពេលចូលគណនី។"
+    },
+    "notifications": {
+      "saveChanges": "រក្សាទុកការផ្លាស់ប្ដូរ",
+      "tournament": {
+        "label": "ការជូនដំណឹងការប្រកួត",
+        "description": "ការអនុម័ត ការបដិសេធ និងការផ្លាស់ប្ដូរស្ថានភាពការចុះឈ្មោះ។"
+      },
+      "match": {
+        "label": "ការជូនដំណឹងការប្រកួតប្រជែង",
+        "description": "កាលវិភាគ លទ្ធផល និងសកម្មភាពវិវាទ។"
+      },
+      "news": {
+        "label": "ការជូនដំណឹងព័ត៌មាន",
+        "description": "សេចក្ដីប្រកាសសំខាន់ៗ និងព័ត៌មានការប្រកួត។"
+      },
+      "system": {
+        "label": "ការជូនដំណឹងប្រព័ន្ធ",
+        "description": "ព័ត៌មានថ្មីទូទាំងវេទិកា និងសកម្មភាពគណនី។"
+      },
+      "email": {
+        "label": "ការជូនដំណឹងតាមអ៊ីមែល",
+        "description": "ត្រៀមសម្រាប់អនាគត — ត្រូវបានរក្សាទុកឥឡូវនេះ ប៉ុន្តែមិនទាន់ផ្ញើអ៊ីមែលនៅឡើយទេ។"
+      },
+      "saved": "បានរក្សាទុក។"
+    },
+    "privacy": {
+      "saveChanges": "រក្សាទុកការផ្លាស់ប្ដូរ",
+      "publicProfile": {
+        "label": "ប្រវត្តិរូបសាធារណៈ",
+        "description": "បិទនឹងលាក់ទំព័រប្រវត្តិរូបរបស់អ្នកពីអ្នកគ្រប់គ្នា លើកលែងតែអ្នក និងអ្នកគ្រប់គ្រង ព្រមទាំងមិនបង្ហាញអ្នកនៅក្នុងការស្វែងរកអ្នកលេង។"
+      },
+      "showTeams": {
+        "label": "បង្ហាញក្រុម",
+        "description": "បង្ហាញការជាសមាជិកក្រុមបច្ចុប្បន្ន/មេក្រុម/គ្រូបង្វឹករបស់អ្នកនៅលើប្រវត្តិរូបសាធារណៈ។"
+      },
+      "showMatchHistory": {
+        "label": "បង្ហាញប្រវត្តិការប្រកួត",
+        "description": "បង្ហាញស្ថិតិការប្រកួត សមិទ្ធិផល និងការប្រកួតថ្មីៗ។"
+      },
+      "showDiscord": {
+        "label": "បង្ហាញ Discord",
+        "description": "បង្ហាញឈ្មោះអ្នកប្រើ Discord របស់អ្នកនៅលើប្រវត្តិរូបសាធារណៈ។"
+      },
+      "saved": "បានរក្សាទុក។"
+    },
+    "profile": {
+      "saveChanges": "រក្សាទុកការផ្លាស់ប្ដូរ",
+      "avatarBannerTitle": "រូបតំណាង និងបដា",
+      "avatarLabel": "រូបតំណាង",
+      "bannerLabel": "បដា",
+      "identityTitle": "អត្តសញ្ញាណ",
+      "usernameLabel": "ឈ្មោះអ្នកប្រើ",
+      "usernameHint": "៣-២០ តួអក្សរ៖ អក្សរ ខ្ទង់ លេខ និងសញ្ញា underscore។",
+      "displayNameLabel": "ឈ្មោះបង្ហាញ",
+      "displayNamePlaceholder": "បង្ហាញជំនួសឈ្មោះអ្នកប្រើនៅកន្លែងដែលបានកំណត់",
+      "countryLabel": "ប្រទេស",
+      "discordUsernameLabel": "ឈ្មោះអ្នកប្រើ Discord",
+      "bioLabel": "ជីវប្រវត្តិសង្ខេប",
+      "bioPlaceholder": "ប្រាប់សហគមន៍អំពីខ្លួនអ្នក...",
+      "socialLinksTitle": "តំណបណ្ដាញសង្គម",
+      "addLink": "បន្ថែមតំណ",
+      "saved": "បានរក្សាទុក។"
+    },
+    "telegramLink": {
+      "unlinked": "គណនី Telegram ត្រូវបានផ្ដាច់។",
+      "linkedAs": "បានភ្ជាប់ជា {handle}",
+      "telegramUserFallback": "អ្នកប្រើ Telegram {id}",
+      "since": "តាំងពី {date}",
+      "unlink": "ផ្ដាច់",
+      "linkTitle": "ភ្ជាប់គណនី Telegram របស់អ្នក",
+      "linkHint": "បើក Telegram ហើយចាប់ផ្ដើមជជែកជាមួយ bot NOBLE STRIKE ដើម្បីបញ្ចប់ការភ្ជាប់។",
+      "generatingLink": "កំពុងបង្កើតតំណ...",
+      "linkTelegram": "ភ្ជាប់ Telegram",
+      "didntOpen": "មិនបានបើកឬ?",
+      "tapHere": "ចុចទីនេះ",
+      "expiresIn15": "(ផុតកំណត់ក្នុងរយៈពេល ១៥ នាទី)។"
+    }
+  }
+}

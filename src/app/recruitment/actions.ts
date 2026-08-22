@@ -1,14 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { lftPostSchema, lfpPostSchema } from "@/lib/validation/recruitment";
 import type { RecruitmentPostType, RecruitmentStatus } from "@/lib/types/database";
 
 export type ActionResult = { error: string } | { success: true };
 
-function firstIssue(error: { issues: { message: string }[] }): string {
-  return error.issues[0]?.message ?? "Invalid input.";
+/** Zod messages in the recruitment schemas are dot-path translation keys. */
+async function firstIssue(error: { issues: { message: string }[] }): Promise<string> {
+  const key = error.issues[0]?.message;
+  const t = await getTranslations();
+  if (!key) return t("validation.generic");
+  return t.has(key) ? t(key) : key;
 }
 
 async function requireUser() {
@@ -46,13 +51,14 @@ export async function createRecruitmentPost(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in to post." };
+  if (!user) return { error: t("recruitment.errors.signInToPost") };
 
   const raw = readForm(formData, postType);
   const schema = postType === "LFT" ? lftPostSchema : lfpPostSchema;
   const parsed = schema.safeParse(raw);
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error } = await supabase.from("recruitment_posts").insert({
     author_id: user.id,
@@ -71,25 +77,26 @@ export async function updateRecruitmentPost(
   _prev: ActionResult | null,
   formData: FormData
 ): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const { data: existing } = await supabase
     .from("recruitment_posts")
     .select("author_id")
     .eq("id", postId)
     .single();
-  if (!existing) return { error: "Post not found." };
+  if (!existing) return { error: t("recruitment.errors.postNotFound") };
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   const isOwner = existing.author_id === user.id;
   const isAdmin = profile?.role === "admin";
-  if (!isOwner && !isAdmin) return { error: "You can only edit your own posts." };
+  if (!isOwner && !isAdmin) return { error: t("recruitment.errors.editOwnPostsOnly") };
 
   const raw = readForm(formData, postType);
   const schema = postType === "LFT" ? lftPostSchema : lfpPostSchema;
   const parsed = schema.safeParse(raw);
-  if (!parsed.success) return { error: firstIssue(parsed.error) };
+  if (!parsed.success) return { error: await firstIssue(parsed.error) };
 
   const { error } = await supabase.from("recruitment_posts").update(parsed.data).eq("id", postId);
   if (error) return { error: error.message };
@@ -102,20 +109,21 @@ export async function setRecruitmentPostStatus(
   postId: string,
   status: RecruitmentStatus
 ): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const { data: existing } = await supabase
     .from("recruitment_posts")
     .select("author_id")
     .eq("id", postId)
     .single();
-  if (!existing) return { error: "Post not found." };
+  if (!existing) return { error: t("recruitment.errors.postNotFound") };
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   const isOwner = existing.author_id === user.id;
   const isAdmin = profile?.role === "admin";
-  if (!isOwner && !isAdmin) return { error: "You can only manage your own posts." };
+  if (!isOwner && !isAdmin) return { error: t("recruitment.errors.manageOwnPostsOnly") };
 
   const { error } = await supabase.from("recruitment_posts").update({ status }).eq("id", postId);
   if (error) return { error: error.message };
@@ -125,20 +133,21 @@ export async function setRecruitmentPostStatus(
 }
 
 export async function deleteRecruitmentPost(postId: string): Promise<ActionResult> {
+  const t = await getTranslations();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "You must be signed in." };
+  if (!user) return { error: t("errors.unauthorized") };
 
   const { data: existing } = await supabase
     .from("recruitment_posts")
     .select("author_id")
     .eq("id", postId)
     .single();
-  if (!existing) return { error: "Post not found." };
+  if (!existing) return { error: t("recruitment.errors.postNotFound") };
 
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
   const isOwner = existing.author_id === user.id;
   const isAdmin = profile?.role === "admin";
-  if (!isOwner && !isAdmin) return { error: "You can only delete your own posts." };
+  if (!isOwner && !isAdmin) return { error: t("recruitment.errors.deleteOwnPostsOnly") };
 
   const { error } = await supabase.from("recruitment_posts").delete().eq("id", postId);
   if (error) return { error: error.message };

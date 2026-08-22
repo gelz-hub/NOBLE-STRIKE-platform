@@ -2,19 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { Bell, Lock, Palette, Shield, UserCircle2 } from "lucide-react";
 
-const TABS = [
-  { href: "/settings/profile", label: "Profile", icon: UserCircle2 },
-  { href: "/settings/account", label: "Account", icon: Lock },
-  { href: "/settings/notifications", label: "Notifications", icon: Bell },
-  { href: "/settings/privacy", label: "Privacy", icon: Shield },
-  { href: "/settings/appearance", label: "Appearance", icon: Palette },
-];
+const TAB_HREFS = [
+  { href: "/settings/profile", key: "profile", icon: UserCircle2 },
+  { href: "/settings/account", key: "account", icon: Lock },
+  { href: "/settings/notifications", key: "notifications", icon: Bell },
+  { href: "/settings/privacy", key: "privacy", icon: Shield },
+  { href: "/settings/appearance", key: "appearance", icon: Palette },
+] as const;
 
 export function SettingsNav() {
+  const t = useTranslations("settings.tabs");
   const pathname = usePathname();
+  const TABS = TAB_HREFS.map((tab) => ({ ...tab, label: t(tab.key) }));
 
   return (
     <nav className="flex flex-wrap gap-1.5 border-b border-gold/10 pb-4 mb-8">

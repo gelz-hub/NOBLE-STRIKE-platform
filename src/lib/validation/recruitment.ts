@@ -44,29 +44,32 @@ function normalizeTelegram(value: string): string {
   return value.trim().replace(/^@/, "");
 }
 
+// Zod messages are dot-path translation keys — resolved at the call site via
+// the shared `firstIssue` helper (see src/app/recruitment/actions.ts), same
+// convention used by src/lib/validation/legacy.ts and team.ts.
 const baseFields = {
-  title: z.string().trim().min(2, "Title must be at least 2 characters.").max(80),
+  title: z.string().trim().min(2, "validation.recruitment.titleTooShort").max(80),
   game: z.enum(RECRUITMENT_GAMES),
   role: z.enum(RECRUITMENT_ROLES),
   telegram_username: z
     .string()
     .trim()
-    .min(3, "Telegram username must be at least 3 characters.")
+    .min(3, "validation.recruitment.telegramTooShort")
     .max(40)
     .transform(normalizeTelegram),
-  description: z.string().trim().min(10, "Description must be at least 10 characters.").max(1000),
+  description: z.string().trim().min(10, "validation.recruitment.descriptionTooShort").max(1000),
   status: z.enum(RECRUITMENT_STATUSES).default("OPEN"),
 };
 
 export const lftPostSchema = z.object({
   ...baseFields,
-  rank: z.string().trim().min(1, "Rank is required.").max(40),
-  country: z.string().trim().min(1, "Country is required.").max(56),
+  rank: z.string().trim().min(1, "validation.recruitment.rankRequired").max(40),
+  country: z.string().trim().min(1, "validation.recruitment.countryRequired").max(56),
 });
 
 export const lfpPostSchema = z.object({
   ...baseFields,
-  requirements: z.string().trim().min(5, "Requirements must be at least 5 characters.").max(500),
+  requirements: z.string().trim().min(5, "validation.recruitment.requirementsTooShort").max(500),
 });
 
 export type LftPostInput = z.infer<typeof lftPostSchema>;

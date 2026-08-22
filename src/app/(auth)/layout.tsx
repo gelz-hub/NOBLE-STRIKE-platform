@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { NSLogo } from "@/components/ns/logo";
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("footer");
   return (
     <div className="relative min-h-screen bg-background flex items-center justify-center px-4 py-12 overflow-hidden">
       <div className="absolute inset-0 ns-grid-bg opacity-40 pointer-events-none" />
@@ -25,7 +27,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <div className="ns-card ns-card-gold-edge rounded-2xl p-6 sm:p-8">{children}</div>
 
         <p className="mt-6 text-center text-[0.65rem] uppercase tracking-widest text-muted-foreground">
-          Compete. Conquer. Become Legendary.
+          {t("tagline")}
         </p>
       </div>
     </div>

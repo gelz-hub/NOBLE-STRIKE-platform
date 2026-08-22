@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { TeamIdentityForm } from "@/components/dashboard/team-identity-form";
 import { DeleteTeamButton } from "@/components/dashboard/delete-team-button";
@@ -13,6 +14,7 @@ interface Props {
 
 export default async function EditTeamPage({ params }: Props) {
   const { teamId } = await params;
+  const t = await getTranslations("dashboard.team");
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,15 +31,15 @@ export default async function EditTeamPage({ params }: Props) {
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Edit {team.team_name}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Update your team&apos;s identity and roster.
-          </p>
+          <h1 className="font-display font-bold text-2xl text-white">
+            {t("editTitle", { teamName: team.team_name })}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">{t("editSubtitle")}</p>
         </div>
         <Link href={`/dashboard/teams/${teamId}/roster`}>
           <Button className="ns-btn-outline h-10 px-4 text-xs uppercase tracking-wider">
             <Users2 className="w-3.5 h-3.5" />
-            Edit Roster
+            {t("editRoster")}
           </Button>
         </Link>
       </div>
@@ -50,16 +52,20 @@ export default async function EditTeamPage({ params }: Props) {
             logo_url: team.logo_url,
             banner_url: team.banner_url,
             description: team.description,
+            game: team.game,
+            contact_number: team.contact_number,
+            captain_telegram: team.captain_telegram,
+            province: team.province,
           }}
-          submitLabel="Save Changes"
+          submitLabel={t("saveChanges")}
           mode="edit"
         />
       </div>
 
       <div className="ns-card rounded-xl p-5 flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-white">Danger Zone</p>
-          <p className="text-xs text-muted-foreground">Permanently delete this team.</p>
+          <p className="text-sm font-medium text-white">{t("dangerZone")}</p>
+          <p className="text-xs text-muted-foreground">{t("dangerZoneHint")}</p>
         </div>
         <DeleteTeamButton teamId={teamId} teamName={team.team_name} />
       </div>
