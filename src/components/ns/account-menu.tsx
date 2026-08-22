@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
 import { useSupabaseUser } from "@/hooks/use-supabase-user";
 import { signOutAction } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ import {
   Bell,
   ClipboardList,
   LayoutDashboard,
+  Loader2,
   LogOut,
   Settings,
   Shield,
@@ -24,6 +26,16 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+function LogoutButton({ className }: { className?: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button type="submit" disabled={pending} className={cn(className, "disabled:opacity-60")}>
+      {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
+      {pending ? "Logging out..." : "Log Out"}
+    </button>
+  );
+}
 
 interface MenuLink {
   href: string;
@@ -95,13 +107,7 @@ export function AccountMenu({ mobile }: { mobile?: boolean }) {
           </Link>
         ))}
         <form action={signOutAction}>
-          <button
-            type="submit"
-            className="w-full flex items-center gap-3 px-4 py-3 font-heading font-semibold uppercase tracking-wider rounded-lg text-text-secondary hover:bg-surface-secondary border border-transparent text-left"
-          >
-            <LogOut className="w-4 h-4" />
-            Log Out
-          </button>
+          <LogoutButton className="w-full flex items-center gap-3 px-4 py-3 font-heading font-semibold uppercase tracking-wider rounded-lg text-text-secondary hover:bg-surface-secondary border border-transparent text-left" />
         </form>
       </div>
     );
@@ -128,10 +134,7 @@ export function AccountMenu({ mobile }: { mobile?: boolean }) {
         <DropdownMenuSeparator className="bg-gold/10" />
         <DropdownMenuItem asChild className="focus:bg-white/10 text-text-secondary">
           <form action={signOutAction} className="w-full">
-            <button type="submit" className="flex items-center gap-2 w-full text-left">
-              <LogOut className="w-4 h-4" />
-              Log Out
-            </button>
+            <LogoutButton className="flex items-center gap-2 w-full text-left" />
           </form>
         </DropdownMenuItem>
       </DropdownMenuContent>

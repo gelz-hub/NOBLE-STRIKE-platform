@@ -19,7 +19,8 @@
     "status": "Status",
     "yes": "Yes",
     "no": "No",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "deleting": "Deleting..."
   },
   "navigation": {
     "home": "Home",

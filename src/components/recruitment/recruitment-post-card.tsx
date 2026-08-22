@@ -144,7 +144,14 @@ export function RecruitmentPostCard({
                     }}
                     className="bg-destructive text-white hover:bg-destructive/90"
                   >
-                    {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : tCommon("delete")}
+                    {pending ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {tCommon("deleting")}
+                      </>
+                    ) : (
+                      tCommon("delete")
+                    )}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

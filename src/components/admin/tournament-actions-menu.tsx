@@ -148,7 +148,14 @@ export function TournamentActionsMenu({
               }}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Delete"}
+              {pending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

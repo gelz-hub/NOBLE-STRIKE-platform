@@ -466,6 +466,16 @@
 }
 .ns-fade-up { animation: ns-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
+/* Route transition — deliberately much shorter than ns-fade-up above,
+ * which is tuned for scroll-triggered section reveals, not full-page
+ * navigation. Kept subtle (4px, 180ms) per "fast, lightweight, not
+ * flashy" — see src/components/route-transition.tsx. */
+@keyframes ns-route-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ns-route-fade { animation: ns-route-fade 180ms ease-out both; }
+
 /* Slow rotate for decorative rings */
 @keyframes ns-rotate-slow {
   to { transform: rotate(360deg); }

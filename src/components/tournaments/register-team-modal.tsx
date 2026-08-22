@@ -186,7 +186,7 @@ export function RegisterTeamModal({
             className="ns-btn-gold h-10 px-6 text-xs uppercase tracking-wider"
           >
             {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
-            Confirm Registration
+            {pending ? "Registering..." : "Confirm Registration"}
           </Button>
         </div>
       </DialogContent>

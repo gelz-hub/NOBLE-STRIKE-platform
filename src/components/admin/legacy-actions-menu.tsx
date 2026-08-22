@@ -29,6 +29,7 @@ export function LegacyActionsMenu({
   isPublished: boolean;
 }) {
   const t = useTranslations("admin.legacy");
+  const tCommon = useTranslations("common");
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -99,7 +100,14 @@ export function LegacyActionsMenu({
               }}
               className="bg-destructive text-white hover:bg-destructive/90"
             >
-              {pending ? <Loader2 className="w-4 h-4 animate-spin" /> : t("delete")}
+              {pending ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {tCommon("deleting")}
+                </>
+              ) : (
+                t("delete")
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

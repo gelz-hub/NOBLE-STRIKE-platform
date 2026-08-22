@@ -8,6 +8,7 @@ import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { createClient } from "@/lib/supabase/server";
 import { PlausibleScript } from "@/components/analytics/plausible-script";
+import { RouteTransition } from "@/components/route-transition";
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -118,7 +119,7 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider attribute="class" defaultTheme={initialTheme} enableSystem storageKey="ns-theme">
-            {children}
+            <RouteTransition>{children}</RouteTransition>
             <Toaster />
             <SonnerToaster theme="dark" position="bottom-right" />
           </ThemeProvider>
