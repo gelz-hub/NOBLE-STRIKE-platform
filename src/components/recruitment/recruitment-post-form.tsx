@@ -24,6 +24,8 @@ import {
 import { Loader2, Save } from "lucide-react";
 import { createRecruitmentPost, updateRecruitmentPost, type ActionResult } from "@/app/recruitment/actions";
 import { RECRUITMENT_GAMES, RECRUITMENT_ROLES, getRoleLabels } from "@/lib/validation/recruitment";
+import { CountrySelect } from "@/components/ui/country-select";
+import { DEFAULT_COUNTRY_CODE, getCountryByCode } from "@/lib/countries";
 import type { RecruitmentPost, RecruitmentPostType } from "@/lib/types/database";
 
 const GAME_LABELS: Record<string, string> = { MLBB: "Mobile Legends: Bang Bang", HOK: "Honor of Kings" };
@@ -60,6 +62,10 @@ export function RecruitmentPostForm({
 
   const [game, setGame] = useState(post?.game ?? "MLBB");
   const [role, setRole] = useState(post?.role ?? "ANY");
+  const [countryCode, setCountryCode] = useState(post?.country_code ?? DEFAULT_COUNTRY_CODE);
+  const [countryName, setCountryName] = useState(
+    post?.country_name ?? getCountryByCode(DEFAULT_COUNTRY_CODE)?.name ?? ""
+  );
 
   useEffect(() => {
     if (state && "success" in state) onOpenChange(false);
@@ -81,6 +87,12 @@ export function RecruitmentPostForm({
           <input type="hidden" name="game" value={game} />
           <input type="hidden" name="role" value={role} />
           <input type="hidden" name="status" value={post?.status ?? "OPEN"} />
+          {postType === "LFT" && (
+            <>
+              <input type="hidden" name="country_code" value={countryCode} />
+              <input type="hidden" name="country_name" value={countryName} />
+            </>
+          )}
 
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">
@@ -142,7 +154,13 @@ export function RecruitmentPostForm({
                 <Label className="text-xs text-muted-foreground">
                   {t("countryLabel")} <span className="text-gold">*</span>
                 </Label>
-                <Input name="country" required defaultValue={post?.country ?? ""} placeholder="e.g. Philippines" className="ns-input" />
+                <CountrySelect
+                  value={countryCode}
+                  onChange={(code, name) => {
+                    setCountryCode(code);
+                    setCountryName(name);
+                  }}
+                />
               </div>
             </div>
           ) : (

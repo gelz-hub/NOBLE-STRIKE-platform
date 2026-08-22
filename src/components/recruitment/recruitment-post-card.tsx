@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Lock, Pencil, Send, Trash2, Unlock } from "lucide-react";
 import { setRecruitmentPostStatus, deleteRecruitmentPost } from "@/app/recruitment/actions";
 import { getRoleLabels } from "@/lib/validation/recruitment";
+import { CountryFlag } from "@/components/ui/country-flag";
 import { RecruitmentPostForm } from "./recruitment-post-form";
 import type { RecruitmentPost } from "@/lib/types/database";
 
@@ -72,7 +73,7 @@ export function RecruitmentPostCard({
       {post.post_type === "LFT" && (
         <div className="flex flex-wrap gap-3 text-xs text-text-secondary">
           {post.rank && <span>{t("rankLabel")}: {post.rank}</span>}
-          {post.country && <span>{post.country}</span>}
+          {post.country_code && <CountryFlag code={post.country_code} name={post.country_name} />}
         </div>
       )}
       {post.post_type === "LFP" && post.requirements && (

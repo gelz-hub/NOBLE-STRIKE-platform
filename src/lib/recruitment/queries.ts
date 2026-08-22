@@ -5,7 +5,7 @@ export interface RecruitmentFilters {
   postType: RecruitmentPostType;
   game?: "MLBB" | "HOK";
   role?: RecruitmentRole;
-  country?: string;
+  countryCode?: string;
   status?: RecruitmentStatus;
   page?: number;
   pageSize?: number;
@@ -15,7 +15,7 @@ export async function getRecruitmentPosts({
   postType,
   game,
   role,
-  country,
+  countryCode,
   status,
   page = 1,
   pageSize = 12,
@@ -30,7 +30,7 @@ export async function getRecruitmentPosts({
 
   if (game) query = query.eq("game", game);
   if (role) query = query.eq("role", role);
-  if (country && country.trim()) query = query.ilike("country", `%${country.trim()}%`);
+  if (countryCode) query = query.eq("country_code", countryCode);
   if (status) query = query.eq("status", status);
 
   const from = (page - 1) * pageSize;

@@ -48,9 +48,10 @@ export async function updateProfileSettings(
   const parsed = profileSettingsSchema.safeParse({
     username: String(formData.get("username") || ""),
     display_name: String(formData.get("display_name") || ""),
-    country: String(formData.get("country") || ""),
+    country_code: String(formData.get("country_code") || ""),
+    country_name: String(formData.get("country_name") || ""),
     bio: String(formData.get("bio") || ""),
-    discord_username: String(formData.get("discord_username") || ""),
+    telegram_handle: String(formData.get("telegram_handle") || ""),
     avatar_url: String(formData.get("avatar_url") || ""),
     banner_url: String(formData.get("banner_url") || ""),
     social_links: socialLinks,
@@ -73,9 +74,10 @@ export async function updateProfileSettings(
     .update({
       username: parsed.data.username,
       display_name: parsed.data.display_name || null,
-      country: parsed.data.country || null,
+      country_code: parsed.data.country_code || null,
+      country_name: parsed.data.country_name || null,
       bio: parsed.data.bio || null,
-      discord_username: parsed.data.discord_username || null,
+      telegram_handle: parsed.data.telegram_handle || null,
       avatar_url: parsed.data.avatar_url || null,
       banner_url: parsed.data.banner_url || null,
       social_links: parsed.data.social_links,
@@ -153,7 +155,7 @@ export async function updatePrivacySettings(
     privacy_public_profile: formData.get("privacy_public_profile") === "true",
     privacy_show_teams: formData.get("privacy_show_teams") === "true",
     privacy_show_match_history: formData.get("privacy_show_match_history") === "true",
-    privacy_show_discord: formData.get("privacy_show_discord") === "true",
+    privacy_show_telegram: formData.get("privacy_show_telegram") === "true",
   });
   if (!parsed.success) return { error: await firstIssue(parsed.error) };
 

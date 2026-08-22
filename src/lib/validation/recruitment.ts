@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidCountryCode } from "@/lib/countries";
 
 export const RECRUITMENT_ROLES = ["EXP", "JUNGLE", "MID", "GOLD", "ROAM", "SUB", "COACH", "ANY"] as const;
 
@@ -64,7 +65,12 @@ const baseFields = {
 export const lftPostSchema = z.object({
   ...baseFields,
   rank: z.string().trim().min(1, "validation.recruitment.rankRequired").max(40),
-  country: z.string().trim().min(1, "validation.recruitment.countryRequired").max(56),
+  country_code: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .refine(isValidCountryCode, "validation.recruitment.countryRequired"),
+  country_name: z.string().trim().min(1, "validation.recruitment.countryRequired").max(56),
 });
 
 export const lfpPostSchema = z.object({

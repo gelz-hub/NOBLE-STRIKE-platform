@@ -15,7 +15,7 @@ interface Props {
     tab?: string;
     game?: string;
     role?: string;
-    country?: string;
+    country_code?: string;
     status?: string;
     page?: string;
   }>;
@@ -44,7 +44,7 @@ export default async function RecruitmentPage({ searchParams }: Props) {
     postType,
     game: sp.game as "MLBB" | "HOK" | undefined,
     role: sp.role as RecruitmentRole | undefined,
-    country: postType === "LFT" ? sp.country : undefined,
+    countryCode: postType === "LFT" ? sp.country_code : undefined,
     status,
     page,
     pageSize: PAGE_SIZE,

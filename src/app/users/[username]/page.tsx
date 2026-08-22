@@ -8,6 +8,7 @@ import { pickLocalized } from "@/lib/i18n/content";
 import type { Locale } from "@/i18n/config";
 import { TeamMonogram } from "@/components/ns/ui";
 import { StatCard } from "@/components/ui/stat-card";
+import { CountryFlag } from "@/components/ui/country-flag";
 import {
   getProfileByUsername,
   getProfileTeams,
@@ -22,14 +23,13 @@ import {
   Coins,
   Crown,
   Lock,
-  MessageSquare,
   Newspaper,
   Percent,
+  Send,
   Shield,
   Star,
   Swords,
   Trophy,
-  Users,
 } from "lucide-react";
 
 interface Props {
@@ -86,7 +86,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   const showTeams = profile.privacy_show_teams || canBypassPrivacy;
   const showMatchHistory = profile.privacy_show_match_history || canBypassPrivacy;
-  const showDiscord = profile.privacy_show_discord || canBypassPrivacy;
+  const showTelegram = profile.privacy_show_telegram || canBypassPrivacy;
 
   const teams = showTeams || showMatchHistory ? await getProfileTeams(supabase, profile.id) : null;
   const teamIds = teams?.current.map((e) => e.team.id) ?? [];
@@ -149,17 +149,13 @@ export default async function PublicProfilePage({ params }: Props) {
         </div>
 
         <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-muted-foreground">
-          {profile.country && (
-            <span className="flex items-center gap-1.5">
-              <Users className="w-3.5 h-3.5" /> {profile.country}
-            </span>
-          )}
+          <CountryFlag code={profile.country_code} name={profile.country_name} unknownLabel={t("unknownCountry")} />
           <span className="flex items-center gap-1.5">
             <Calendar className="w-3.5 h-3.5" /> {t("joined", { date: new Date(profile.created_at).toLocaleDateString() })}
           </span>
-          {showDiscord && profile.discord_username && (
+          {showTelegram && profile.telegram_handle && (
             <span className="flex items-center gap-1.5">
-              <MessageSquare className="w-3.5 h-3.5" /> {profile.discord_username}
+              <Send className="w-3.5 h-3.5" /> {profile.telegram_handle}
             </span>
           )}
         </div>

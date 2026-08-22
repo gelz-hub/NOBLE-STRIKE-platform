@@ -695,7 +695,8 @@
     "requirementsPlaceholder": "e.g. Mythic+ rank, available weeknights, mic required",
     "telegramUsernameLabel": "Telegram Username",
     "descriptionLabel": "Description",
-    "descriptionPlaceholder": "Tell them more..."
+    "descriptionPlaceholder": "Tell them more...",
+    "allCountries": "All Countries"
   },
   "home": {
     "hero": {
@@ -807,7 +808,8 @@
     "loss": "Loss",
     "newsContributions": "News Contributions",
     "official": "Official",
-    "tbd": "TBD"
+    "tbd": "TBD",
+    "unknownCountry": "Unknown"
   },
   "settings": {
     "backToDashboard": "Back to Dashboard",
@@ -892,11 +894,11 @@
         "label": "Show Match History",
         "description": "Display tournament stats, achievements, and recent matches."
       },
-      "showDiscord": {
-        "label": "Show Discord",
-        "description": "Display your Discord username on your public profile."
-      },
-      "saved": "Saved."
+      "saved": "Saved.",
+      "showTelegram": {
+        "label": "Show Telegram",
+        "description": "Display your Telegram username on your public profile."
+      }
     },
     "profile": {
       "saveChanges": "Save Changes",
@@ -909,12 +911,13 @@
       "displayNameLabel": "Display Name",
       "displayNamePlaceholder": "Shown instead of your username where set",
       "countryLabel": "Country",
-      "discordUsernameLabel": "Discord Username",
       "bioLabel": "Bio",
       "bioPlaceholder": "Tell the community about yourself...",
       "socialLinksTitle": "Social Links",
       "addLink": "Add Link",
-      "saved": "Saved."
+      "saved": "Saved.",
+      "telegramHandleLabel": "Telegram Username",
+      "telegramHandleHint": "Optional. Used for team recruitment and tournament contact."
     },
     "telegramLink": {
       "unlinked": "Telegram account unlinked.",

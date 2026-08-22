@@ -54,6 +54,11 @@ export const ACCEPTED_IMAGE_TYPES = [
   "image/png",
   "image/webp",
   "image/gif",
+  // iPhones save camera-roll photos as HEIC/HEIF by default. Rejecting
+  // these was the root cause of "avatar/banner upload not working" for
+  // most iOS users — see docs referenced in the upload-bug investigation.
+  "image/heic",
+  "image/heif",
 ] as const;
 
 export interface CloudinaryUploadResult {

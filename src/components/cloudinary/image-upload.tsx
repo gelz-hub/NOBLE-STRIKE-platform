@@ -54,15 +54,23 @@ export function ImageUpload({
     formData.set("file", file);
 
     startTransition(async () => {
-      const result = await uploadImageAction(useCase, formData);
-      URL.revokeObjectURL(localPreview);
-      if (!result.success) {
-        toast.error(result.error);
+      try {
+        const result = await uploadImageAction(useCase, formData);
+        if (!result.success) {
+          toast.error(result.error);
+          setPreview(currentUrl ?? null);
+          return;
+        }
+        setPreview(result.data.url);
+        onUploaded(result.data.url);
+      } catch {
+        // Network drop, server exception, etc. — never leave the user
+        // wondering whether it worked (this previously failed silently).
+        toast.error("Upload failed. Please check your connection and try again.");
         setPreview(currentUrl ?? null);
-        return;
+      } finally {
+        URL.revokeObjectURL(localPreview);
       }
-      setPreview(result.data.url);
-      onUploaded(result.data.url);
     });
   }
 
@@ -126,7 +134,7 @@ export function ImageUpload({
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0];

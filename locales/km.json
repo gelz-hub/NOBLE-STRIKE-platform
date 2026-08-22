@@ -690,7 +690,8 @@
     "requirementsPlaceholder": "ឧទាហរណ៍៖ ចំណាត់ថ្នាក់ Mythic+ ទំនេរពេលយប់ថ្ងៃធ្វើការ ត្រូវការមីក្រូ",
     "telegramUsernameLabel": "ឈ្មោះអ្នកប្រើ Telegram",
     "descriptionLabel": "ការពិពណ៌នា",
-    "descriptionPlaceholder": "ប្រាប់ព័ត៌មានបន្ថែម..."
+    "descriptionPlaceholder": "ប្រាប់ព័ត៌មានបន្ថែម...",
+    "allCountries": "គ្រប់ប្រទេស"
   },
   "home": {
     "hero": {
@@ -794,7 +795,8 @@
     "loss": "ចាញ់",
     "newsContributions": "ការចូលរួមសរសេរព័ត៌មាន",
     "official": "ផ្លូវការ",
-    "tbd": "មិនទាន់កំណត់"
+    "tbd": "មិនទាន់កំណត់",
+    "unknownCountry": "មិនស្គាល់"
   },
   "settings": {
     "backToDashboard": "ត្រឡប់ទៅផ្ទាំងគ្រប់គ្រង",
@@ -879,11 +881,11 @@
         "label": "បង្ហាញប្រវត្តិការប្រកួត",
         "description": "បង្ហាញស្ថិតិការប្រកួត សមិទ្ធិផល និងការប្រកួតថ្មីៗ។"
       },
-      "showDiscord": {
-        "label": "បង្ហាញ Discord",
-        "description": "បង្ហាញឈ្មោះអ្នកប្រើ Discord របស់អ្នកនៅលើប្រវត្តិរូបសាធារណៈ។"
-      },
-      "saved": "បានរក្សាទុក។"
+      "saved": "បានរក្សាទុក។",
+      "showTelegram": {
+        "label": "បង្ហាញ Telegram",
+        "description": "បង្ហាញឈ្មោះអ្នកប្រើ Telegram របស់អ្នកនៅលើទំព័រប្រវត្តិរូបសាធារណៈ។"
+      }
     },
     "profile": {
       "saveChanges": "រក្សាទុកការផ្លាស់ប្ដូរ",
@@ -896,12 +898,13 @@
       "displayNameLabel": "ឈ្មោះបង្ហាញ",
       "displayNamePlaceholder": "បង្ហាញជំនួសឈ្មោះអ្នកប្រើនៅកន្លែងដែលបានកំណត់",
       "countryLabel": "ប្រទេស",
-      "discordUsernameLabel": "ឈ្មោះអ្នកប្រើ Discord",
       "bioLabel": "ជីវប្រវត្តិសង្ខេប",
       "bioPlaceholder": "ប្រាប់សហគមន៍អំពីខ្លួនអ្នក...",
       "socialLinksTitle": "តំណបណ្ដាញសង្គម",
       "addLink": "បន្ថែមតំណ",
-      "saved": "បានរក្សាទុក។"
+      "saved": "បានរក្សាទុក។",
+      "telegramHandleLabel": "ឈ្មោះអ្នកប្រើ Telegram",
+      "telegramHandleHint": "ស្រេចចិត្ត។ ប្រើសម្រាប់ការជ្រើសរើសក្រុម និងទំនាក់ទំនងការប្រកួត។"
     },
     "telegramLink": {
       "unlinked": "គណនី Telegram ត្រូវបានផ្ដាច់។",

@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CountrySelect } from "@/components/ui/country-select";
 import { cn } from "@/lib/utils";
 import { RECRUITMENT_GAMES, RECRUITMENT_ROLES, RECRUITMENT_STATUSES, getRoleLabels } from "@/lib/validation/recruitment";
 import type { RecruitmentPostType } from "@/lib/types/database";
@@ -55,7 +55,7 @@ export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [country, setCountry] = useState(searchParams.get("country") ?? "");
+  const countryCode = searchParams.get("country_code") ?? "";
   const [, startTransition] = useTransition();
 
   function updateParams(next: Record<string, string | null>) {
@@ -103,13 +103,12 @@ export function RecruitmentFilters({ postType }: { postType: RecruitmentPostType
       </Select>
 
       {postType === "LFT" && (
-        <Input
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && updateParams({ country: country || null })}
-          onBlur={() => updateParams({ country: country || null })}
+        <CountrySelect
+          value={countryCode}
+          onChange={(code) => updateParams({ country_code: code || null })}
           placeholder={t("countryPlaceholder")}
-          className="ns-input h-9 w-36 text-sm"
+          allLabel={t("allCountries")}
+          className="h-9 w-44 text-sm"
         />
       )}
 

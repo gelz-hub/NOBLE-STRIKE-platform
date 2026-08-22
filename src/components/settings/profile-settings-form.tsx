@@ -15,9 +15,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ImageUpload } from "@/components/cloudinary/image-upload";
+import { CountrySelect } from "@/components/ui/country-select";
 import { Loader2, Plus, Save, Trash2, User } from "lucide-react";
 import { updateProfileSettings, type ActionResult } from "@/app/settings/actions";
 import { SOCIAL_PLATFORMS, MAX_SOCIAL_LINKS } from "@/lib/validation/profile";
+import { DEFAULT_COUNTRY_CODE, getCountryByCode } from "@/lib/countries";
 import type { Profile, SocialLinkEntry } from "@/lib/types/database";
 
 function FormSection({
@@ -59,6 +61,10 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
   const [bannerUrl, setBannerUrl] = useState(profile.banner_url ?? "");
   const [links, setLinks] = useState<SocialLinkEntry[]>(profile.social_links ?? []);
+  const [countryCode, setCountryCode] = useState(profile.country_code ?? DEFAULT_COUNTRY_CODE);
+  const [countryName, setCountryName] = useState(
+    profile.country_name ?? getCountryByCode(DEFAULT_COUNTRY_CODE)?.name ?? ""
+  );
 
   function updateLink(index: number, patch: Partial<SocialLinkEntry>) {
     setLinks((prev) => prev.map((l, i) => (i === index ? { ...l, ...patch } : l)));
@@ -69,6 +75,8 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
       <input type="hidden" name="avatar_url" value={avatarUrl} />
       <input type="hidden" name="banner_url" value={bannerUrl} />
       <input type="hidden" name="social_links" value={JSON.stringify(links)} />
+      <input type="hidden" name="country_code" value={countryCode} />
+      <input type="hidden" name="country_name" value={countryName} />
 
       <FormSection icon={User} title={t("avatarBannerTitle")}>
         <div className="flex flex-wrap gap-6">
@@ -105,21 +113,23 @@ export function ProfileSettingsForm({ profile }: { profile: Profile }) {
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <Label className="text-xs text-muted-foreground">{t("countryLabel")}</Label>
-            <Input
-              name="country"
-              defaultValue={profile.country ?? ""}
-              placeholder="e.g. Philippines"
-              className="ns-input"
+            <CountrySelect
+              value={countryCode}
+              onChange={(code, name) => {
+                setCountryCode(code);
+                setCountryName(name);
+              }}
             />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">{t("discordUsernameLabel")}</Label>
+            <Label className="text-xs text-muted-foreground">{t("telegramHandleLabel")}</Label>
             <Input
-              name="discord_username"
-              defaultValue={profile.discord_username ?? ""}
-              placeholder="username"
+              name="telegram_handle"
+              defaultValue={profile.telegram_handle ?? ""}
+              placeholder="@username"
               className="ns-input"
             />
+            <p className="text-[0.7rem] text-muted-foreground">{t("telegramHandleHint")}</p>
           </div>
         </div>
         <div className="space-y-1.5">

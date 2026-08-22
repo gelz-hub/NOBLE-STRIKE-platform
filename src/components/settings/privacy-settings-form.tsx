@@ -27,14 +27,14 @@ export function PrivacySettingsForm({ profile }: { profile: Profile }) {
   const [publicProfile, setPublicProfile] = useState(profile.privacy_public_profile);
   const [showTeams, setShowTeams] = useState(profile.privacy_show_teams);
   const [showMatchHistory, setShowMatchHistory] = useState(profile.privacy_show_match_history);
-  const [showDiscord, setShowDiscord] = useState(profile.privacy_show_discord);
+  const [showTelegram, setShowTelegram] = useState(profile.privacy_show_telegram);
 
   return (
     <form action={formAction} className="space-y-6">
       <input type="hidden" name="privacy_public_profile" value={String(publicProfile)} />
       <input type="hidden" name="privacy_show_teams" value={String(showTeams)} />
       <input type="hidden" name="privacy_show_match_history" value={String(showMatchHistory)} />
-      <input type="hidden" name="privacy_show_discord" value={String(showDiscord)} />
+      <input type="hidden" name="privacy_show_telegram" value={String(showTelegram)} />
 
       <div className="ns-card rounded-xl p-5">
         <ToggleRow
@@ -56,10 +56,10 @@ export function PrivacySettingsForm({ profile }: { profile: Profile }) {
           onCheckedChange={setShowMatchHistory}
         />
         <ToggleRow
-          label={t("showDiscord.label")}
-          description={t("showDiscord.description")}
-          checked={showDiscord}
-          onCheckedChange={setShowDiscord}
+          label={t("showTelegram.label")}
+          description={t("showTelegram.description")}
+          checked={showTelegram}
+          onCheckedChange={setShowTelegram}
         />
       </div>
 

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidCountryCode } from "@/lib/countries";
 
 export const MAX_SOCIAL_LINKS = 6;
 
@@ -30,9 +31,15 @@ export const profileSettingsSchema = z.object({
     .trim()
     .regex(usernamePattern, "validation.profile.invalidUsername"),
   display_name: z.string().trim().max(50, "validation.profile.displayNameTooLong").optional(),
-  country: z.string().trim().max(56).optional(),
+  country_code: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .refine((v) => v === "" || isValidCountryCode(v), "validation.profile.invalidCountry")
+    .optional(),
+  country_name: z.string().trim().max(56).optional(),
   bio: z.string().trim().max(500, "validation.profile.bioTooLong").optional(),
-  discord_username: z.string().trim().max(40).optional(),
+  telegram_handle: z.string().trim().max(40).optional(),
   avatar_url: z.union([z.string().url(), z.literal("")]).optional(),
   banner_url: z.union([z.string().url(), z.literal("")]).optional(),
   social_links: z.array(socialLinkSchema).max(MAX_SOCIAL_LINKS, `validation.profile.maxSocialLinks|${MAX_SOCIAL_LINKS}`),
@@ -55,7 +62,7 @@ export const privacySettingsSchema = z.object({
   privacy_public_profile: z.boolean(),
   privacy_show_teams: z.boolean(),
   privacy_show_match_history: z.boolean(),
-  privacy_show_discord: z.boolean(),
+  privacy_show_telegram: z.boolean(),
 });
 
 export type PrivacySettingsInput = z.infer<typeof privacySettingsSchema>;

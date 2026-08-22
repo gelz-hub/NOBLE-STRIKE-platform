@@ -35,12 +35,16 @@ export function GalleryUpload({ useCase, urls, onChange, label, maxImages = 20 }
       const formData = new FormData();
       formData.set("file", file);
       startTransition(async () => {
-        const result = await uploadImageAction(useCase, formData);
-        if (!result.success) {
-          toast.error(result.error);
-          return;
+        try {
+          const result = await uploadImageAction(useCase, formData);
+          if (!result.success) {
+            toast.error(result.error);
+            return;
+          }
+          onChange([...urls, result.data.url]);
+        } catch {
+          toast.error("Upload failed. Please check your connection and try again.");
         }
-        onChange([...urls, result.data.url]);
       });
     }
   }
@@ -85,7 +89,7 @@ export function GalleryUpload({ useCase, urls, onChange, label, maxImages = 20 }
         ref={inputRef}
         type="file"
         multiple
-        accept="image/jpeg,image/png,image/webp,image/gif"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
         className="hidden"
         onChange={(e) => {
           if (e.target.files?.length) handleFiles(e.target.files);

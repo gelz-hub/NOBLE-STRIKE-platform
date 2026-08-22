@@ -16,8 +16,9 @@ export interface Profile {
   id: string;
   username: string | null;
   avatar_url: string | null;
-  country: string | null;
-  discord_username: string | null;
+  country_code: string | null;
+  country_name: string | null;
+  telegram_handle: string | null;
   role: Role;
   theme_preference: ThemePreference;
   locale: LocalePreference;
@@ -28,7 +29,7 @@ export interface Profile {
   privacy_public_profile: boolean;
   privacy_show_teams: boolean;
   privacy_show_match_history: boolean;
-  privacy_show_discord: boolean;
+  privacy_show_telegram: boolean;
   notify_tournament: boolean;
   notify_match: boolean;
   notify_news: boolean;
@@ -322,7 +323,8 @@ export interface RecruitmentPost {
   game: "MLBB" | "HOK";
   role: RecruitmentRole;
   rank: string | null;
-  country: string | null;
+  country_code: string | null;
+  country_name: string | null;
   requirements: string | null;
   telegram_username: string;
   description: string;

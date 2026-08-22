@@ -71,7 +71,7 @@ describe("privacySettingsSchema", () => {
       privacy_public_profile: true,
       privacy_show_teams: false,
       privacy_show_match_history: true,
-      privacy_show_discord: false,
+      privacy_show_telegram: false,
     });
     expect(result.success).toBe(true);
   });

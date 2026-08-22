@@ -5,7 +5,7 @@ export function validateImageFile(
   useCase: ImageUseCase
 ): string | null {
   if (!ACCEPTED_IMAGE_TYPES.includes(file.type as (typeof ACCEPTED_IMAGE_TYPES)[number])) {
-    return "Unsupported file type. Please upload a JPEG, PNG, WebP, or GIF image.";
+    return "Unsupported file type. Please upload a JPEG, PNG, WebP, GIF, or HEIC image.";
   }
 
   const limit = IMAGE_SIZE_LIMITS[useCase];

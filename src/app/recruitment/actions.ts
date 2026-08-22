@@ -37,7 +37,8 @@ function readForm(formData: FormData, postType: RecruitmentPostType) {
     return {
       ...base,
       rank: String(formData.get("rank") || ""),
-      country: String(formData.get("country") || ""),
+      country_code: String(formData.get("country_code") || ""),
+      country_name: String(formData.get("country_name") || ""),
     };
   }
   return {
