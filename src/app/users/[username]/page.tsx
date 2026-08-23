@@ -9,6 +9,7 @@ import type { Locale } from "@/i18n/config";
 import { TeamMonogram } from "@/components/ns/ui";
 import { StatCard } from "@/components/ui/stat-card";
 import { CountryFlag } from "@/components/ui/country-flag";
+import { ReportUserButton } from "@/components/moderation/report-user-button";
 import {
   getProfileByUsername,
   getProfileTeams,
@@ -122,6 +123,14 @@ export default async function PublicProfilePage({ params }: Props) {
           >
             {t("editProfile")}
           </Link>
+        )}
+        {viewer && !isOwner && (
+          <div className="absolute top-5 right-4 md:right-6">
+            <ReportUserButton
+              userId={profile.id}
+              className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-text-secondary hover:text-destructive bg-background/40 backdrop-blur-sm border border-border rounded-md px-3 py-1.5 h-auto"
+            />
+          </div>
         )}
       </div>
 

@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { lftPostSchema, lfpPostSchema } from "@/lib/validation/recruitment";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { checkForSpamLinks } from "@/lib/spam-filter";
+import { flagAccount } from "@/lib/moderation";
 import type { RecruitmentPostType, RecruitmentStatus } from "@/lib/types/database";
 
 export type ActionResult = { error: string } | { success: true };
@@ -47,6 +50,11 @@ function readForm(formData: FormData, postType: RecruitmentPostType) {
   };
 }
 
+/** Concatenates the free-text fields a spammer could stuff a link into. */
+function textFieldsOf(data: Record<string, unknown>): string {
+  return [data.title, data.description, data.requirements].filter((v) => typeof v === "string").join(" ");
+}
+
 export async function createRecruitmentPost(
   postType: RecruitmentPostType,
   _prev: ActionResult | null,
@@ -56,10 +64,38 @@ export async function createRecruitmentPost(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t("recruitment.errors.signInToPost") };
 
+  // Content Protection: email must be verified before posting.
+  if (!user.email_confirmed_at) return { error: t("recruitment.errors.verifyEmailToPost") };
+
+  // Content Protection: 5 posts per minute per user.
+  const { allowed, retryAfterSeconds } = await checkRateLimit("post-create", user.id);
+  if (!allowed) return { error: t("recruitment.errors.postingTooFast", { seconds: retryAfterSeconds }) };
+
   const raw = readForm(formData, postType);
   const schema = postType === "LFT" ? lftPostSchema : lfpPostSchema;
   const parsed = schema.safeParse(raw);
   if (!parsed.success) return { error: await firstIssue(parsed.error) };
+
+  // Content Protection: block common spam/phishing links; a match also
+  // flags the account for admin review rather than just silently rejecting.
+  const spamCheck = checkForSpamLinks(textFieldsOf(parsed.data));
+  if (spamCheck.isSpam) {
+    await flagAccount(supabase, user.id, `Spam link in recruitment post: ${spamCheck.matchedDomain}`);
+    return { error: t("recruitment.errors.spamLinkDetected") };
+  }
+
+  // Content Protection: reject a near-identical post from the same author
+  // posted in the last 24h (title + description match).
+  const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const { data: recentPosts } = await supabase
+    .from("recruitment_posts")
+    .select("title, description")
+    .eq("author_id", user.id)
+    .gte("created_at", since);
+  const isDuplicate = (recentPosts ?? []).some(
+    (p) => p.title === parsed.data.title && p.description === parsed.data.description
+  );
+  if (isDuplicate) return { error: t("recruitment.errors.duplicatePost") };
 
   const { error } = await supabase.from("recruitment_posts").insert({
     author_id: user.id,
@@ -98,6 +134,12 @@ export async function updateRecruitmentPost(
   const schema = postType === "LFT" ? lftPostSchema : lfpPostSchema;
   const parsed = schema.safeParse(raw);
   if (!parsed.success) return { error: await firstIssue(parsed.error) };
+
+  const spamCheck = checkForSpamLinks(textFieldsOf(parsed.data));
+  if (spamCheck.isSpam) {
+    await flagAccount(supabase, user.id, `Spam link in recruitment post: ${spamCheck.matchedDomain}`);
+    return { error: t("recruitment.errors.spamLinkDetected") };
+  }
 
   const { error } = await supabase.from("recruitment_posts").update(parsed.data).eq("id", postId);
   if (error) return { error: error.message };

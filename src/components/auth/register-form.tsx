@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2, UserPlus, MailCheck } from "lucide-react";
 import { signUpAction, type ActionResult } from "@/app/(auth)/actions";
+import { TurnstileWidget } from "@/components/auth/turnstile-widget";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -27,6 +28,7 @@ export function RegisterForm() {
     signUpAction,
     null
   );
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   if (state && "success" in state) {
     return (
@@ -94,6 +96,9 @@ export function RegisterForm() {
             className="ns-input"
           />
         </div>
+
+        <input type="hidden" name="turnstileToken" value={turnstileToken} />
+        <TurnstileWidget onVerify={setTurnstileToken} />
 
         {state && "error" in state && (
           <p className="text-sm text-destructive">{state.error}</p>

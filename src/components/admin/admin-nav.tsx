@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { Trophy, ClipboardList, Swords, Newspaper, Send, History } from "lucide-react";
+import { Trophy, ClipboardList, Swords, Newspaper, Send, History, Flag } from "lucide-react";
 import { LanguageSwitcher } from "@/components/ns/language-switcher";
 
 const TAB_DEFS = [
@@ -13,6 +13,7 @@ const TAB_DEFS = [
   { href: "/admin/matches", key: "matches", icon: Swords },
   { href: "/admin/news", key: "news", icon: Newspaper },
   { href: "/admin/legacy", key: "legacy", icon: History },
+  { href: "/admin/moderation", key: "moderation", icon: Flag },
   { href: "/admin/integrations/telegram", key: "telegram", icon: Send },
 ] as const;
 

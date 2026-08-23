@@ -19,6 +19,7 @@ import { Loader2, Lock, Pencil, Send, Trash2, Unlock } from "lucide-react";
 import { setRecruitmentPostStatus, deleteRecruitmentPost } from "@/app/recruitment/actions";
 import { getRoleLabels } from "@/lib/validation/recruitment";
 import { CountryFlag } from "@/components/ui/country-flag";
+import { ReportPostButton } from "@/components/moderation/report-post-button";
 import { RecruitmentPostForm } from "./recruitment-post-form";
 import type { RecruitmentPost } from "@/lib/types/database";
 
@@ -27,9 +28,11 @@ const GAME_LABELS: Record<string, string> = { MLBB: "Mobile Legends: Bang Bang",
 export function RecruitmentPostCard({
   post,
   canManage,
+  canReport,
 }: {
   post: RecruitmentPost;
   canManage: boolean;
+  canReport?: boolean;
 }) {
   const t = useTranslations("recruitment");
   const tCommon = useTranslations("common");
@@ -93,6 +96,8 @@ export function RecruitmentPostCard({
         >
           <Send className="w-3.5 h-3.5" />@{post.telegram_username}
         </a>
+
+        {canReport && !canManage && <ReportPostButton postId={post.id} />}
 
         {canManage && (
           <div className="flex items-center gap-1">

@@ -46,7 +46,8 @@
       "matches": "Matches",
       "news": "News",
       "legacy": "Legacy",
-      "telegram": "Telegram"
+      "telegram": "Telegram",
+      "moderation": "Moderation"
     },
     "localeTabs": {
       "english": "English",
@@ -598,7 +599,9 @@
       "tooManyRegistrationAttempts": "Too many registration attempts. Try again in {seconds}s.",
       "tooManyLoginAttempts": "Too many login attempts. Try again in {seconds}s.",
       "invalidCredentials": "Invalid email or password.",
-      "enterEmail": "Please enter your email."
+      "enterEmail": "Please enter your email.",
+      "disposableEmail": "This email provider is not allowed. Please use a permanent email address.",
+      "captchaFailed": "Captcha verification failed. Please try again."
     },
     "login": {
       "title": "Welcome Back",
@@ -653,7 +656,11 @@
       "postNotFound": "Post not found.",
       "editOwnPostsOnly": "You can only edit your own posts.",
       "manageOwnPostsOnly": "You can only manage your own posts.",
-      "deleteOwnPostsOnly": "You can only delete your own posts."
+      "deleteOwnPostsOnly": "You can only delete your own posts.",
+      "verifyEmailToPost": "Please verify your email address before posting.",
+      "postingTooFast": "You are posting too quickly. Try again in {seconds} seconds.",
+      "spamLinkDetected": "Your post contains a link that is not allowed. Please remove it and try again.",
+      "duplicatePost": "You already posted this exact listing recently."
     },
     "backToSite": "Back to Site",
     "title": "Recruitment Hub",
@@ -932,6 +939,29 @@
       "didntOpen": "Didn't open?",
       "tapHere": "Tap here",
       "expiresIn15": "(expires in 15 minutes)."
+    }
+  },
+  "moderation": {
+    "reportUser": "Report User",
+    "reportPost": "Report Post",
+    "reportDialogTitle": "Submit a Report",
+    "reportDialogDescription": "Help us keep Noble Strike safe. Reports are reviewed by admins.",
+    "reasonLabel": "Reason",
+    "detailsLabel": "Additional details (optional)",
+    "detailsPlaceholder": "Anything else we should know...",
+    "submitReport": "Submit Report",
+    "submitting": "Submitting...",
+    "reportSubmitted": "Report submitted. Thank you.",
+    "reasons": {
+      "SPAM": "Spam",
+      "HARASSMENT": "Harassment",
+      "SCAM": "Scam or phishing",
+      "INAPPROPRIATE": "Inappropriate content",
+      "OTHER": "Other"
+    },
+    "errors": {
+      "cannotReportSelf": "You cannot report yourself.",
+      "reportingTooFast": "You are submitting reports too quickly. Try again in {seconds} seconds."
     }
   }
 }

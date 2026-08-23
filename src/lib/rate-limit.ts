@@ -37,15 +37,22 @@ if (!redis) {
   });
 }
 
-export type RateLimitBucket = "login" | "registration" | "news-view" | "dispute-create";
+export type RateLimitBucket =
+  | "login"
+  | "registration"
+  | "news-view"
+  | "dispute-create"
+  | "post-create"
+  | "report-create";
 
 const BUCKET_LIMITS: Record<RateLimitBucket, { limit: number; windowSeconds: number }> = {
   // Login: generous enough for a genuine typo or two, tight enough to slow
   // credential stuffing.
   login: { limit: 10, windowSeconds: 60 },
-  // Tournament registration: a real user registers a handful of teams at
-  // most in a sitting.
-  registration: { limit: 5, windowSeconds: 60 },
+  // Account signup: 5 per IP per hour — tight enough to blunt a mass
+  // account-creation script, generous enough for a shared IP (office,
+  // internet cafe, mobile carrier NAT) creating a handful of real accounts.
+  registration: { limit: 5, windowSeconds: 3600 },
   // News view-count RPC: anonymous-callable by design (see the news
   // migration), so it's the most exposed single endpoint to a naive
   // view-count-inflation script.
@@ -54,6 +61,12 @@ const BUCKET_LIMITS: Record<RateLimitBucket, { limit: number; windowSeconds: num
   // contested match); a tight limit mostly targets spam/harassment via the
   // dispute explanation field.
   "dispute-create": { limit: 5, windowSeconds: 300 },
+  // Recruitment post create/update: a real user posts a handful of LFT/LFP
+  // listings, not a stream of them.
+  "post-create": { limit: 5, windowSeconds: 60 },
+  // Reports: generous enough to report several bad posts/users in one
+  // sitting, tight enough to stop a report-flooding harassment campaign.
+  "report-create": { limit: 10, windowSeconds: 3600 },
 };
 
 const limiters = new Map<RateLimitBucket, Ratelimit>();

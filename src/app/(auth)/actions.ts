@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { isDisposableEmail } from "@/lib/disposable-emails";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 function siteUrl() {
   return process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -19,6 +21,7 @@ export async function signUpAction(
   const email = String(formData.get("email") || "").trim();
   const password = String(formData.get("password") || "");
   const username = String(formData.get("username") || "").trim();
+  const turnstileToken = String(formData.get("turnstileToken") || "");
 
   if (!email || !password || !username) {
     return { error: t("errors.fillAllFields") };
@@ -26,8 +29,17 @@ export async function signUpAction(
   if (password.length < 8) {
     return { error: t("errors.passwordTooShort") };
   }
+  if (isDisposableEmail(email)) {
+    return { error: t("errors.disposableEmail") };
+  }
 
   const ip = await getClientIp();
+
+  const turnstileOk = await verifyTurnstileToken(turnstileToken, ip);
+  if (!turnstileOk) {
+    return { error: t("errors.captchaFailed") };
+  }
+
   const { allowed, retryAfterSeconds } = await checkRateLimit("registration", ip);
   if (!allowed) {
     return { error: t("errors.tooManyRegistrationAttempts", { seconds: retryAfterSeconds }) };

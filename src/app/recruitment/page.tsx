@@ -84,6 +84,7 @@ export default async function RecruitmentPage({ searchParams }: Props) {
                   key={post.id}
                   post={post}
                   canManage={!!user && (isAdmin || post.author_id === user.id)}
+                  canReport={!!user && post.author_id !== user.id}
                 />
               ))}
             </div>

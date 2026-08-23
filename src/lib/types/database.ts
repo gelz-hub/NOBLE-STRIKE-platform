@@ -39,6 +39,45 @@ export interface Profile {
   telegram_id: number | null;
   telegram_username: string | null;
   telegram_linked_at: string | null;
+  flagged_at: string | null;
+  flag_reason: string | null;
+  created_at: string;
+}
+
+export type ReportTargetType = "USER" | "RECRUITMENT_POST";
+export type ReportReason = "SPAM" | "HARASSMENT" | "SCAM" | "INAPPROPRIATE" | "OTHER";
+export type ReportStatus = "PENDING" | "RESOLVED" | "DISMISSED";
+
+export interface Report {
+  id: string;
+  reporter_id: string;
+  target_type: ReportTargetType;
+  target_id: string;
+  reason: ReportReason;
+  details: string | null;
+  status: ReportStatus;
+  resolved_by: string | null;
+  resolved_at: string | null;
+  created_at: string;
+}
+
+export type ModerationActionType =
+  | "REPORT_RESOLVED"
+  | "REPORT_DISMISSED"
+  | "ACCOUNT_FLAGGED"
+  | "ACCOUNT_UNFLAGGED"
+  | "POST_REMOVED"
+  | "ACCOUNT_SUSPENDED";
+
+export type ModerationTargetType = "USER" | "RECRUITMENT_POST" | "REPORT";
+
+export interface ModerationAction {
+  id: string;
+  admin_id: string | null;
+  action_type: ModerationActionType;
+  target_type: ModerationTargetType;
+  target_id: string;
+  reason: string | null;
   created_at: string;
 }
 

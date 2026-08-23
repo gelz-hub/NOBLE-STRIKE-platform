@@ -13,13 +13,16 @@ const CSP_DIRECTIVES = [
   "default-src 'self'",
   // Next.js's own inline bootstrap scripts require 'unsafe-inline'; no
   // nonce-based CSP is wired up (a stricter follow-up, not done here).
-  "script-src 'self' 'unsafe-inline'",
+  // Cloudflare Turnstile (registration anti-bot check) needs its script
+  // allowlisted here and its widget iframe allowlisted via frame-src below.
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://res.cloudinary.com",
   "font-src 'self' data:",
   // Supabase (DB/auth) + Sentry error ingest are the only external APIs
   // this app's client code talks to directly.
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://challenges.cloudflare.com",
+  "frame-src https://challenges.cloudflare.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
