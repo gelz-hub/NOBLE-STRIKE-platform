@@ -10,7 +10,13 @@ import { TournamentStatsCards } from "@/components/admin/tournament-stats-cards"
 import { getTournamentStats } from "@/lib/tournament-stats";
 import { getBracket, getBracketMatches } from "@/lib/bracket/queries";
 import { summarizeBracket } from "@/lib/bracket/summary";
-import { BracketView } from "@/components/bracket/bracket-view";
+import {
+  filterRoundsForFeaturedStage,
+  featuredBracketStats,
+  mainEventTitle,
+  featuredStageLabel,
+} from "@/lib/bracket/featured";
+import { PublicBracket } from "@/components/bracket/public-bracket";
 import { getTournamentMatchSummary } from "@/lib/matches/queries";
 import { MatchSummaryList } from "@/components/matches/match-summary-list";
 import { getTournamentNews } from "@/lib/news/queries";
@@ -92,6 +98,27 @@ export default async function TournamentDetailPage({ params }: Props) {
   const bracket = await getBracket(id);
   const bracketRounds = bracket ? await getBracketMatches(id) : [];
   const bracketSummary = bracket ? summarizeBracket(bracketRounds, tournament.bracket_format) : null;
+
+  // Public bracket view: hide qualifier rounds before the featured stage.
+  // Admin pages (see /admin/tournaments/[id]/bracket) always show everything.
+  const featuredStage = tournament.featured_bracket_stage ?? "FULL";
+  const publicRounds = filterRoundsForFeaturedStage(
+    bracketRounds,
+    featuredStage,
+    tournament.bracket_format
+  );
+  const eventTitle = mainEventTitle(featuredStage);
+  const featuredStats = featuredBracketStats({
+    stage: featuredStage,
+    registeredTeams: stats.approved,
+    // Before any real elimination (or before the bracket exists) everyone is
+    // still "remaining"; summarizeBracket only counts non-bye eliminations.
+    liveRemainingTeams: bracketSummary?.remainingTeams ?? stats.approved,
+  });
+  const qualifierNote =
+    featuredStage !== "FULL" && publicRounds.length < bracketRounds.length
+      ? t("qualifierRoundsHidden", { stage: featuredStageLabel(featuredStage) })
+      : null;
 
   const deadlinePassed = new Date(tournament.registration_deadline).getTime() < Date.now();
   const slotsFull = stats.availableSlots <= 0;
@@ -200,6 +227,28 @@ export default async function TournamentDetailPage({ params }: Props) {
               <h2 className="font-heading font-bold uppercase tracking-wider text-lg text-white">
                 {t("tournamentStatistics")}
               </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <InfoCard
+                  icon={Users}
+                  label={t("registeredTeams")}
+                  value={String(featuredStats.registeredTeams)}
+                />
+                <InfoCard
+                  icon={Trophy}
+                  label={t("qualifiedTeams")}
+                  value={String(featuredStats.qualifiedTeams)}
+                />
+                <InfoCard
+                  icon={Clock}
+                  label={t("eliminatedTeams")}
+                  value={String(featuredStats.eliminatedTeams)}
+                />
+                <InfoCard
+                  icon={Crown}
+                  label={t("remainingTeams")}
+                  value={String(featuredStats.remainingTeams)}
+                />
+              </div>
               <TournamentStatsCards stats={stats} />
             </section>
 
@@ -318,13 +367,19 @@ export default async function TournamentDetailPage({ params }: Props) {
                     <InfoCard icon={Users} label={t("eliminated")} value={String(bracketSummary.eliminatedTeams ?? 0)} />
                   </div>
                 )}
-                <div className="ns-card ns-card-gold-edge rounded-xl p-6 overflow-x-auto">
-                  <BracketView
-                    rounds={bracketRounds}
-                    editable={false}
+                {publicRounds.length === 0 ? (
+                  <div className="ns-card rounded-xl p-12 flex flex-col items-center text-center gap-3">
+                    <Network className="w-8 h-8 text-gold/50" />
+                    <p className="text-white/70">{t("bracketNotGenerated")}</p>
+                  </div>
+                ) : (
+                  <PublicBracket
+                    rounds={publicRounds}
                     bracketFormat={tournament.bracket_format}
+                    mainEventTitle={eventTitle}
+                    hiddenNote={qualifierNote}
                   />
-                </div>
+                )}
               </>
             )}
           </TabsContent>

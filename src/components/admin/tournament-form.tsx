@@ -18,7 +18,15 @@ import { ImageUpload } from "@/components/cloudinary/image-upload";
 import { Switch } from "@/components/ui/switch";
 import { LocaleTabs } from "@/components/admin/locale-tabs";
 import { Loader2, Save, Trophy, Network } from "lucide-react";
-import { GAME_TYPES, TOURNAMENT_STATUSES, BRACKET_FORMATS, slugify } from "@/lib/validation/tournament";
+import {
+  GAME_TYPES,
+  TOURNAMENT_STATUSES,
+  BRACKET_FORMATS,
+  MAX_TEAMS_OPTIONS,
+  FEATURED_BRACKET_STAGES,
+  slugify,
+} from "@/lib/validation/tournament";
+import type { FeaturedBracketStage } from "@/lib/types/database";
 import { toDatetimeLocal } from "@/lib/format-datetime";
 import type { ActionResult } from "@/app/admin/tournaments/actions";
 import type { Tournament } from "@/lib/types/database";
@@ -35,6 +43,15 @@ const STATUS_LABELS: Record<(typeof TOURNAMENT_STATUSES)[number], string> = {
 const GAME_LABELS: Record<(typeof GAME_TYPES)[number], string> = {
   MLBB: "Mobile Legends: Bang Bang",
   HOK: "Honor of Kings",
+};
+
+const FEATURED_STAGE_LABELS: Record<FeaturedBracketStage, string> = {
+  FULL: "Full Bracket",
+  TOP_64: "Top 64",
+  TOP_32: "Top 32",
+  TOP_16: "Top 16",
+  TOP_8: "Top 8",
+  TOP_4: "Top 4",
 };
 
 interface TournamentFormProps {
@@ -69,6 +86,10 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
   const [grandFinalReset, setGrandFinalReset] = useState(
     initial?.grand_final_reset_enabled ?? true
   );
+  const [maxTeams, setMaxTeams] = useState<string>(String(initial?.max_teams ?? 32));
+  const [featuredStage, setFeaturedStage] = useState<string>(
+    initial?.featured_bracket_stage ?? "FULL"
+  );
   const [status, setStatus] = useState<string>(initial?.status ?? "DRAFT");
 
   return (
@@ -79,6 +100,8 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
       <input type="hidden" name="format" value={matchFormat} />
       <input type="hidden" name="bracket_format" value={bracketFormat} />
       <input type="hidden" name="grand_final_reset_enabled" value={grandFinalReset ? "true" : "false"} />
+      <input type="hidden" name="max_teams" value={maxTeams} />
+      <input type="hidden" name="featured_bracket_stage" value={featuredStage} />
       <input type="hidden" name="status" value={status} />
 
       {/* Basic Information */}
@@ -208,19 +231,21 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
       <FormSection icon={Trophy} title={t("tournamentSettings")}>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label htmlFor="max_teams" className="text-xs text-muted-foreground">
+            <Label className="text-xs text-muted-foreground">
               {t("maxTeamsLabel")} <span className="text-gold">*</span>
             </Label>
-            <Input
-              id="max_teams"
-              name="max_teams"
-              type="number"
-              min={2}
-              max={1024}
-              required
-              defaultValue={initial?.max_teams ?? 32}
-              className="ns-input"
-            />
+            <Select value={maxTeams} onValueChange={setMaxTeams}>
+              <SelectTrigger className="ns-input">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border-gold/30">
+                {MAX_TEAMS_OPTIONS.map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n} Teams
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="prize_pool" className="text-xs text-muted-foreground">
@@ -337,6 +362,23 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
         {bracketFormat === "DOUBLE_ELIMINATION" && (
           <p className="text-xs text-muted-foreground">{t("seedingMethodNote")}</p>
         )}
+
+        <div className="space-y-1.5">
+          <Label className="text-xs text-muted-foreground">{t("featuredStageLabel")}</Label>
+          <Select value={featuredStage} onValueChange={setFeaturedStage}>
+            <SelectTrigger className="ns-input">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border-gold/30">
+              {FEATURED_BRACKET_STAGES.map((s) => (
+                <SelectItem key={s} value={s}>
+                  {FEATURED_STAGE_LABELS[s]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">{t("featuredStageNote")}</p>
+        </div>
       </FormSection>
 
       {/* Status */}

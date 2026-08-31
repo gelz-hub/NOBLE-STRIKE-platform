@@ -13,6 +13,23 @@ export const GAME_TYPES = ["MLBB", "HOK"] as const;
 export const MATCH_FORMATS = ["BO1", "BO3", "BO5"] as const;
 export const BRACKET_FORMATS = ["SINGLE_ELIMINATION", "DOUBLE_ELIMINATION"] as const;
 
+/** Selectable tournament capacities. Bracket generation itself is power-of-2
+ *  generic, but the admin UI offers this fixed ladder. */
+export const MAX_TEAMS_OPTIONS = [8, 16, 32, 64, 128, 256] as const;
+
+/** Which slice of the bracket the PUBLIC site shows. Admin pages always show
+ *  the full bracket regardless of this setting. */
+export const FEATURED_BRACKET_STAGES = [
+  "FULL",
+  "TOP_64",
+  "TOP_32",
+  "TOP_16",
+  "TOP_8",
+  "TOP_4",
+] as const;
+
+export type FeaturedBracketStage = (typeof FEATURED_BRACKET_STAGES)[number];
+
 export function slugify(input: string): string {
   return input
     .toLowerCase()
@@ -39,7 +56,12 @@ export const tournamentSchema = z
     format: z.enum(MATCH_FORMATS),
     bracket_format: z.enum(BRACKET_FORMATS),
     grand_final_reset_enabled: z.enum(["true", "false"]).transform((v) => v === "true"),
-    max_teams: z.coerce.number().int().min(2, "validation.tournament.maxTeamsMin").max(1024),
+    max_teams: z.coerce
+      .number()
+      .int()
+      .min(2, "validation.tournament.maxTeamsMin")
+      .max(256, "validation.tournament.maxTeamsMax"),
+    featured_bracket_stage: z.enum(FEATURED_BRACKET_STAGES).catch("FULL"),
     prize_pool: z.coerce.number().min(0, "validation.tournament.prizePoolNonNegative"),
     registration_deadline: z.string().min(1, "validation.tournament.registrationDeadlineRequired"),
     start_date: z.string().min(1, "validation.tournament.startDateRequired"),

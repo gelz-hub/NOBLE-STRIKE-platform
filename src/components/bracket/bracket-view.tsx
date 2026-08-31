@@ -2,11 +2,15 @@ import { MatchCard } from "./match-card";
 import type { BracketRound, MatchWithTeams } from "@/lib/bracket/queries";
 import type { BracketFormat } from "@/lib/types/database";
 
-function roundLabel(roundNumber: number, totalRounds: number, prefix?: string): string {
-  const fromEnd = totalRounds - roundNumber;
+function roundLabel(roundNumber: number, lastRoundNumber: number, prefix?: string): string {
+  const fromEnd = lastRoundNumber - roundNumber;
   const base =
     fromEnd === 0 ? "Final" : fromEnd === 1 ? "Semifinals" : fromEnd === 2 ? "Quarterfinals" : `Round ${roundNumber}`;
   return prefix ? `${prefix} ${base}` : base;
+}
+
+function lastRoundOf(rounds: BracketRound[]): number {
+  return rounds.reduce((max, r) => Math.max(max, r.round_number), 0);
 }
 
 function lowerRoundLabel(roundNumber: number): string {
@@ -65,11 +69,12 @@ export function BracketView({ rounds, editable = false, bracketFormat = "SINGLE_
   if (rounds.length === 0) return null;
 
   if (bracketFormat === "SINGLE_ELIMINATION") {
+    const lastRound = lastRoundOf(rounds);
     return (
       <RoundsRow
         rounds={rounds}
         editable={editable}
-        labelFor={(r) => roundLabel(r, rounds.length)}
+        labelFor={(r) => roundLabel(r, lastRound)}
       />
     );
   }
@@ -85,7 +90,7 @@ export function BracketView({ rounds, editable = false, bracketFormat = "SINGLE_
     <div className="space-y-10">
       <div>
         <p className="ns-kicker mb-3">Upper Bracket</p>
-        <RoundsRow rounds={upper} editable={editable} labelFor={(r) => roundLabel(r, upper.length, "UB")} />
+        <RoundsRow rounds={upper} editable={editable} labelFor={(r) => roundLabel(r, lastRoundOf(upper), "UB")} />
       </div>
       {lower.length > 0 && (
         <div>

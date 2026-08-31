@@ -81,6 +81,23 @@ describe("runDoubleEliminationGeneration", () => {
     }
   });
 
+  it("supports a full 256-team double-elimination bracket", async () => {
+    const { result, supabase } = await generate(256);
+    expect(result.ok).toBe(true);
+    const matches = supabase._tables.matches as Record<string, unknown>[];
+    const upper = matches.filter((m) => m.bracket_type === "upper");
+    const lower = matches.filter((m) => m.bracket_type === "lower");
+    const grandFinal = matches.filter((m) => m.bracket_type === "grand_final");
+    // k = log2(256) = 8 upper rounds -> 128+64+...+1 = 255 upper matches.
+    expect(upper).toHaveLength(255);
+    expect(new Set(upper.map((m) => m.round_number)).size).toBe(8);
+    // Lower bracket: 2*(k-1) = 14 rounds.
+    expect(new Set(lower.map((m) => m.round_number)).size).toBe(14);
+    expect(grandFinal).toHaveLength(1);
+    // Exactly one terminal match (the grand final).
+    expect(matches.filter((m) => !m.next_match_winner_id)).toHaveLength(1);
+  });
+
   it("produces a structurally valid bracket (passes the same integrity check generation itself runs)", async () => {
     const { result } = await generate(16);
     // runDoubleEliminationGeneration internally calls validateBracketIntegrity

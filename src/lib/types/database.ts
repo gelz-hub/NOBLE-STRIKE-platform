@@ -147,6 +147,13 @@ export type TournamentStatus =
 
 export type BracketFormat = "SINGLE_ELIMINATION" | "DOUBLE_ELIMINATION";
 export type SeedingMethod = "RANDOM";
+export type FeaturedBracketStage =
+  | "FULL"
+  | "TOP_64"
+  | "TOP_32"
+  | "TOP_16"
+  | "TOP_8"
+  | "TOP_4";
 
 export interface Tournament {
   id: string;
@@ -170,6 +177,7 @@ export interface Tournament {
   bracket_format: BracketFormat;
   seeding_method: SeedingMethod;
   grand_final_reset_enabled: boolean;
+  featured_bracket_stage: FeaturedBracketStage;
   champion_team_id: string | null;
   champion_team_name: string | null;
   champion_date: string | null;

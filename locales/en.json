@@ -234,6 +234,8 @@
         "enabled": "Enabled",
         "disabled": "Disabled",
         "seedingMethodNote": "Seeding method: Random. Teams start in the upper bracket; a loss drops them to the lower bracket, a second loss eliminates them.",
+        "featuredStageLabel": "Featured Bracket Stage",
+        "featuredStageNote": "How much of the bracket the public website shows. Earlier qualifier rounds stay hidden from spectators; admin pages always show the full bracket.",
         "statusLabel": "Status",
         "saveSuccess": "Tournament updated successfully.",
         "saving": "Saving...",
@@ -387,6 +389,10 @@
       "upperBracket": "Upper Bracket",
       "lowerBracket": "Lower Bracket",
       "eliminated": "Eliminated",
+      "registeredTeams": "Registered Teams",
+      "qualifiedTeams": "Qualified Teams",
+      "eliminatedTeams": "Eliminated Teams",
+      "qualifierRoundsHidden": "Qualifier rounds are hidden. Showing {stage} onward.",
       "telegramCta": "Get updates on this tournament as they happen."
     }
   },
@@ -468,6 +474,7 @@
       "slugMinLength": "Slug must be at least 2 characters.",
       "slugFormat": "Slug can only contain lowercase letters, numbers, and hyphens.",
       "maxTeamsMin": "At least 2 teams required.",
+      "maxTeamsMax": "A tournament can have at most 256 teams.",
       "prizePoolNonNegative": "Prize pool cannot be negative.",
       "registrationDeadlineRequired": "Registration deadline is required.",
       "startDateRequired": "Start date is required.",
