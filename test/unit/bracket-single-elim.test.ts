@@ -106,6 +106,27 @@ describe("runBracketGeneration (single elimination)", () => {
     }
   });
 
+  it("supports a full 256-team bracket (8 rounds, 255 matches, one terminal)", async () => {
+    const { result, supabase } = await generate(256);
+    expect(result.ok).toBe(true);
+    const matches = supabase._tables.matches as Record<string, unknown>[];
+    expect(matches).toHaveLength(255);
+    expect(matches.filter((m) => m.round_number === 1)).toHaveLength(128);
+    expect(matches.filter((m) => m.round_number === 8)).toHaveLength(1);
+    expect(matches.filter((m) => !m.next_match_winner_id)).toHaveLength(1);
+  });
+
+  it("auto-resolves byes and stays valid for 200 teams padded to 256", async () => {
+    const { result, supabase } = await generate(200);
+    expect(result.ok).toBe(true);
+    const round1 = (supabase._tables.matches as Record<string, unknown>[]).filter(
+      (m) => m.round_number === 1
+    );
+    const byes = round1.filter((m) => !m.team_a_id || !m.team_b_id);
+    expect(byes).toHaveLength(56); // 256 - 200
+    for (const m of byes) expect(m.status).toBe("COMPLETED");
+  });
+
   it("creates the bracket row with SINGLE_ELIMINATION format and ACTIVE status", async () => {
     const { supabase } = await generate(4);
     const brackets = supabase._tables.brackets as Record<string, unknown>[];

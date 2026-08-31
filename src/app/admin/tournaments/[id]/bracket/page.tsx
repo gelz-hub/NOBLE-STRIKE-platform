@@ -3,6 +3,10 @@ import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getBracket, getBracketMatches } from "@/lib/bracket/queries";
 import { summarizeBracket } from "@/lib/bracket/summary";
+import {
+  filterRoundsForFeaturedStage,
+  featuredStageLabel,
+} from "@/lib/bracket/featured";
 import { BracketControls } from "@/components/admin/bracket-controls";
 import { BracketView } from "@/components/bracket/bracket-view";
 import { GAME_LABELS } from "@/lib/types";
@@ -26,6 +30,14 @@ export default async function AdminBracketPage({ params }: Props) {
   const rounds = await getBracketMatches(id);
   const summary = summarizeBracket(rounds, tournament.bracket_format);
   const isDoubleElim = tournament.bracket_format === "DOUBLE_ELIMINATION";
+
+  const featuredStage = tournament.featured_bracket_stage ?? "FULL";
+  const publicRoundCount = filterRoundsForFeaturedStage(
+    rounds,
+    featuredStage,
+    tournament.bracket_format
+  ).length;
+  const hiddenRoundCount = Math.max(0, rounds.length - publicRoundCount);
 
   return (
     <div className="space-y-6">
@@ -65,6 +77,17 @@ export default async function AdminBracketPage({ params }: Props) {
           <StatCard icon={Users} label="Lower Bracket Teams" value={String(summary.lowerTeams ?? 0)} />
           <StatCard icon={Users} label="Eliminated Teams" value={String(summary.eliminatedTeams ?? 0)} />
         </div>
+      )}
+
+      {bracket && (
+        <p className="text-xs text-muted-foreground">
+          Public site shows:{" "}
+          <span className="text-gold-light">{featuredStageLabel(featuredStage)}</span>
+          {hiddenRoundCount > 0
+            ? ` — ${hiddenRoundCount} qualifier round${hiddenRoundCount === 1 ? "" : "s"} hidden from spectators.`
+            : " — the full bracket is public."}{" "}
+          This page always shows the complete bracket.
+        </p>
       )}
 
       {bracket ? (
