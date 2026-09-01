@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { pickLocalized } from "@/lib/i18n/content";
 import { StatusPill, TeamMonogram } from "@/components/ns/ui";
-import { Crown, Trophy, Users, Calendar, ArrowLeft } from "lucide-react";
+import { PageNav } from "@/components/ns/page-nav";
+import { Crown, Trophy, Users, Calendar } from "lucide-react";
 import type { RosterRole, TeamMember } from "@/lib/types/database";
 import type { Locale } from "@/i18n/config";
 
@@ -53,6 +53,7 @@ export default async function TeamDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       {/* Banner */}
       <div className="relative h-56 md:h-72 w-full overflow-hidden">
         {team.banner_url ? (
@@ -68,13 +69,6 @@ export default async function TeamDetailPage({ params }: Props) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black ns-grid-bg" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10" />
-        <Link
-          href="/"
-          className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light bg-black/40 backdrop-blur-sm border border-white/10 rounded-md px-3 py-1.5"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {t("back")}
-        </Link>
       </div>
 
       <div className="mx-auto max-w-5xl px-4 md:px-6 -mt-16 relative">

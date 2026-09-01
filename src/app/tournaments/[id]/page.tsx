@@ -25,7 +25,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { TelegramButtons } from "@/components/telegram/telegram-buttons";
 import {
-  ArrowLeft,
   Calendar,
   Crown,
   Trophy,
@@ -33,6 +32,7 @@ import {
   Clock,
   Network,
 } from "lucide-react";
+import { PageNav } from "@/components/ns/page-nav";
 import type { Locale } from "@/i18n/config";
 
 interface Props {
@@ -128,6 +128,7 @@ export default async function TournamentDetailPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       <div className="relative h-56 md:h-80 w-full overflow-hidden">
         {tournament.banner_url ? (
           <Image
@@ -142,13 +143,6 @@ export default async function TournamentDetailPage({ params }: Props) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black ns-grid-bg" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10" />
-        <Link
-          href="/"
-          className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light bg-black/40 backdrop-blur-sm border border-white/10 rounded-md px-3 py-1.5"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {t("back")}
-        </Link>
         <div className="absolute bottom-6 left-4 md:left-6 right-4 md:right-6">
           <span className={`ns-pill ${statusMeta.className} mb-3 inline-flex`}>
             {statusMeta.label}

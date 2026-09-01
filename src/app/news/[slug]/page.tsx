@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getNewsBySlug, getRelatedArticles, incrementNewsView } from "@/lib/news/queries";
 import { NewsCard } from "@/components/news/news-card";
 import { ShareLinks } from "@/components/news/share-links";
 import { MarkdownContent } from "@/components/news/markdown-content";
-import { ArrowLeft, Calendar, Eye, Pin, User } from "lucide-react";
+import { PageNav } from "@/components/ns/page-nav";
+import { Calendar, Eye, Pin, User } from "lucide-react";
 import { pickLocalized } from "@/lib/i18n/content";
 import { TelegramButtons } from "@/components/telegram/telegram-buttons";
 import type { Locale } from "@/i18n/config";
@@ -56,6 +56,7 @@ export default async function NewsArticlePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav backHref="/news" backLabel={t("newsroom")} />
       <div className="relative h-64 md:h-96 w-full overflow-hidden">
         {article.image_url ? (
           <Image src={article.image_url} alt={title} fill sizes="100vw" className="object-cover" priority />
@@ -63,13 +64,6 @@ export default async function NewsArticlePage({ params }: Props) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black ns-grid-bg" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10" />
-        <Link
-          href="/news"
-          className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/70 hover:text-gold-light bg-black/40 backdrop-blur-sm border border-white/10 rounded-md px-3 py-1.5"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {t("newsroom")}
-        </Link>
       </div>
 
       <div className="mx-auto max-w-3xl px-4 md:px-6 -mt-12 relative pb-16">

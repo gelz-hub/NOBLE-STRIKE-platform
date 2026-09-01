@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getMatch, getMatchDisputes } from "@/lib/matches/queries";
 import { pickLocalized } from "@/lib/i18n/content";
 import { TeamMonogram, StatusPill } from "@/components/ns/ui";
+import { PageNav } from "@/components/ns/page-nav";
 import { OpenDisputeForm } from "@/components/matches/open-dispute-form";
-import { ArrowLeft, Calendar, Crown, Radio } from "lucide-react";
+import { Calendar, Crown, Radio } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 
 interface Props {
@@ -25,15 +25,11 @@ export default async function PublicMatchPage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav
+        backHref={match.tournament ? `/tournaments/${match.tournament.id}` : "/"}
+        backLabel={tournamentName ?? undefined}
+      />
       <div className="mx-auto max-w-3xl px-4 md:px-6 py-8 space-y-8">
-        <Link
-          href={match.tournament ? `/tournaments/${match.tournament.id}` : "/"}
-          className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/60 hover:text-gold-light"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span lang={locale}>{tournamentName ?? t("back")}</span>
-        </Link>
-
         <div className="ns-card ns-card-gold-edge rounded-xl p-6 space-y-6">
           <div className="flex items-center justify-between">
             <p className="ns-kicker">

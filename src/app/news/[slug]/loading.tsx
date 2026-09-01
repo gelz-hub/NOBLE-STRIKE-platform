@@ -1,8 +1,10 @@
 import { SkeletonAnnounce, SkeletonBlock, SkeletonCardGrid } from "@/components/skeletons/ns-skeleton";
+import { PageNav } from "@/components/ns/page-nav";
 
 export default function NewsArticleLoading() {
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       <SkeletonAnnounce />
       <div className="relative h-64 md:h-96 w-full overflow-hidden bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black animate-pulse" />
 

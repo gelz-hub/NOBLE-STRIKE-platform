@@ -15,7 +15,7 @@ import { NextIntlClientProvider } from "next-intl";
 import en from "../../../locales/en.json";
 import km from "../../../locales/km.json";
 import { setLocale as persistLocaleCookie } from "@/app/actions/locale";
-import { isLocale, localeCookieName, type Locale } from "@/i18n/config";
+import { isLocale, localeCookieName, timeZone, type Locale } from "@/i18n/config";
 import { mergeMessages } from "@/lib/i18n/merge";
 
 const STORAGE_KEY = localeCookieName;
@@ -130,7 +130,11 @@ export function I18nProvider({
 
   return (
     <I18nContext.Provider value={value}>
-      <NextIntlClientProvider locale={locale} messages={MESSAGES[locale]}>
+      <NextIntlClientProvider
+        locale={locale}
+        messages={MESSAGES[locale]}
+        timeZone={timeZone}
+      >
         {children}
       </NextIntlClientProvider>
     </I18nContext.Provider>

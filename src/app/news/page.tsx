@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { getPublishedNews, getFeaturedArticle, getPinnedAnnouncements } from "@/lib/news/queries";
 import { NewsCard } from "@/components/news/news-card";
 import { NewsPublicFilters } from "@/components/news/news-public-filters";
 import { PaginationLinks } from "@/components/admin/pagination-links";
-import { ArrowLeft, Newspaper } from "lucide-react";
+import { PageNav } from "@/components/ns/page-nav";
+import { Newspaper } from "lucide-react";
 import { TelegramButtons } from "@/components/telegram/telegram-buttons";
 import type { NewsCategory } from "@/lib/types/database";
 
@@ -33,12 +33,9 @@ export default async function NewsPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       <div className="mx-auto max-w-6xl px-4 md:px-6 py-8 space-y-10">
         <div>
-          <Link href="/" className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/60 hover:text-gold-light mb-4">
-            <ArrowLeft className="w-3.5 h-3.5" />
-            {t("backToSite")}
-          </Link>
           <h1 className="font-display font-extrabold text-3xl md:text-4xl text-white">{t("newsroom")}</h1>
           <p className="text-muted-foreground mt-2">{t("newsroomDescription")}</p>
           <TelegramButtons className="mt-4" />

@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { pickLocalized } from "@/lib/i18n/content";
 import type { Locale } from "@/i18n/config";
 import { TeamMonogram } from "@/components/ns/ui";
+import { PageNav } from "@/components/ns/page-nav";
 import { StatCard } from "@/components/ui/stat-card";
 import { CountryFlag } from "@/components/ui/country-flag";
 import { ReportUserButton } from "@/components/moderation/report-user-button";
@@ -18,7 +19,6 @@ import {
   getAuthoredNews,
 } from "@/lib/profile/queries";
 import {
-  ArrowLeft,
   Award,
   Calendar,
   Coins,
@@ -72,14 +72,14 @@ export default async function PublicProfilePage({ params }: Props) {
 
   if (!profile.privacy_public_profile && !canBypassPrivacy) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-4">
-        <div className="ns-card rounded-xl p-10 text-center max-w-sm">
-          <Lock className="w-8 h-8 text-gold/50 mx-auto mb-4" />
-          <h1 className="font-display font-bold text-xl text-text-primary mb-2">{t("privateProfileTitle")}</h1>
-          <p className="text-sm text-muted-foreground">{t("privateProfileBody")}</p>
-          <Link href="/" className="ns-btn-outline inline-flex mt-6 px-4 py-2 rounded-md text-xs">
-            {t("backToSite")}
-          </Link>
+      <div className="min-h-screen bg-background">
+        <PageNav />
+        <div className="flex items-center justify-center px-4 py-24">
+          <div className="ns-card rounded-xl p-10 text-center max-w-sm">
+            <Lock className="w-8 h-8 text-gold/50 mx-auto mb-4" />
+            <h1 className="font-display font-bold text-xl text-text-primary mb-2">{t("privateProfileTitle")}</h1>
+            <p className="text-sm text-muted-foreground">{t("privateProfileBody")}</p>
+          </div>
         </div>
       </div>
     );
@@ -102,6 +102,7 @@ export default async function PublicProfilePage({ params }: Props) {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       <div className="relative h-56 md:h-72 w-full overflow-hidden">
         {profile.banner_url ? (
           <Image src={profile.banner_url} alt="" fill sizes="100vw" className="object-cover" priority />
@@ -109,13 +110,6 @@ export default async function PublicProfilePage({ params }: Props) {
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#0d0d0d] to-black ns-grid-bg" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/10" />
-        <Link
-          href="/"
-          className="absolute top-5 left-4 md:left-6 flex items-center gap-1.5 text-xs uppercase tracking-wider text-text-secondary hover:text-gold-light bg-background/40 backdrop-blur-sm border border-border rounded-md px-3 py-1.5"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {t("back")}
-        </Link>
         {isOwner && (
           <Link
             href="/settings/profile"

@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
 import { getPublishedLegacyEvents, getLegacyStats } from "@/lib/legacy/queries";
 import { LegacyStatsGrid } from "@/components/legacy/legacy-stats";
 import { LegacyEventCard } from "@/components/legacy/legacy-event-card";
-import { ArrowLeft, History, ScrollText } from "lucide-react";
+import { PageNav } from "@/components/ns/page-nav";
+import { History, ScrollText } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 
 export async function generateMetadata() {
@@ -25,15 +25,9 @@ export default async function LegacyPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       <div className="mx-auto max-w-6xl px-4 md:px-6 py-8 space-y-10">
         <div>
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-white/60 hover:text-gold-light mb-4"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            {t("backToSite")}
-          </Link>
           <div className="flex items-center gap-2 mb-2">
             <History className="w-5 h-5 text-gold" />
             <span className="ns-kicker">{t("kicker")}</span>

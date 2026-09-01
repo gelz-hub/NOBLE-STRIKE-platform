@@ -5,10 +5,12 @@ import {
   SkeletonDetailHero,
   SkeletonStatGrid,
 } from "@/components/skeletons/ns-skeleton";
+import { PageNav } from "@/components/ns/page-nav";
 
 export default function TournamentDetailLoading() {
   return (
     <div className="min-h-screen bg-background">
+      <PageNav />
       <SkeletonAnnounce />
       <SkeletonDetailHero />
       <div className="mx-auto max-w-5xl px-4 md:px-6 py-8 space-y-8">

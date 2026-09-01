@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useApp } from "@/lib/store";
 import { NSLogo } from "./logo";
+import { useScrolled } from "./use-scrolled";
 import { cn } from "@/lib/utils";
 import { Menu, X, Trophy, Users, History } from "lucide-react";
 import type { NSView } from "@/lib/types";
@@ -19,7 +20,7 @@ export function NavBar() {
   const tFooter = useTranslations("footer");
   const view = useApp((s) => s.view);
   const setView = useApp((s) => s.setView);
-  const [scrolled, setScrolled] = useState(false);
+  const scrolled = useScrolled();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navLabels: Record<NSView, string> = {
@@ -31,13 +32,6 @@ export function NavBar() {
     brackets: t("brackets"),
   };
   const NAV_ITEMS = NAV_ITEM_IDS.map((id) => ({ id, label: navLabels[id] }));
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // lock body scroll when mobile menu open
   useEffect(() => {
@@ -58,17 +52,28 @@ export function NavBar() {
 
   return (
     <>
+      {/* Deliberately `fixed`, not `sticky` like the shared <PageNav>: the
+          homepage is a hero-overlay design — every SPA view (see views/*.tsx)
+          reserves top padding (pt-20 / pt-24) for a nav that floats over the
+          hero rather than occupying a layout slot. The condense-on-scroll
+          behaviour, timing, blur, gold border and shadow are kept identical
+          to <PageNav> (both read useScrolled()). */}
       <header
         className={cn(
-          "fixed top-0 inset-x-0 z-50 transition-all duration-300",
+          "fixed top-0 inset-x-0 z-50 backdrop-blur-md transition-all duration-200 ease-out",
           scrolled
-            ? "glass-dark border-b border-gold/15 shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
-            : "bg-transparent"
+            ? "bg-black/85 border-b border-gold/10 shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+            : "bg-transparent border-b border-transparent shadow-none"
         )}
       >
         <div className="h-px bg-gradient-to-r from-transparent via-gold/60 to-transparent" />
         <div className="mx-auto max-w-7xl px-4 md:px-6">
-          <div className="flex h-16 md:h-20 items-center justify-between gap-4">
+          <div
+            className={cn(
+              "flex items-center justify-between gap-4 transition-all duration-200 ease-out",
+              scrolled ? "h-14" : "h-18"
+            )}
+          >
             {/* Logo */}
             <button
               onClick={() => go("home")}
