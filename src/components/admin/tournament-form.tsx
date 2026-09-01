@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
@@ -92,7 +92,28 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
   );
   const [status, setStatus] = useState<string>(initial?.status ?? "DRAFT");
 
+  // React 19 calls `form.reset()` after a `<form action>` submission completes.
+  // Every controlled Radix <Select> here registers a native "reset" listener
+  // that snaps its value back to the one captured at mount — so after a save
+  // the row persists correctly but the dropdowns (Featured Bracket Stage,
+  // Status, …) visibly jump back to their original values. Swallow the reset
+  // in the capture phase on a wrapper element (an ancestor of the <form>), so
+  // it never reaches those listeners. There is no reset button in this form,
+  // so nothing legitimate depends on the reset event firing.
+  const wrapRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const swallow = (e: Event) => {
+      e.stopImmediatePropagation();
+      e.preventDefault();
+    };
+    el.addEventListener("reset", swallow, true);
+    return () => el.removeEventListener("reset", swallow, true);
+  }, []);
+
   return (
+    <div ref={wrapRef}>
     <form action={formAction} className="space-y-8">
       <input type="hidden" name="slug" value={slug} />
       <input type="hidden" name="banner_url" value={bannerUrl} />
@@ -406,6 +427,7 @@ export function TournamentForm({ action, initial, mode }: TournamentFormProps) {
         <SubmitButton mode={mode} />
       </div>
     </form>
+    </div>
   );
 }
 
