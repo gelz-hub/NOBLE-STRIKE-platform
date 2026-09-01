@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Orbitron, Rajdhani, Inter, JetBrains_Mono, Noto_Sans_Khmer } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import "./globals.css";
+import { I18nProvider } from "@/components/i18n/i18n-provider";
+import { isLocale, defaultLocale } from "@/i18n/config";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -106,8 +107,8 @@ export default async function RootLayout({
     // Anonymous / no session — keep the dark default.
   }
 
-  const locale = await getLocale();
-  const messages = await getMessages();
+  const rawLocale = await getLocale();
+  const locale = isLocale(rawLocale) ? rawLocale : defaultLocale;
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -117,13 +118,13 @@ export default async function RootLayout({
       <body
         className={`${orbitron.variable} ${rajdhani.variable} ${inter.variable} ${jetMono.variable} ${notoSansKhmer.variable} antialiased`}
       >
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <I18nProvider initialLocale={locale}>
           <ThemeProvider attribute="class" defaultTheme={initialTheme} enableSystem storageKey="ns-theme">
             <RouteTransition>{children}</RouteTransition>
             <Toaster />
             <SonnerToaster theme="dark" position="bottom-right" />
           </ThemeProvider>
-        </NextIntlClientProvider>
+        </I18nProvider>
       </body>
     </html>
   );
